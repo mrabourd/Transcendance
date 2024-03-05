@@ -110,19 +110,34 @@ function ChangeDirection (playerPosition) {
 	game.ball.speed.y = Math.round(impact * ratio / 10);
 }
 
-function playerMove(event) {
-	let canvasLocation = canvas.getBoundingClientRect();
-	let mouseLocation = event.clientY - canvasLocation.y;
+// function playerMove(event) {
+// 	let canvasLocation = canvas.getBoundingClientRect();
+// 	let mouseLocation = event.clientY - canvasLocation.y;
 	
-	if (mouseLocation < PLAYER_HEIGHT / 2) {
-		game.player.y = 0;
+// 	if (mouseLocation < PLAYER_HEIGHT / 2) {
+// 		game.player.y = 0;
+// 	}
+// 	else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2) {
+// 		game.player.y = canvas.height - PLAYER_HEIGHT;
+// 	}
+// 	else {
+// 		game.player.y = mouseLocation - PLAYER_HEIGHT / 2;
+// 	}
+// }
+
+function playerMoveKey(event) {
+
+	if (event.key === "ArrowDown"){
+		if (game.player.y + PLAYER_HEIGHT > canvas.height)
+			game.player.y = canvas.height - PLAYER_HEIGHT;
+		game.player.y += 20;
 	}
-	else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2) {
-		game.player.y = canvas.height - PLAYER_HEIGHT;
+	else if (event.key === "ArrowUp"){
+		if(game.player.y < PLAYER_HEIGHT / 2)
+			game.player.y = 0;
+		game.player.y -= 20;
 	}
-	else {
-		game.player.y = mouseLocation - PLAYER_HEIGHT / 2;
-	}
+
 }
 
 function ballMove() {
@@ -197,6 +212,8 @@ document.addEventListener('DOMContentLoaded', function ()
 	// play();
 	document.querySelector('#start-game').addEventListener('click', play);
 	document.querySelector('#stop-game').addEventListener('click', stop);
-	canvas.addEventListener('mousemove', playerMove);
+	// canvas.addEventListener('mousemove', playerMove);
+	document.addEventListener('keydown', playerMoveKey);
+
 });
 
