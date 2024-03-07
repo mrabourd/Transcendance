@@ -130,12 +130,12 @@ function playerMoveKey(event) {
 	if (event.key === "ArrowDown"){
 		if (game.player.y + PLAYER_HEIGHT > canvas.height)
 			game.player.y = canvas.height - PLAYER_HEIGHT;
-		game.player.y += 20;
+		game.player.y += 25;
 	}
 	else if (event.key === "ArrowUp"){
 		if(game.player.y < PLAYER_HEIGHT / 2)
 			game.player.y = 0;
-		game.player.y -= 20;
+		game.player.y -= 25;
 	}
 
 }
@@ -214,6 +214,4 @@ document.addEventListener('DOMContentLoaded', function ()
 	document.querySelector('#stop-game').addEventListener('click', stop);
 	// canvas.addEventListener('mousemove', playerMove);
 	document.addEventListener('keydown', playerMoveKey);
-
 });
-

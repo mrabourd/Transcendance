@@ -9,10 +9,11 @@
 
 <!-- Menu de navigation du site -->
 <ul class="navbar">
-  <li><button id="start-game">Start game</button>
-  <li><button id="stop-game">Stop game</button>
-  <li><a href="https://random.dog/" target="_blank">This is my dog.</a>
-  <li><a href="https://selenthomas.atlassian.net/jira/software/projects/SPIES/boards/1"  target="_blank">Lien vers tableau orga</a>
+	<li><button id="start-game">Start game</button>
+	<li><button id="stop-game">Stop game</button>
+	<li><a href="https://random.dog/" target="_blank">This is my dog.</a>
+	<li><a href="https://selenthomas.atlassian.net/jira/software/projects/SPIES/boards/1"  target="_blank">Lien vers tableau orga</a>
+	<!-- <li><a href="/login">login</a></li> -->
 </ul>
 
 <!-- Contenu principal -->
@@ -40,18 +41,43 @@
     <div class="RyanImg">
       <img name="imgRyan" src="" id="ryanGosling">
     </div> -->
-    
-    <script src="./script.js" type="text/javascript"></script>
-    
-    <main>
-      <canvas id="canvas" width="640" height="480"></canvas>
-    </main>
-    
-    <p>Player 1: <em id="player-score">0</em></p>
-    <p>Player 2: <em id="computer-score">0</em></p>
-    
-    <address>started on 26/02/2024<br>
-      by me.</address>
-      
-    </body>
-    </html>
+
+<script src="./script.js" type="text/javascript"></script>
+
+<main>
+	<canvas id="canvas" width="640" height="480"></canvas>
+</main>
+
+<p>Player 1: <em id="player-score">0</em></p>
+<p>Player 2: <em id="computer-score">0</em></p>
+
+
+		<!-- FORM -->
+
+<form action="/login" method="post">login
+	<ul>
+		<li>
+			<label for="name">Name:</label>
+			<input type="text" id="name" name="user_name" />
+		</li>
+		<li>
+			<label for="mail">Email:</label>
+			<input type="email" id="mail" name="user_email" />
+		</li>
+		<li>
+			<label for="passw">Password:</label>
+			<input type="password" id="passw" name="user_password" />
+		</li>
+	</ul>
+	<class="button"> 
+		<button type="submit">OK</button>
+
+</form>
+
+  
+
+<address>started on 26/02/2024<br>
+	by me.</address>
+	
+</body>
+</html>
