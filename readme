@@ -1,0 +1,18 @@
+DOCKER COMPOSE 
+https://stackoverflow.com/questions/56844746/how-to-set-uid-and-gid-in-docker-compose
+
+
+
+ADD POSTGRESQL 
+https://testdriven.io/blog/dockerizing-django-with-postgres-gunicorn-and-nginx/
+
+
+
+
+LINKS
+#https://docs.docker.com/compose/compose-file/05-services/#links
+#Links also express implicit dependency between services in the same way 
+#as depends_on, so they determine the order of service startup.
+
+VOLUME
+#https://docs.docker.com/compose/compose-file/07-volumes/
