@@ -1,0 +1,62 @@
+version: "3"
+
+services:
+  frontend:
+    container_name: frontend
+    env_file: .env
+    build: docker/nginx/
+    ports:
+      - 8000:8000
+    volumes:
+      - frontend-data:/var/www/html/
+  
+  backend:
+    container_name: backend
+    build: docker/backend/
+    restart: on-failure
+    ports:
+      - "8001:8001"
+    volumes:
+      - backend-data:/app/
+      - frontend-data:/var/www/html/
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - server
+
+  db:
+    container_name: db
+    image: postgres:15
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    networks:
+      - server
+
+volumes:
+  frontend-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: "${DATA_FOLDER}/frontend"
+
+  backend-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: "${DATA_FOLDER}/backend"
+
+  db-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: "${DATA_FOLDER}/database"
+
+networks:
+  server:
