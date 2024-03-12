@@ -13,7 +13,7 @@ logs:
 	docker logs nginx
 
 migration:
-	docker exec backend python transcendance/manage.py migrate --noinput 
+	docker exec backend python manage.py migrate --noinput 
 
 clean: down
 	docker rmi -f $$(docker images -qa);\
