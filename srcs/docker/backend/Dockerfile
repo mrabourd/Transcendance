@@ -44,31 +44,34 @@
 
 
 
-# Utilisez une image de base avec Python et votre version préférée
-FROM python:3
+# pull official base image
+FROM python:3.11.4-slim-buster
 
-# Définissez le répertoire de travail dans le conteneur
-WORKDIR /app
+# set work directory
+WORKDIR /usr/src/app
 
-#PYTHONDONTWRITEBYTECODE
-#If this is set to a non-empty string, Python won’t try to write .pyc files
-#on the import of source modules. This is equivalent to specifying the -B optio
-ENV PYTHONDONTWRITEBYTECODE=1
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-#PYTHONUNBUFFERED
-#Force the stdout and stderr streams to be unbuffered. This option has no effect on the stdin stream.
-ENV PYTHONUNBUFFERED=1
+# install system dependencies
+RUN apt-get update && apt-get install -y netcat
 
+# install dependencies
 RUN pip install --upgrade pip
-# Copiez le fichier requirements.txt dans le conteneur
-COPY tools/requirements.txt .
-
-# Installez les dépendances Python
+COPY ./tools/requirements.txt .
 RUN pip install -r requirements.txt
 RUN pip install django-cors-headers
+
+# copy entrypoint.sh
+COPY ./tools/entrypoint.sh .
+RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
 
 # Exposez le port sur lequel Django s'exécutera
 EXPOSE 8001
 
-# Commande pour exécuter votre application Django
-CMD ["python", "transcendance/manage.py", "runserver", "0.0.0.0:8001"]
+# copy project
+
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
