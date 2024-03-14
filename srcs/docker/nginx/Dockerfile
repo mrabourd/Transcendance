@@ -11,6 +11,7 @@ FROM nginx:stable-alpine AS nginx_installation
 #	-subj "/C=FR/ST=Paris/L=Paris/O=42 School/OU=sethomas/CN=sethomas.42.fr"
 
 RUN mkdir -p /var/run/nginx
+COPY ./conf/mime.types /etc/nginx/mime.types
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \

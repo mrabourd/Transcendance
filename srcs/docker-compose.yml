@@ -19,7 +19,6 @@ services:
       - "8001:8001"
     volumes:
       - backend-data:/usr/src/app/
-      - frontend-data:/var/www/html/
     env_file:
       - .env
     depends_on:
@@ -43,19 +42,6 @@ services:
         timeout: 5s
         retries: 5
   
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    restart: always
-    ports:
-    - "8888:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: hello_django@domain-name.com
-      PGADMIN_DEFAULT_PASSWORD: hello_django
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    networks:
-      - server
 
 volumes:
   frontend-data:

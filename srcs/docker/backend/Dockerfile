@@ -61,11 +61,10 @@ RUN apt-get update && apt-get install -y netcat
 RUN pip install --upgrade pip
 COPY ./tools/requirements.txt .
 RUN pip install -r requirements.txt
-RUN pip install django-cors-headers
 
 # copy entrypoint.sh
-COPY ./tools/entrypoint.sh .
-RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.sh
+COPY ./tools/entrypoint.sh /usr/src/app/entrypoint.sh
+#RUN sed -i 's/\r$//g' /usr/src/app/entrypoint.sh
 RUN chmod +x /usr/src/app/entrypoint.sh
 
 # Exposez le port sur lequel Django s'exécutera
