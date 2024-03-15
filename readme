@@ -16,3 +16,22 @@ LINKS
 
 VOLUME
 #https://docs.docker.com/compose/compose-file/07-volumes/
+
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+    - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: hello_django@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: hello_django
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - server
+
+
+volumes:
+  pgadmin-data:

@@ -35,6 +35,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+#AUTH_USER_MODEL = 'authenticate.User'
 # Application definition
 
 
@@ -48,7 +49,7 @@ INSTALLED_APPS = [
 	'corsheaders', 
 	'rest_framework',
 	'singlepage', 
-	'users.apps.UsersConfig',    
+	'users',
 ]
 
 MIDDLEWARE = [
@@ -87,9 +88,9 @@ WSGI_APPLICATION = 'hello_django.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+		"NAME": os.environ.get("SQL_DATABASE", "database"),
         "USER": os.environ.get("SQL_USER", "user"),
         "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
         "HOST": os.environ.get("SQL_HOST", "localhost"),
