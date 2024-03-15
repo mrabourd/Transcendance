@@ -9,12 +9,10 @@ def index(request):
 
 texts = ["Coucou la section 1",
         "Praesent euismod auctor quam, id congue tellus malesuada vitae. Ut sed lacinia quam. Sed vitae mattis metus, vel gravida ante. Praesent tincidunt nulla non sapien tincidunt, vitae semper diam faucibus. Nulla venenatis tincidunt efficitur. Integer justo nunc, egestas eget dignissim dignissim,  facilisis, dictum nunc ut, tincidunt diam.",
-        "Flemme de faire une section 3",
-        "deesse",
-        "coucou"]
+        "coucou le loup"]
 
 def section(request, num):
-    if 1 <= num <= 5:
+    if 1 <= num <= 3:
         return HttpResponse(texts[num-1])
     else:
         raise Http404("No such section")
