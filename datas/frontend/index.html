@@ -7,7 +7,7 @@
             //  This function communicates with django (backend)
             
             function showSection(section) {   
-                fetch(`http://localhost:8001/sections/${section}`)
+                fetch(`http://localhost:8000/sections/${section}`)
                 .then(response => response.text())
                 .then(text => {
                     console.log(text);
@@ -40,6 +40,30 @@
         <div id="content">
 
         </div>
+
+
+<form action="/login" method="post">login
+	<ul>
+		<li>
+			<label for="name">Name:</label>
+			<input type="text" id="name" name="user_name" />
+		</li>
+		<li>
+			<label for="mail">Email:</label>
+			<input type="email" id="mail" name="user_email" />
+		</li>
+		<li>
+			<label for="passw">Password:</label>
+			<input type="password" id="passw" name="user_password" />
+		</li>
+	</ul>
+	<class="button"> 
+		<button type="submit">OK</button>
+
+    </form>
+
+
+
     
     </body>
 </html>
