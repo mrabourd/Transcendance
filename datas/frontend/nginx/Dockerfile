@@ -21,6 +21,6 @@ RUN mkdir -p /var/www/html
 RUN chown -R nginx:nginx /var/www/* \
 && chmod -R 755 /var/www/*
 
-EXPOSE 8000
+EXPOSE 3000
 
 CMD ["nginx", "-g", "daemon off;"]

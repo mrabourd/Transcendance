@@ -31,3 +31,7 @@ VOLUME
       - pgadmin-data:/var/lib/pgadmin
     networks:
       - server
+
+
+volumes:
+  pgadmin-data:

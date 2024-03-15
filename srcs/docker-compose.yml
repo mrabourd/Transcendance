@@ -4,19 +4,19 @@ services:
   frontend:
     container_name: frontend
     env_file: .env
-    build: docker/nginx/
+    build: datas/frontend/nginx/
     ports:
-      - 8000:8000
+      - 3000:3000
     volumes:
       - frontend-data:/var/www/html/
   
   backend:
     container_name: backend
-    build: docker/backend/
+    build: datas/backend/
     restart: on-failure
-    command: python /usr/src/app/manage.py runserver 0.0.0.0:8001
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
-      - "8001:8001"
+      - "8000:8000"
     volumes:
       - backend-data:/usr/src/app/
     env_file:
@@ -28,7 +28,7 @@ services:
       - server
   db:
     container_name: db
-    image: postgres:14-alpine
+    image: postgres:15
     restart: always
     env_file:
       - .env
@@ -42,6 +42,22 @@ services:
         timeout: 5s
         retries: 5
   
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+    - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: hello_django@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: hello_django
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - server
 
 volumes:
   frontend-data:
