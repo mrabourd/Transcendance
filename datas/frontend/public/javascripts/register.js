@@ -1,7 +1,6 @@
 
 var EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-// var buttonOn = false;
-// var buttonRegister = document.getElementById("button");
+// var buttonRegister = document.getElementById("registerButton");
 
 document.getElementById("form3Example3c").oninput = function (){checkEmail ()};
 document.getElementById("form3Example4cd").oninput = function () {checkPasswords ()}; 
@@ -10,11 +9,10 @@ function checkEmail () {
 	let inputEmail = document.getElementById("form3Example3c").value;
 	
 	if (inputEmail.match(EMAIL_REGEX) )
-	document.getElementById("checkMail").innerHTML = "";
-else{
-	document.getElementById("checkMail").innerHTML = "Wrong email address";
-	// buttonOn = false
-}
+		document.getElementById("checkMail").innerHTML = "";
+	else{
+		document.getElementById("checkMail").innerHTML = "Wrong email address";
+	}
 }
 
 function checkPasswords () {
@@ -23,12 +21,10 @@ function checkPasswords () {
 	
 	if (pass1 === pass2){
 		document.getElementById("checkPass").innerHTML = "";
-		// buttonOn = true;
 		// buttonRegister.disabled = false;
 	}
 	else{
 		document.getElementById("checkPass").innerHTML = "The passwords are not the same.";
-		// buttonOn = false;
 		// buttonRegister.disabled = true;
 	}
 }
@@ -50,17 +46,10 @@ function register () {
 	let email = baliseEmail.value;
 	// console.log(pass); // affiche ce qui est contenu dans la balise name
 	
-	var buttonRegister = document.getElementById("registerButton");
-	buttonRegister.disabled = true;
+	// var buttonRegister = document.getElementById("registerButton");
+	// buttonRegister.disabled = true;
 	// document.getElementsById("registerButton").setAttribute("disabled", true);
-	// if (buttonOn === true){
-	// 	buttonRegister.disabled = false;
-	// 	console.log("the button is able");
-	// }
-	// else{
-	// 	buttonRegister.disabled = true;
-	// 	console.log("the button is disable");
-	// }
+
 
     fetch('http://127.0.0.1:8000/api/users/register/', {
     method: 'POST',
@@ -69,9 +58,18 @@ function register () {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({username: uname, email: email, password: pass})
-  }).then(res => console.log("bravo"))
-  	// .then(res => res.json())
-    .then(res => console.log(res));
+  })
+  	// .then(res => console.log("bravo"))
+  	// // .then(res => res.json())
+    // .then(res => console.log(res));
+
+	.then((res) => {
+		if (!res.ok) {
+		  document.getElementById("finish").innerHTML = "A user with this email address already exists.";
+		}
+		else
+		  console.log("bravo, this person has been added")
+	  })
 };
 
 // recuperer les elements renvoyes par le formulaire et les envyer dans stringify

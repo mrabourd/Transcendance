@@ -8,9 +8,14 @@ function postDummy () {
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({username: "marie", email: "coucou@g.com", password: "Mi0)miou"})
-}).then(res => res.json())
-  .then(res => console.log(res));
-};
-
-// recuperer les elements renvoyes par le formulaire et les envyer dans stringify
-// si elements ok (code reponse bonne) envoyer "successfull ou un truc du genre"
+})
+  // .then(res => res.json())
+  // .then(res => console.log(res));
+  .then((res) => {
+    if (!res.ok) {
+      document.getElementById("dummy").innerHTML = "A user with this email address already exists.";
+    }
+    else
+      console.log("bravo, this person has been added")
+  })
+ };
