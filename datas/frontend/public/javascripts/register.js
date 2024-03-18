@@ -45,6 +45,10 @@ function register () {
 	let balisePassword = document.getElementById("form3Example4c");
 	let pass = balisePassword.value;
 	// console.log(pass); // affiche ce qui est contenu dans la balise name
+
+	let baliseEmail = document.getElementById("form3Example3c");
+	let email = baliseEmail.value;
+	// console.log(pass); // affiche ce qui est contenu dans la balise name
 	
 	var buttonRegister = document.getElementById("registerButton");
 	buttonRegister.disabled = true;
@@ -58,15 +62,15 @@ function register () {
 	// 	console.log("the button is disable");
 	// }
 
-    fetch('http://127.0.0.1:8000/api/auth/login/', {
+    fetch('http://127.0.0.1:8000/api/users/register/', {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({username: uname, password: pass})
+    body: JSON.stringify({username: uname, email: email, password: pass})
   }).then(res => console.log("bravo"))
-  	.then(res => res.json())
+  	// .then(res => res.json())
     .then(res => console.log(res));
 };
 
