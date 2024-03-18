@@ -15,6 +15,11 @@ logs:
 migration:
 	docker exec backend python manage.py migrate --noinput 
 
+backend :
+	docker compose -f ./srcs/docker-compose.yml down
+	docker rmi srcs-backend
+	docker compose -f ./srcs/docker-compose.yml up
+
 clean: down
 	docker rmi -f $$(docker images -qa);\
 	docker volume rm $$(docker volume ls -q);
