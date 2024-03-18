@@ -12,7 +12,7 @@ services:
   
   backend:
     container_name: backend
-    build: datas/backend/
+    image: alicekatkout/trans_back:v0.0.1
     restart: on-failure
     command: python manage.py runserver 0.0.0.0:8000
     ports:
@@ -26,6 +26,7 @@ services:
         condition: service_healthy
     networks:
       - server
+  
   db:
     container_name: db
     image: postgres:15
