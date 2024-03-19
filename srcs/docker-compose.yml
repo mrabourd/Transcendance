@@ -12,7 +12,7 @@ services:
   
   backend:
     container_name: backend
-    image: alicekatkout/trans_back:v0.0.1
+    build: datas/backend/
     restart: on-failure
     command: python manage.py runserver 0.0.0.0:8000
     ports:

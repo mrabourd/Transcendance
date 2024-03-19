@@ -31,7 +31,7 @@ function checkPasswords () {
 
 
 function register () {
-	// buttonRegister.disabled = true;
+	buttonRegister.disabled = true;
 	
 	let baliseNom = document.getElementById("form3Example1c");
 	console.log(baliseNom);
@@ -50,27 +50,40 @@ function register () {
 	// buttonRegister.disabled = true;
 	// document.getElementsById("registerButton").setAttribute("disabled", true);
 
-
+	
     fetch('http://127.0.0.1:8000/api/users/register/', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json, text/plain, */*',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({username: uname, email: email, password: pass})
-  })
-  	// .then(res => console.log("bravo"))
-  	// // .then(res => res.json())
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json, text/plain, */*',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({username: uname, email: email, password: pass})
+	})
+	// .then(res => console.log("bravo"))
+	// // .then(res => res.json())
     // .then(res => console.log(res));
-
-	.then((res) => {
+	
+	.then((res) =>
+	{
 		if (!res.ok) {
-		  document.getElementById("finish").innerHTML = "A user with this email address already exists.";
+			document.getElementById("finish").innerHTML = "A user with this email address already exists.";
 		}
 		else
-		  console.log("bravo, this person has been added")
-	  })
-};
+			console.log("bravo, this person has been added")
+	})
+	window.localStorage.setItem("username", uname);
 
+	// userData = [{
+	// 	username: document.getElementById('form3Example1c').value
+	//   }, {
+	// 	password: document.getElementById('form3Example4c').value
+	//   }];
+	//   usersr = JSON.parse(localStorage.getItem('Users')) || [];
+	//   usersr.push(userData);
+	//   localStorage.setItem('Users', JSON.stringify(usersr));
+	//   location.reload()
+	//   console.log(userData)
+	  //continuer a checker: https://stackoverflow.com/questions/61162022/how-to-check-if-user-exist-in-local-storage
+};
 // recuperer les elements renvoyes par le formulaire et les envyer dans stringify
 // si elements ok (code reponse bonne) envoyer "successfull ou un truc du genre"
