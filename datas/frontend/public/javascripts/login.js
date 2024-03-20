@@ -9,15 +9,15 @@ function login () {
 	let balisePassword = document.getElementById("PasswordId");
 	let UserPassword = balisePassword.value;
 	  
-	const nameUser = JSON.parse(localStorage.getItem("username")) || [];
-	loginData = [{
-		loginName: UserName}, {
-		loginPass: UserPassword
-		}];
-	nameUser.push(loginData)
-	localStorage.setItem("username", JSON.stringify(nameUser))
-	console.log(nameUser)
-	location.reload()
+	// const nameUser = JSON.parse(localStorage.getItem("username")) || [];
+	// loginData = [{
+	// 	loginName: UserName}, {
+	// 	loginPass: UserPassword
+	// 	}];
+	// nameUser.push(loginData)
+	// localStorage.setItem("username", JSON.stringify(nameUser))
+	// console.log(nameUser)
+	// location.reload()
     fetch('http://127.0.0.1:8000/api/auth/login/', {
     method: 'POST',
     headers: {
@@ -26,14 +26,26 @@ function login () {
     },
     body: JSON.stringify({username: UserName, password: UserPassword})
   })
-	// .then(res => res.json())
+	.then(res => res.json())
 	// .then(res => console.log(res));
-	.then((res) =>
-	{
-		if (!res.ok) {
-			document.getElementById("finishLogin").innerHTML = "This user doesn't exist!";
-		}
-		else
+	// .then((res) =>
+	// {
+	// 	if (!res.ok) {
+	// 		document.getElementById("finishLogin").innerHTML = "This user doesn't exist!";
+	// 	}
+	// 	else
+	// 		console.log("bravo, you are logged in")
+	// })
+	.then(data => {
+		if (data.success) {
+			localStorage.setItem("username", UserName);
+			localStorage.setItem("password", UserPassword);
 			console.log("bravo, you are logged in")
+		} else {
+			alert(data.message);
+		}
 	})
+	// .catch(error => {
+	// 	console.error('Erreur:', error);
+	// })
 };

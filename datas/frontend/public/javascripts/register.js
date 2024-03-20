@@ -31,7 +31,7 @@ function checkPasswords () {
 
 
 function register () {
-	buttonRegister.disabled = true;
+	// buttonRegister.disabled = true;
 	
 	let baliseNom = document.getElementById("form3Example1c");
 	console.log(baliseNom);
