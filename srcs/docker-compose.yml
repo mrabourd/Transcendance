@@ -4,7 +4,7 @@ services:
   frontend:
     container_name: frontend
     env_file: .env
-    build: datas/frontend/nginx/
+    build: ../datas/frontend/nginx/
     ports:
       - 3000:3000
     volumes:
@@ -12,7 +12,8 @@ services:
   
   backend:
     container_name: backend
-    image: alicekatkout/trans_back:amd64
+    build: ../datas/backend/
+    #image: aliceKatkout/trans_back:v0.0.1
     restart: on-failure
     command: python manage.py runserver 0.0.0.0:8000
     ports:
