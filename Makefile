@@ -1,13 +1,13 @@
 all: build up
 
 build:
-	docker compose -f ./srcs/docker-compose.yml build
+	docker compose -f ./docker-compose.yml build
 
 up:
-	docker compose -f ./srcs/docker-compose.yml up
+	docker compose -f ./docker-compose.yml up
 	
 down:
-	docker compose -f ./srcs/docker-compose.yml down
+	docker compose -f ./docker-compose.yml down
 	
 logs:
 	docker logs nginx
@@ -16,9 +16,14 @@ migration:
 	docker exec backend python manage.py migrate --noinput 
 
 backend :
-	docker compose -f ./srcs/docker-compose.yml down
-	docker rmi srcs-backend
-	docker compose -f ./srcs/docker-compose.yml up
+	docker compose -f ./docker-compose.yml down
+	docker rmi backend
+	docker compose -f ./docker-compose.yml up
+
+front :
+	docker compose -f ./docker-compose.yml down
+	docker rmi -f repo_mrabourd-frontend:latest
+	docker compose -f ./docker-compose.yml up
 
 clean: down
 	docker rmi -f $$(docker images -qa);\
@@ -26,9 +31,6 @@ clean: down
 	docker system prune
 
 fclean: clean
-
-see_db:
-	docker exec db psql --username=hello_django --dbname=hello_django_dev
 
 re: clean up
 	docker ps -a

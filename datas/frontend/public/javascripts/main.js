@@ -1,40 +1,65 @@
-function show(page, param) {
-    var contentDiv = document.getElementById("content");
+import home from "./views/home.js";
+import about from "./views/about.js";
+import contact from "./views/contact.js";
+import play from "./views/play.js";
+import profile from "./views/profile.js";
 
-    switch(page){
-        case "about" :
-            show_about_page(contentDiv);
-            break;
-        case "contact" :
-            show_contact_page(contentDiv);
-            break;
-        case "play" :
-            show_play_page(contentDiv);
-            break;
-        case "profile" :
-            show_profile_page(contentDiv, param);
-            break;
-        case "home" :
-        default :
-            show_home_page(contentDiv);
-            break;
-        
+const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+
+const getParams = match => {
+    const values = match.result.slice(1);
+    const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
+
+    return Object.fromEntries(keys.map((key, i) => {
+        return [key, values[i]];
+    }));
+};
+
+const navigateTo = url => {
+    history.pushState(null, null, url);
+    router();
+};
+
+const router = async () => {
+    const routes = [
+        { path: "/", view: Dashboard },
+        { path: "/home", view: home },
+        { path: "/profile/:id", view: profile },
+        { path: "/about", view: about },
+        { path: "/play", view: play }
+    ];
+
+    // Test each route for potential match
+    const potentialMatches = routes.map(route => {
+        return {
+            route: route,
+            result: location.pathname.match(pathToRegex(route.path))
+        };
+    });
+
+    let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
+
+    if (!match) {
+        match = {
+            route: routes[0],
+            result: [location.pathname]
+        };
     }
-}
 
-document.addEventListener('DOMContentLoaded', function (){
-    let url = location.hash.substring(1);
-    let param = url.split("/");
-    let page = param[0];
-    param.shift();
-    show(page, param);
+    const view = new match.route.view(getParams(match));
+
+    document.querySelector("#app").innerHTML = await view.getHtml();
+};
+
+window.addEventListener("popstate", router);
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.body.addEventListener("click", e => {
+        if (e.target.matches("[data-link]")) {
+            e.preventDefault();
+            navigateTo(e.target.href);
+        }
+    });
+
+    router();
 });
-
-window.addEventListener("hashchange", function() {
-    let url = location.hash.substring(1);
-    let param = url.split("/");
-    let page = param[0];
-    param.shift(); 
-    show(page, param);
-});
-
