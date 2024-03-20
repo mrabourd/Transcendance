@@ -3,15 +3,26 @@ import AbstractView from "./AbstractView.js";
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("Play");
+        this.setTitle("Play fun");
     }
 
     async getHtml() {
-        return `
-            <h1>Play</h1>
-            <p>
-                Fugiat voluptate et nisi Lorem cillum anim sit do eiusmod occaecat irure do. Reprehenderit anim fugiat sint exercitation consequat. Sit anim laborum sit amet Lorem adipisicing ullamco duis. Anim in do magna ea pariatur et.
-            </p>
-        `;
+        console.log("coucouo");
+
+
+        fetch('/template/play').then(function (response) {
+            // The API call was successful!
+            return response.text();
+        }).then(function (html) {
+            // This is the HTML from our response as a text string
+            //const parser = new DOMParser();
+            //const jsdom = require("jsdom");
+            const dom = new JSDOM(html);
+//            const doc = parser.parseFromString(html, "text/html");
+           return(dom);
+        }).catch(function (err) {
+            // There was an error
+            console.warn('Something went wrong.', err);
+        });
     }
 }

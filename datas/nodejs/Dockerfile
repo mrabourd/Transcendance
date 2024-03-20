@@ -9,6 +9,7 @@ COPY package*.json ./
 USER node
 
 RUN npm install
+RUN npm install jsdom --save
 
 COPY --chown=node:node . .
 

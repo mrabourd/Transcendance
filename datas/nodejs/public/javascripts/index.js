@@ -1,3 +1,4 @@
+import login from "./views/login.js";
 import home from "./views/home.js";
 import about from "./views/about.js";
 import contact from "./views/contact.js";
@@ -22,10 +23,12 @@ const navigateTo = url => {
 
 const router = async () => {
     const routes = [
-        { path: "/", view: Dashboard },
+        { path: "/", view: login },
         { path: "/home", view: home },
+        { path: "/profile", view: profile },
         { path: "/profile/:id", view: profile },
         { path: "/about", view: about },
+        { path: "/contact", view: contact },
         { path: "/play", view: play }
     ];
 
@@ -47,8 +50,12 @@ const router = async () => {
     }
 
     const view = new match.route.view(getParams(match));
+    let html = await view.getHtml();
+    console.log(">>>>>>>>>");
+    console.log(html.body.firstChild.textContent);
+    console.log("<<<<<<>>>>>>");
 
-    document.querySelector("#app").innerHTML = await view.getHtml();
+    document.querySelector("#app").innerText = html.body.firstChild.textContent;
 };
 
 window.addEventListener("popstate", router);
@@ -57,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
         
         if (e.target.matches("[data-link]")) {
-            console.log("ok");
             e.preventDefault();
             navigateTo(e.target.href);
         }
