@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 	'rest_framework',
 	'singlepage',
 	'users',
+	'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -146,4 +147,14 @@ from datetime import timedelta
 SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
     'ROTATE_REFRESH_TOKENS': True,
+}
+
+REST_FRAMEWORK = {
+
+	'DEFAULT_AUTHENTICATION_CLASSES': [
+		'rest_framework.authentication.TokenAuthentication',
+# ...
+		'rest_framework_simplejwt.authentication.JWTAuthentication',
+	]
+
 }
