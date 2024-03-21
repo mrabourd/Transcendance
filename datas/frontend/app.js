@@ -8,7 +8,6 @@ const port = 3000;
 
 router.use(function (req,res,next) {
     console.log('/' + req.method);
-    console.log(req.params);
     next();
   });
   
