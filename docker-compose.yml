@@ -4,7 +4,7 @@ services:
   frontend:
     container_name: frontend
     env_file: .env
-    build: datas/nodejs/
+    build: datas/frontend/
     ports:
       - 3000:3000
     volumes:
@@ -50,7 +50,7 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: "${DATA_FOLDER}/nodejs"
+      device: "${DATA_FOLDER}/frontend"
 
   backend-data:
     driver: local
