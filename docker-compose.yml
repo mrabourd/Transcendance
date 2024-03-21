@@ -1,0 +1,64 @@
+version: "3"
+
+services:
+  frontend:
+    container_name: frontend
+    env_file: .env
+    build: datas/nodejs/
+    ports:
+      - 3000:3000
+    volumes:
+      - frontend-data:/home/node/app/
+  
+  backend:
+    container_name: backend
+    image: alicekatkout/trans_back:amd64
+    restart: on-failure
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend-data:/usr/src/app/
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - server
+  
+  db:
+    container_name: db
+    image: postgres:15
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - server
+    healthcheck:
+        test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
+volumes:
+  frontend-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: "${DATA_FOLDER}/nodejs"
+
+  backend-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: "${DATA_FOLDER}/backend"
+
+  db-data:
+
+networks:
+  server:
