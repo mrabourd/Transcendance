@@ -18,7 +18,7 @@ export default function login () {
 	// localStorage.setItem("username", JSON.stringify(nameUser))
 	// console.log(nameUser)
 	// location.reload()
-    fetch('http://127.0.0.1:8000/api/auth/login/', {
+    fetch('http://127.0.0.1:8000/api/users/login/', {
     method: 'POST',
     headers: {
       'Accept': 'application/json, text/plain, */*',
