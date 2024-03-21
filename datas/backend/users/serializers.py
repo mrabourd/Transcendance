@@ -1,8 +1,22 @@
 from django.contrib.auth import get_user_model
 from rest_framework.settings import api_settings
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 User = get_user_model() # Get reference to the model
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+        token = super(CustomTokenObtainPairSerializer, cls).get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+        token['email'] = user.email
+        return token
 
 class UserSerializer(serializers.ModelSerializer):
 

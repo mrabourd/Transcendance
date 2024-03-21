@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'corsheaders', 
 	'rest_framework',
+	"rest_framework.authtoken",
 	'singlepage', 
 	'users',
 	'rest_framework_simplejwt',
@@ -147,12 +148,15 @@ from datetime import timedelta
 SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
     'ROTATE_REFRESH_TOKENS': True,
+
+  # It will work instead of the default serializer(TokenObtainPairSerializer).
+  	"TOKEN_OBTAIN_SERIALIZER": "users.serializers.CustomTokenObtainPairSerializer",
+
 }
 
 REST_FRAMEWORK = {
 
 	'DEFAULT_AUTHENTICATION_CLASSES': [
-		'rest_framework.authentication.TokenAuthentication',
 # ...
 		'rest_framework_simplejwt.authentication.JWTAuthentication',
 	]
