@@ -4,7 +4,7 @@ services:
   frontend:
     container_name: frontend
     env_file: .env
-    build: datas/frontend/nginx/
+    build: ../datas/frontend/nginx/
     ports:
       - 3000:3000
     volumes:
@@ -12,7 +12,7 @@ services:
   
   backend:
     container_name: backend
-    build: datas/backend/
+    build: ../datas/backend/
     restart: on-failure
     command: python manage.py runserver 0.0.0.0:8000
     ports:
