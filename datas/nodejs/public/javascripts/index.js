@@ -48,14 +48,8 @@ const router = async () => {
             result: [location.pathname]
         };
     }
-
     const view = new match.route.view(getParams(match));
-    let html = await view.getHtml();
-    console.log(">>>>>>>>>");
-    console.log(html.body.firstChild.textContent);
-    console.log("<<<<<<>>>>>>");
-
-    document.querySelector("#app").innerText = html.body.firstChild.textContent;
+    view.getHtml(document.querySelector("#app"));
 };
 
 window.addEventListener("popstate", router);

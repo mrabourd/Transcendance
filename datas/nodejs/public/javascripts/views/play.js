@@ -6,20 +6,16 @@ export default class extends AbstractView {
         this.setTitle("Play fun");
     }
 
-    async getHtml() {
-        console.log("coucouo");
-
-
-        fetch('/template/play').then(function (response) {
+    async getHtml(DOM) {
+        await fetch('/template/play').then(function (response) {
             // The API call was successful!
             return response.text();
         }).then(function (html) {
             // This is the HTML from our response as a text string
-            //const parser = new DOMParser();
-            //const jsdom = require("jsdom");
-            const dom = new JSDOM(html);
-//            const doc = parser.parseFromString(html, "text/html");
-           return(dom);
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(html, 'text/html');
+            let body = doc.querySelector('#app');
+            DOM.innerHTML = body.innerHTML;
         }).catch(function (err) {
             // There was an error
             console.warn('Something went wrong.', err);

@@ -13,7 +13,6 @@ router.use(function (req,res,next) {
   });
   
   router.get('/template/:name', function (req, res) {
-    console.log("try to send");
     console.log(req.params.name);
     /*
     var options = {
@@ -25,7 +24,6 @@ router.use(function (req,res,next) {
       }
     }
     */
-  
     var fileName = req.params.name
     res.sendFile(path + '/javascripts/views/templates/' + fileName + '.html');
   })
