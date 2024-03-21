@@ -13,6 +13,7 @@ services:
   backend:
     container_name: backend
     build: ../datas/backend/
+    #image: aliceKatkout/trans_back:v0.0.1
     restart: on-failure
     command: python manage.py runserver 0.0.0.0:8000
     ports:
@@ -42,23 +43,6 @@ services:
         interval: 10s
         timeout: 5s
         retries: 5
-  
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    restart: always
-    ports:
-    - "8888:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: hello_django@domain-name.com
-      PGADMIN_DEFAULT_PASSWORD: hello_django
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - server
 
 volumes:
   frontend-data:
@@ -76,7 +60,6 @@ volumes:
       device: "${DATA_FOLDER}/backend"
 
   db-data:
-  pgadmin-data:
 
 networks:
   server:
