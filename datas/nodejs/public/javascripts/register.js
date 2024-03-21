@@ -2,10 +2,8 @@
 var EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 // var buttonRegister = document.getElementById("registerButton");
 
-document.getElementById("form3Example3c").oninput = function (){checkEmail ()};
-document.getElementById("form3Example4cd").oninput = function () {checkPasswords ()}; 
 
-function checkEmail () {
+export function checkEmail () {
 	let inputEmail = document.getElementById("form3Example3c").value;
 	
 	if (inputEmail.match(EMAIL_REGEX) )
@@ -15,7 +13,7 @@ function checkEmail () {
 	}
 }
 
-function checkPasswords () {
+export function checkPasswords () {
 	let pass1 = document.getElementById("form3Example4c").value;
 	let pass2 = document.getElementById("form3Example4cd").value;
 	
@@ -29,8 +27,7 @@ function checkPasswords () {
 	}
 }
 
-
-function register () {
+export function register () {
 	// buttonRegister.disabled = true;
 	
 	let baliseNom = document.getElementById("form3Example1c");
@@ -50,27 +47,40 @@ function register () {
 	// buttonRegister.disabled = true;
 	// document.getElementsById("registerButton").setAttribute("disabled", true);
 
-
+	
     fetch('http://127.0.0.1:8000/api/users/register/', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json, text/plain, */*',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({username: uname, email: email, password: pass})
-  })
-  	// .then(res => console.log("bravo"))
-  	// // .then(res => res.json())
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json, text/plain, */*',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({username: uname, email: email, password: pass})
+	})
+	// .then(res => console.log("bravo"))
+	// // .then(res => res.json())
     // .then(res => console.log(res));
-
-	.then((res) => {
+	
+	.then((res) =>
+	{
 		if (!res.ok) {
-		  document.getElementById("finish").innerHTML = "A user with this email address already exists.";
+			document.getElementById("finish").innerHTML = "A user with this email address already exists.";
 		}
 		else
-		  console.log("bravo, this person has been added")
-	  })
-};
+			console.log("bravo, this person has been added")
+	})
+	window.localStorage.setItem("username", uname);
 
+	// userData = [{
+	// 	username: document.getElementById('form3Example1c').value
+	//   }, {
+	// 	password: document.getElementById('form3Example4c').value
+	//   }];
+	//   usersr = JSON.parse(localStorage.getItem('Users')) || [];
+	//   usersr.push(userData);
+	//   localStorage.setItem('Users', JSON.stringify(usersr));
+	//   location.reload()
+	//   console.log(userData)
+	  //continuer a checker: https://stackoverflow.com/questions/61162022/how-to-check-if-user-exist-in-local-storage
+};
 // recuperer les elements renvoyes par le formulaire et les envyer dans stringify
 // si elements ok (code reponse bonne) envoyer "successfull ou un truc du genre"
