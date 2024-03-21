@@ -3,7 +3,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
-from rest_framework_simplejwt.views import TokenObtainPairView
 # We import our serializer here
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer
 from django.views.decorators.csrf import csrf_exempt
