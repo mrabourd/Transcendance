@@ -30,10 +30,37 @@ export default class extends AbstractView {
     }
 
 
+    addEvents () {
+        canvas = document.getElementById('canvas');
+        game = {
+            player: {
+                y: canvas.height / 2 - PLAYER_HEIGHT / 2,
+                score: 0
+            },
+            computer: {
+                y: canvas.height / 2 - PLAYER_HEIGHT / 2,
+                score: 0
+            },
+            ball: {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                r: 5,
+                speed: {
+                    x: 2,
+                    y: 2
+                }
+            }
+        }
+        this.draw();
+        // play();
+        document.querySelector('#start-game').addEventListener('click',  this.play());
+        document.querySelector('#stop-game').addEventListener('click',  this.stop());
+        // canvas.addEventListener('mousemove', playerMove);
+        document.addEventListener('keydown', this.playerMoveKey());
+    }
 
 
-
-    async draw() {
+    draw() {
         let context = canvas.getContext('2d');
     
         context.fillStyle = 'black';
@@ -96,7 +123,8 @@ export default class extends AbstractView {
     
     
     playerMoveKey(event) {
-    
+        if (event)
+        {
         if (event.key === "ArrowDown"){
             if (game.player.y + PLAYER_HEIGHT > canvas.height)
                 game.player.y = canvas.height - PLAYER_HEIGHT;
@@ -107,7 +135,7 @@ export default class extends AbstractView {
                 game.player.y = 0;
             game.player.y -= 25;
         }
-    
+    }
     }
     
     ballMove() {
@@ -131,19 +159,19 @@ export default class extends AbstractView {
     }
     
     play() {
-        this.draw();
+        console.log("play")
+        this.draw;
     
-        this.computerMove();
-        this.ballMove();
+        this.computerMove;
+        this.ballMove;
     
-        // requestAnimationFrame(play);
-        anim = requestAnimationFrame(play);
+        anim = requestAnimationFrame(this.play());
     }
-    
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion
     stop() {
         cancelAnimationFrame(anim);
     
-        this.setToCenter();
+        this.setToCenter;
     
         game.ball.speed.y = 2;
     
@@ -155,36 +183,5 @@ export default class extends AbstractView {
     
         this.draw();
     }
-    addEvents () {
-        
-       
-        canvas = document.getElementById('canvas');
-        game = {
-            player: {
-                y: canvas.height / 2 - PLAYER_HEIGHT / 2,
-                score: 0
-            },
-            computer: {
-                y: canvas.height / 2 - PLAYER_HEIGHT / 2,
-                score: 0
-            },
-            ball: {
-                x: canvas.width / 2,
-                y: canvas.height / 2,
-                r: 5,
-                speed: {
-                    x: 2,
-                    y: 2
-                }
-            }
-        }
-        this.draw();
-        // play();
-        document.querySelector('#start-game').addEventListener('click',  this.play);
-        document.querySelector('#stop-game').addEventListener('click',  this.stop);
-        // canvas.addEventListener('mousemove', playerMove);
-        document.addEventListener('keydown', this.playerMoveKey);
-    
-    
-}
+
 }
