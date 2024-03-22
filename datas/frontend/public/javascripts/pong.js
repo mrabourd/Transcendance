@@ -1,15 +1,13 @@
-let canvas;
-let game;
-let anim;
-
 const PLAYER_HEIGHT = 100;
 const PLAYER_WIDTH = 5;
+//https://lawrencewhiteside.com/courses/game-mechanics-in-javascript/the-game-loop/
 
-export default class PongClass {
+export default class Pong {
 
-    constructor() {
-        console.log("Pong Constructor called");
-        this._canvas = document.getElementById('canvas');
+    constructor(canvas, player_score, computer_score) {
+        this._canvas = canvas;
+        this._player_score = player_score;
+        this._computer_score = computer_score;
         this._game = {
             player: {
                 y: this._canvas.height / 2 - PLAYER_HEIGHT / 2,
@@ -29,35 +27,40 @@ export default class PongClass {
                 }
             }
         }
-
-
-        let ANIMATION = {};
-        
-        const start = (fps) => {
-            console.log("start")
-            cancelAnimationFrame(ANIMATION.id);
-            loop();
-        }
-        
-        const doOneFrame = () => {
-            console.log("doOneFrame")
-            // whole game exists here.
-        }
-        const loop = () => {
-            console.log("loop")
-            doOneFrame()
-            ANIMATION.id = requestAnimationFrame(loop);
-        }
-        start()
-
-
-
+        this.ANIMATION = {};
+        this.draw()
+        this.stop()
     }
 
+    start = (fps) => {
+        cancelAnimationFrame(this.ANIMATION.id);
+        this.ANIMATION.fps = 60
+        this.ANIMATION.fpsInterval = 1000 / this.ANIMATION.fps;
+        this.ANIMATION.then = Date.now();
+        this.ANIMATION.startTime = this.ANIMATION.then;
+        this.ANIMATION.frameCount = 0;
+        this.loop();
+    }
+    
+    doOneFrame = () => {
+        this.draw();
+        this.computerMove();
+        this.ballMove();
+    }
 
+    loop = () => {
+        this.ANIMATION.now = Date.now();
+        this.ANIMATION.elapsed = this.ANIMATION.now - this.ANIMATION.then;
+        this.ANIMATION.sinceStart = this.ANIMATION.now - this.ANIMATION.startTime;
+        this.ANIMATION.currentFPS = (Math.round(1000 / (this.ANIMATION.sinceStart / ++this.ANIMATION.frameCount) * 100) / 100).toFixed(2);
+        if (this.ANIMATION.elapsed > this.ANIMATION.fpsInterval) {
+          this.doOneFrame()  // whole game, right here.
+          this.ANIMATION.then = this.ANIMATION.now - (this.ANIMATION.elapsed % this.ANIMATION.fpsInterval);  // After everything.
+        }
+        this.ANIMATION.id = requestAnimationFrame(() => this.loop());
+    }
 
-    draw() {
-        console.log("draw");
+    draw = () => {
         let context = this._canvas.getContext('2d');
     
         context.fillStyle = 'black';
@@ -97,11 +100,11 @@ export default class PongClass {
             this.setToCenter();
             if (player == this._game.player) {
                 this._game.computer.score++;
-                document.querySelector('#computer-score').textContent = this._game.computer.score;
+                this._computer_score.textContent = this._game.computer.score;
             }
             else {
                 this._game.player.score++;
-                document.querySelector('#player-score').textContent = this._game.player.score;
+                this._player_score.textContent = this._game.player.score;
             }
         }
         else {
@@ -120,7 +123,7 @@ export default class PongClass {
     }
     
     
-    playerMoveKey(event) {
+    playerMoveKey = (event) => {
         if (event)
         {
         if (event.key === "ArrowDown"){
@@ -136,7 +139,7 @@ export default class PongClass {
     }
     }
     
-    ballMove() {
+    ballMove = () => {
         if (this._game.ball.y > this._canvas.height || this._game.ball.y < 0) {
             this._game.ball.speed.y *= -1;
         }
@@ -155,23 +158,9 @@ export default class PongClass {
     computerMove() {
         this._game.computer.y += this._game.ball.speed.y * 0.85;
     }
-    
-    play_again(){
-        console.log("play_again")
-    }
-    play() {
-        console.log("play")
-        this.draw;
-    
-        this.computerMove;
-        this.ballMove;
-    
-        this._anim = requestAnimationFrame(this.play());
-    }
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Errors/Too_much_recursion
 
-    _stop() {
-            cancelAnimationFrame(this._anim);
+    stop = () => {
+        cancelAnimationFrame(this.ANIMATION.id );
     
         this.setToCenter;
     
@@ -180,8 +169,8 @@ export default class PongClass {
         this._game.computer.score = 0;
         this._game.computer.player = 0;
     
-        document.querySelector('#computer-score').textContent = this._game.computer.score;
-        document.querySelector('#player-score').textContent = this._game.player.score;
+        this._computer_score.textContent = this._game.computer.score;
+        this._player_score.textContent = this._game.player.score;
     
         this.draw();
     }

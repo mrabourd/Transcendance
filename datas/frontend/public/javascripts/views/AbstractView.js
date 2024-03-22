@@ -10,6 +10,9 @@ export default class {
     async getHtml() {
         return "";
     }
+    async setUser(user) {
+        this._user = user;
+    }
     
     addEvents () {
 

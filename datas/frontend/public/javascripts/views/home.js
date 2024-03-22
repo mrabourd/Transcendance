@@ -22,6 +22,7 @@ export default class extends AbstractView {
 
     addEvents () {
         console.log("Add Events")
+        console.log(this._user.username)
     }
     // fonction specifiques a la vue
 }

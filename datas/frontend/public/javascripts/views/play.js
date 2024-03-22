@@ -1,5 +1,5 @@
 import AbstractView from "./AbstractView.js";
-import PongClass from "../pong.js";
+import Pong from "../pong.js";
 
 
 
@@ -27,7 +27,15 @@ export default class extends AbstractView {
 
 
     addEvents () {
-        this._game = new PongClass;
+        let canvas = document.getElementById('canvas');
+        let player_score = document.querySelector('#player-score')
+        let computer_score = document.querySelector('#computer-score')
+        
+        this._game = new Pong(canvas, player_score, computer_score);
+
+        document.querySelector('#start-game').addEventListener('click',  this._game.start);
+        document.querySelector('#stop-game').addEventListener('click',  this._game.stop);
+        document.addEventListener('keydown', this._game.playerMoveKey);
     }
 
 }

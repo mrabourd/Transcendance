@@ -4,7 +4,8 @@ import about from "./views/about.js";
 import contact from "./views/contact.js";
 import play from "./views/play.js";
 import profile from "./views/profile.js";
-//import register from "./views/register.js";
+import register from "./views/register.js";
+import User from "./user.js";
 
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
@@ -22,10 +23,10 @@ const navigateTo = url => {
     router();
 };
 
-const router = async () => {
+const router = async (user) => {
     const routes = [
         { path: "/", view: login },
-        //{ path: "/register", view: register },
+        { path: "/register", view: register },
         { path: "/home", view: home },
         { path: "/profile", view: profile },
         { path: "/profile/:id", view: profile },
@@ -51,6 +52,7 @@ const router = async () => {
         };
     }
     const view = new match.route.view(getParams(match));
+    await view.setUser(user);
     await view.getHtml(document.querySelector("#app"));
     view.addEvents();
 };
@@ -58,13 +60,17 @@ const router = async () => {
 window.addEventListener("popstate", router);
 
 document.addEventListener("DOMContentLoaded", () => {
+
+    const user = new User();
+    user.username = "selen est une deesse";
+
     document.body.addEventListener("click", e => {
-        
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
             navigateTo(e.target.href);
         }
     });
 
-    router();
+    router(user);
+
 });
