@@ -63,6 +63,35 @@
         </div>
         <aside class="col-4">
             ASIDE
+            <form id="input-form">
+              <label for="message">Enter Message:</label>
+              <input type="text" id="message" name="message"><br><br>
+              <input type="submit" value="Send">
+            </form>
+            <div id="messages"></div>
+            <script>
+              const webSocket = new WebSocket('ws://localhost:8080/');
+    
+                webSocket.onmessage = (event) => {
+                    console.log(event)
+                    document.getElementById('messages').innerHTML += 'Message from server: ' + event.data + "<br>";
+                };
+    
+                webSocket.addEventListener("open", () => {
+                    console.log("We are connected");
+                });
+    
+                webSocket.send('hello');
+    
+    
+                function sendMessage(event) {
+                    var inputMessage = document.getElementById('message')
+                    webSocket.send(inputMessage.value)
+                    inputMessage.value = ""
+                    event.preventDefault();
+                }
+                document.getElementById('input-form').addEventListener('submit', sendMessage);
+            </script>
         </aside>
     </main>
         <footer class="row p-1">
