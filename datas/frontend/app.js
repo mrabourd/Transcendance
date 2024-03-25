@@ -55,25 +55,14 @@ class DOMParser {
 }
 */
 
-// --------- WEB SOCKER PART --------------
 
-const WebSocketServer = require('ws');
-const wss = new WebSocketServer.Server({ port: 8080 });
+// const WebSocket = require('ws');
+// const socket = new WebSocket.Server("ws://localhost:8080");
 
-wss.on('connection', function connection(ws) {
-	console.log('New client connected!');
-	ws.send('connection established');
-	ws.on('close', () => console.log('Client has disconnected!'));
-	ws.on('message', data => {
-		wss.clients.forEach(client => {
-			console.log(`distributing message: ${data}`);
-			client.send(`${data}`);
-		})
-	})
-	ws.onerror = function () {
-		console.log('websocket error');
-	}
-})
+// socket.addEventListener("open", (event) => {
+// 	console.log("Message from server ", event.data);
+// 	socket.send("Hello Server!");
+// })
 
 
 // tuto: https://www.pubnub.com/blog/nodejs-websocket-programming-examples/

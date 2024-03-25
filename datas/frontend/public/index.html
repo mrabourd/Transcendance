@@ -63,17 +63,19 @@
         </div>
         <aside class="col-4">
             ASIDE
+
+            <!-- WEBSOCKET PART  -->
             <form id="input-form">
               <label for="message">Enter Message:</label>
               <input type="text" id="message" name="message"><br><br>
-              <input type="submit" value="Send">
+              <input id="send" type="submit" value="Send" >
             </form>
             <div id="messages"></div>
             <script>
               const webSocket = new WebSocket('ws://localhost:8080/');
-    
+
                 webSocket.onmessage = (event) => {
-                    console.log(event)
+                    console.log("onmessage:", event)
                     document.getElementById('messages').innerHTML += 'Message from server: ' + event.data + "<br>";
                 };
     
@@ -81,17 +83,17 @@
                     console.log("We are connected");
                 });
     
-                webSocket.send('hello');
-    
-    
                 function sendMessage(event) {
-                    var inputMessage = document.getElementById('message')
+                    event.preventDefault();
+                    console.log("sending message");
+                    var inputMessage = document.getElementById('message');
                     webSocket.send(inputMessage.value)
                     inputMessage.value = ""
-                    event.preventDefault();
                 }
+                // document.getElementById('input-form').preventDefault();
                 document.getElementById('input-form').addEventListener('submit', sendMessage);
-            </script>
+           </script>
+            <!-- END OF WEBSOCKET PART  -->
         </aside>
     </main>
         <footer class="row p-1">
