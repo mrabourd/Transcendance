@@ -51,10 +51,12 @@ const router = async (user) => {
             result: [location.pathname]
         };
     }
-    const view = new match.route.view(getParams(match));
-    await view.setUser(user);
-    await view.getHtml(document.querySelector("#app"));
-    view.addEvents();
+    await user.isConnected();
+   // user.view = new match.route.view(getParams(match));
+   // user.view.user = user;
+    
+   ///await user.view.getHtml(document.querySelector("#app"));
+    //user.view.addEvents();
 };
 
 window.addEventListener("popstate", router);
@@ -62,7 +64,7 @@ window.addEventListener("popstate", router);
 document.addEventListener("DOMContentLoaded", () => {
 
     const user = new User();
-    user.username = "selen est une deesse";
+     
 
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {

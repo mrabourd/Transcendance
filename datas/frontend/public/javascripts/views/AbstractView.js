@@ -7,11 +7,15 @@ export default class {
         document.title = title;
     }
 
+    set user(u) {
+        this._user = u;
+    }
+    get user() {
+        return this._user;
+    }
+
     async getHtml() {
         return "";
-    }
-    async setUser(user) {
-        this._user = user;
     }
     
     addEvents () {
