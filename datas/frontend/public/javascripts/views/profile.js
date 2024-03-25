@@ -24,12 +24,16 @@ export default class extends AbstractView {
     }
     async fillHtml(DOM) {
         console.log("fillHtml")
+        document.querySelector("#id span").innerText = this.user.datas.id;
+        document.querySelector("#avatar span").innerText = this.user.datas.avatar;
         document.querySelector("#username span").innerText = this.user.datas.username;
-        document.querySelector("#firstname span").innerText = this.user.datas.firstname;
-        document.querySelector("#lastname span").innerText = this.user.datas.lastname;
-        document.querySelector("#age span").innerText = this.user.datas.age;
+        document.querySelector("#realname span").innerText = this.user.datas.realname;
         document.querySelector("#email span").innerText = this.user.datas.email;
+        document.querySelector("#password span").innerText = this.user.datas.password;
+        document.querySelector("#biography span").innerText = this.user.datas.biography;
         document.querySelector("#token span").innerText = this.user.datas.token;
+        document.querySelector("#socket_id span").innerText = this.user.datas.socket_id;
+        
     }
 
     addEvents () {

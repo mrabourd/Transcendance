@@ -5,7 +5,7 @@ var EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("Login too Transcendance");
+        this.setTitle("Sign Up Transcendance");
     }
 
     async getHtml(DOM) {
@@ -25,14 +25,12 @@ export default class extends AbstractView {
             console.warn('Something went wrong.', err);
         });
     }
-    async fillHtml(DOM) {
-        console.log("fillHtml")
-    }
+
     addEvents () {
         console.log("Add Events")
         document.querySelector('#registerButton').addEventListener("click", this.register);
-        document.getElementById("form3Example3c").oninput = function (){this.checkEmail ()};
-        document.getElementById("form3Example4cd").oninput = function () {this.checkPasswords ()}; 
+        document.querySelector('#email').addEventListener("input", this.checkEmail);
+        document.querySelector('#repeat-password').addEventListener("input", this.checkPasswords);
     }
 
 
@@ -42,17 +40,12 @@ export default class extends AbstractView {
 
 	// buttonRegister.disabled = true;
 	
-	let baliseNom = document.getElementById("form3Example1c");
-	console.log(baliseNom);
-	let uname = baliseNom.value;
-	// console.log(uname); // affiche ce qui est contenu dans la balise name
-	
-	let balisePassword = document.getElementById("form3Example4c");
-	let pass = balisePassword.value;
+	let username = document.getElementById("username").value;	
+	let realname = document.getElementById("realname").value;	
+	let email = document.getElementById("email").value;	
+	let password = document.getElementById("password").value;
 	// console.log(pass); // affiche ce qui est contenu dans la balise name
 
-	let baliseEmail = document.getElementById("form3Example3c");
-	let email = baliseEmail.value;
 	// console.log(pass); // affiche ce qui est contenu dans la balise name
 	
 	// var buttonRegister = document.getElementById("registerButton");
@@ -66,21 +59,41 @@ export default class extends AbstractView {
 			'Accept': 'application/json, text/plain, */*',
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify({username: uname, email: email, password: pass})
+		body: JSON.stringify({
+            "avatar": "/avatar/default.png",
+            "username": username,
+            "realname": realname,
+            "email": email,
+            "password": password
+        })
 	})
 	// .then(res => console.log("bravo"))
 	// // .then(res => res.json())
     // .then(res => console.log(res));
 	
-	.then((res) =>
+	.then((response) =>
 	{
-		if (!res.ok) {
-			document.getElementById("finish").innerHTML = "A user with this email address already exists.";
+        console.log("RES", response, response.status)
+		if (response.status === 201) {
+            // TODO Receptionner JSON user et l'enregistrer dans le localStorage
+        }
+        else if (response.status === 400)
+        {
+            console.log("BAD REQUEST")
+            document.getElementById("errors").classList.remove("d-none");
+            document.querySelector('.error[for="username"]').classList.remove("d-none");
+            document.querySelector('.error[for="username"]').innerHTML = "error huhu "
+            document.getElementById("errors").innerHTML = "A user with this email address already exists.";
 		}
 		else
-			console.log("bravo, this person has been added")
+        {
+            console.warn("BAD REQUEST")
+            document.getElementById("errors").classList.remove("d-none");
+            document.getElementById("errors").innerHTML = "An error occured ! check console logs.";
+        }
+			
 	})
-	window.localStorage.setItem("username", uname);
+	//window.localStorage.setItem("username", uname);
 
 	// userData = [{
 	// 	username: document.getElementById('form3Example1c').value
@@ -98,8 +111,8 @@ export default class extends AbstractView {
 
 
 
-        checkEmail () {
-            let inputEmail = document.getElementById("form3Example3c").value;
+        checkEmail(){
+            let inputEmail = document.getElementById("email").value;
             
             if (inputEmail.match(EMAIL_REGEX) )
                 document.getElementById("checkMail").innerHTML = "";
@@ -108,9 +121,9 @@ export default class extends AbstractView {
             }
         }
 
-        checkPasswords () {
-            let pass1 = document.getElementById("form3Example4c").value;
-            let pass2 = document.getElementById("form3Example4cd").value;
+        checkPasswords() {
+            let pass1 = document.getElementById("password").value;
+            let pass2 = document.getElementById("repeat-password").value;
             
             if (pass1 === pass2){
                 document.getElementById("checkPass").innerHTML = "";

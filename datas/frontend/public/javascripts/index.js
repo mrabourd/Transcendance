@@ -56,8 +56,8 @@ const router = async (user) => {
     user.view.user = user;
     
    await user.view.getHtml(document.querySelector("#app"));
-   user.view.fillHtml();
-   user.view.addEvents();
+   await user.view.fillHtml();
+   await user.view.addEvents();
 };
 
 window.addEventListener("popstate", router);

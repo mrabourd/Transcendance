@@ -29,10 +29,14 @@ export default class User {
     {
         return this._datas;
     }
-
-
     checkLocalStorage = async() => {
         console.log("checkLocalStorage")
+        /*
+        const reponse = await fetch("http://localhost:3000/user.json")
+        const JsonUser = await reponse.json();
+        const strJsonUser = JSON.stringify(JsonUser);
+        window.localStorage.setItem("LocalUser", strJsonUser);
+        */
         let LocalUser = window.localStorage.getItem("LocalUser");
         if (LocalUser !== null)
         {

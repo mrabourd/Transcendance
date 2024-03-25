@@ -54,7 +54,7 @@ export default class extends AbstractView {
         // localStorage.setItem("username", JSON.stringify(nameUser))
         // console.log(nameUser)
         // location.reload()
-        fetch('http://127.0.0.1:8000/api/auth/login/', {
+        fetch('http://127.0.0.1:8000/api/users/login/', {
         method: 'POST',
         headers: {
           'Accept': 'application/json, text/plain, */*',
@@ -78,14 +78,30 @@ export default class extends AbstractView {
                 localStorage.setItem("password", UserPassword);
                 console.log("bravo, you are logged in")
             } else {
-                alert(data.message);
+                console.log(data.detail);
             }
         })
         // .catch(error => {
         // 	console.error('Erreur:', error);
         // })
     }
+/*
+const tokenData = {
+    refresh: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcxMjM0OTg3MywiaWF0IjoxNzExMDUzODczLCJqdGkiOiIyYmQyYzVhOTBkNjc0ODg5OTIwYzZmNDFjZmJhYTBjZiIsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoiZ2xhIiwiZW1haWwiOiJnbGFAZ2xvdS5jb20ifQ.vYlYzmyvC9Gk-XgcAO3623Qa2YXldVvAKxaG4jYAZ1Y",
+    access: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzExMDU0MTczLCJpYXQiOjE3MTEwNTM4NzMsImp0aSI6IjhlMThiMzk3MTgxMDQ1YTA4Y2RkNzYzODI5NTk3YjA1IiwidXNlcl9pZCI6MiwidXNlcm5hbWUiOiJnbGEiLCJlbWFpbCI6ImdsYUBnbG91LmNvbSJ9.UKOY4Xb1xrW2W5bqhcB1Fz6benfMjqXQYNuxgROtIBg"
+};
+// Convertir les données en format JSON
+const tokenDataJSON = JSON.stringify(tokenData);
 
+// Stocker les données dans le stockage local
+localStorage.setItem('tokens', tokenDataJSON);
+
+// Pour récupérer les données ultérieurement :
+const storedTokenDataJSON = localStorage.getItem('tokens');
+const storedTokenData = JSON.parse(storedTokenDataJSON);
+
+// Maintenant vous pouvez utiliser storedTokenData.refresh et storedTokenData.access comme nécessaire dans vos appels d'API.
+*/
 
     login42()
     {
