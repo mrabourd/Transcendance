@@ -1,24 +1,58 @@
 from django.contrib.auth import get_user_model
 from rest_framework.settings import api_settings
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth.hashers import make_password
 
 User = get_user_model() # Get reference to the model
 
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+	@classmethod
+	def get_token(cls, user):
+		token = super(CustomTokenObtainPairSerializer, cls).get_token(user)
+
+		# Add custom claims
+		token['username'] = user.username
+		token['email'] = user.email
+		return token
+    
 class UserSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = User
-        fields = ('email', 'username', 'password')
-        extra_kwargs = {
-            'username': {
-                'required': False,
-                'error_messages': {
-                    'unique': 'A user with this username already exists.'
-                }
-            },
-        }
+	class Meta:
+		model = User
+		fields = ('email', 'username', 'password')
+		extra_kwargs = {
+			'password': {'write_only': True},
+			'email': {
+				'validators': [UniqueValidator(queryset=User.objects.all())]
+			}
+		}
 
-    def validate_email(self, value):
+	def create(self, validated_data):
+		return User.objects.create_user(**validated_data)
+
+""" 
+def update(self, instance, validated_data):
+# Note: it's important to return the updated instance here
+# as it will be used by `serializer.data` in our view
+	for attr, value in validated_data.items():
+		setattr(instance, attr, value)
+	instance.save()
+	return instance 
+    
+
+def validate_password(self, value):
+		if len(value) < 8:
+			raise serializers.ValidationError( 
+				'The password must be at least 8 characters long.')
+		return value
+        
+
+def validate_email(self, value):
         # Skip validation if no value provided
         if value is None:
             return value
@@ -30,7 +64,8 @@ class UserSerializer(serializers.ModelSerializer):
         # Note: it's important to return the value at the end of this method
         return value
 
-    def validate(self, attrs):
+    
+def validate(self, attrs):
         # Here we don't need to check whether a user with the given
         # email or username exists, as this would have already
         # been done by the one of our `validate_...` methods
@@ -49,19 +84,4 @@ class UserSerializer(serializers.ModelSerializer):
         if email is None:
             attrs['email'] = username
         # Note: it's important to return attrs at the end of this method
-        return attrs
-    
-def create(self, validated_data):
-	# Note: it's important to return the created instance here
-	# as it will be used by `serializer.data` in our view
-	return User.objects.create(**validated_data)
-
-def update(self, instance, validated_data):
-# Note: it's important to return the updated instance here
-# as it will be used by `serializer.data` in our view
-	for attr, value in validated_data.items():
-		setattr(instance, attr, value)
-	instance.save()
-	return instance
-    
-
+        return attrs """

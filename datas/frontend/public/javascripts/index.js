@@ -5,6 +5,7 @@ import contact from "./views/contact.js";
 import play from "./views/play.js";
 import profile from "./views/profile.js";
 import register from "./views/register.js";
+import User from "./user.js";
 
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
@@ -17,12 +18,12 @@ const getParams = match => {
     }));
 };
 
-const navigateTo = url => {
+const navigateTo = (url, user) => {
     history.pushState(null, null, url);
-    router();
+    router(user);
 };
 
-const router = async () => {
+const router = async (user) => {
     const routes = [
         { path: "/", view: login },
         { path: "/register", view: register },
@@ -50,21 +51,27 @@ const router = async () => {
             result: [location.pathname]
         };
     }
-    const view = new match.route.view(getParams(match));
-    await view.getHtml(document.querySelector("#app"));
-    view.addEvents();
+
+    user.view = new match.route.view(getParams(match));
+    user.view.user = user;
+    
+   await user.view.getHtml(document.querySelector("#app"));
+   await user.view.fillHtml();
+   await user.view.addEvents();
 };
 
 window.addEventListener("popstate", router);
 
 document.addEventListener("DOMContentLoaded", () => {
+
+    const user = new User();
+    user.checkLocalStorage();
+
     document.body.addEventListener("click", e => {
-        
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
-            navigateTo(e.target.href);
+            navigateTo(e.target.href, user);
         }
     });
-
-    router();
+    router(user);
 });

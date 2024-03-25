@@ -22,7 +22,9 @@ export default class extends AbstractView {
             console.warn('Something went wrong.', err);
         });
     }
-
+    async fillHtml(DOM) {
+        console.log("fillHtml")
+    }
     addEvents () {
         console.log("Add Events")
     }
