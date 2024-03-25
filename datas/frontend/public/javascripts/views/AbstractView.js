@@ -13,11 +13,12 @@ export default class {
     get user() {
         return this._user;
     }
-
     async getHtml() {
         return "";
     }
-    
+    async fillHtml() {
+        return "";
+    }
     addEvents () {
 
     }

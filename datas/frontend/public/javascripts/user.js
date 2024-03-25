@@ -1,61 +1,51 @@
 export default class User {
     constructor() {
         console.log("User constructor called")
-        this._name = "toto";
-
-
+        this._isConnected = false;
+        this._view = null;
+        this._datas = null;
     }
-
-    set username(n)
+    set isConnected(n)
     {
-        this._username = n;
+        this._isConnected = n;
     }
-
+    get isConnected()
+    {
+        return this._isConnected;
+    }
     set view(n)
     {
         this._view = n;
     }
-
-    get username()
-    {
-        return this._username;
-    }
-
     get view()
     {
         return this._view;
     }
-    set infos(n)
+    set datas(n)
     {
-        this._infos = n;
+        this._datas = n;
+    }
+    get datas()
+    {
+        return this._datas;
     }
 
-    get infos()
-    {
-        return this._infos;
-    }
 
-    async isConnected() {
-        console.log("isConnected")
-        const reponse = await fetch("http://localhost:3000/user.json")
-        const JsonUser = await reponse.json();
-        const strJsonUser = JSON.stringify(JsonUser);
-        window.localStorage.setItem("LocalUser", strJsonUser);
-
-        const LocalUser = window.localStorage.getItem("LocalUser");
+    checkLocalStorage = async() => {
+        console.log("checkLocalStorage")
+        let LocalUser = window.localStorage.getItem("LocalUser");
         if (LocalUser !== null)
         {
-            infos = JSON.parse(LocalUser);
-            console.log(infos.email)
-            //this.isConnected = true;
+            this.datas = JSON.parse(LocalUser);
+            this._isConnected = true;
+            /*
+            TODO
+            Renvoyer le token au back et checker si le token correspond
+            */
         }
         else
         {
-            console.log("null")
+            this._isConnected = false;
         }
-        //else
-            //this.isConnected = false;
-        //return this.isConnected;
-
     }
   }

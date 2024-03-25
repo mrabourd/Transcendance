@@ -25,7 +25,9 @@ export default class extends AbstractView {
         });
     }
 
-
+    async fillHtml(DOM) {
+        console.log("fillHtml")
+    }
     addEvents () {
         let canvas = document.getElementById('canvas');
         let player_score = document.querySelector('#player-score')

@@ -18,9 +18,9 @@ const getParams = match => {
     }));
 };
 
-const navigateTo = url => {
+const navigateTo = (url, user) => {
     history.pushState(null, null, url);
-    router();
+    router(user);
 };
 
 const router = async (user) => {
@@ -51,12 +51,13 @@ const router = async (user) => {
             result: [location.pathname]
         };
     }
-    await user.isConnected();
-   // user.view = new match.route.view(getParams(match));
-   // user.view.user = user;
+
+    user.view = new match.route.view(getParams(match));
+    user.view.user = user;
     
-   ///await user.view.getHtml(document.querySelector("#app"));
-    //user.view.addEvents();
+   await user.view.getHtml(document.querySelector("#app"));
+   user.view.fillHtml();
+   user.view.addEvents();
 };
 
 window.addEventListener("popstate", router);
@@ -64,15 +65,13 @@ window.addEventListener("popstate", router);
 document.addEventListener("DOMContentLoaded", () => {
 
     const user = new User();
-     
+    user.checkLocalStorage();
 
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
-            navigateTo(e.target.href);
+            navigateTo(e.target.href, user);
         }
     });
-
     router(user);
-
 });
