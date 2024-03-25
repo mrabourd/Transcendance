@@ -4,7 +4,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 # We import our serializer here
-from .serializers import UserSerializer
+from .serializers import UserSerializer, CustomTokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from django.views.decorators.csrf import csrf_exempt
+
+
+# We extend the TokenObtainPairView to use our custom serializer
+class CustomObtainTokenPairView(TokenObtainPairView):
+    permission_classes = [AllowAny]
+    serializer_class = CustomTokenObtainPairSerializer
 
 class UserRegistrationAPIView(APIView):
     # Note: we have to specify the following policy to allow 

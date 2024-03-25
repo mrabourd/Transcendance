@@ -16,13 +16,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include         
-from users.views import UserRegistrationAPIView
+from users.views import UserRegistrationAPIView, CustomObtainTokenPairView, UserProfileAPIView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.views.decorators.csrf import csrf_exempt
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include("singlepage.urls")),               # new
-	path('api/auth/', include('rest_framework.urls')),
-	 path('api/users/register/',
-         UserRegistrationAPIView.as_view(),
-         name='user-register'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("", include("singlepage.urls")),      
+	path('api/auth/', include('rest_framework.urls')),         # new
+	path('api/users/', include('users.urls')),
 ]
+
+#urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+""" urlpatterns = [
+    path('admin/', admin.site.urls),
+    path("", include("singlepage.urls")),      
+	#path('api/auth/', include('rest_framework.urls')),         # new
+	path('api/users/', include('users.urls')),
+
+] """
