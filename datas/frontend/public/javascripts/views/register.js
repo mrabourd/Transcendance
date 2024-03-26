@@ -32,23 +32,25 @@ export default class extends AbstractView {
             let body = doc.querySelector('#app');
             DOM.innerHTML = body.innerHTML;
             /* ADD FORM FIELDS */
-           let RegisterForm = document.querySelector("form");
+           let RegisterForm = document.querySelector("#registerForm");
             new Map([
-                ['username', { libelle: "Username", type: "text" }],
-                ['firstname', { libelle: "Firstname", type: "text" }],
-                ['lastname', { libelle: "Lastname", type: "text" }],
-                ['email', { libelle: "Email", type: "email" }],
-                ['password', { libelle: "Password", type: "password" }],
-                ['repeat-password', { libelle: "repeat your password", type: "password" }],
+                ['username', { libelle: "Username *", type: "text" }],
+                ['firstname', { libelle: "Firstname *", type: "text" }],
+                ['lastname', { libelle: "Lastname *", type: "text" }],
+                ['email', { libelle: "Email *", type: "email" }],
+                ['password', { libelle: "Password *", type: "password" }],
+                ['repeat-password', { libelle: "repeat your password *", type: "password" }],
             ]).forEach((value, key, map) => {
                 let main_div    = FormcreateElement("div",  ["d-flex", "flex-row", "align-items-center", "mb-4"]);
                 let inner_div   = FormcreateElement("div",  ["form-outline", "flex-fill", "mb-0"]);
                 let label       = FormcreateElement("label", ["form-label"], { "for": `${key}`, "innerText": value.libelle });
                 let input       = FormcreateElement("input", ["form-control"], { "type": value.type, "id": `${key}` });
                 let error       = FormcreateElement("div",  ["error", "alert", "alert-danger", "d-none"], { "for": `${key}` });
+                
                 FormAppendElements(inner_div, label, input, error);
                 FormAppendElements(main_div, inner_div);
                 RegisterForm.appendChild(main_div);
+
             });
             let submitBt    = FormcreateElement("button",  ["btn", "btn-primary", "btn-lg"],
                 {   "innerText": "Register!",
@@ -63,124 +65,173 @@ export default class extends AbstractView {
     }
 
     addEvents () {
-        document.querySelector('#registerButton').addEventListener("click", this.register);
-        document.querySelector('#email').addEventListener("input", this.checkEmail);
-        document.querySelector('#repeat-password').addEventListener("input", this.checkPasswords);
+        document.querySelector('#registerForm  #registerButton').addEventListener("click", this.register);
+        document.querySelector('#registerForm #email').addEventListener("focusout", this.checkEmail);
+        document.querySelector('#registerForm #password').addEventListener("focusout", this.checkPassword);
+        document.querySelector('#registerForm #repeat-password').addEventListener("focusout", this.checkRepeatPassword);
+
+        document.querySelectorAll('#registerForm input[type="text"]').forEach(input => {
+            input.addEventListener("focusout", this.checkBlankField);
+        });
     }
 
 
 
     register = () => {
-        console.log("register() called")
-
-	// buttonRegister.disabled = true;
+        if (!this.checkAllFields())
+            return false;
 	
-	let username = document.getElementById("username").value;	
-	let firstname = document.getElementById("firstname").value;	
-	let lastname = document.getElementById("lastname").value;	
-	let email = document.getElementById("email").value;	
-	let password = document.getElementById("password").value;
-	// console.log(pass); // affiche ce qui est contenu dans la balise name
+        let username = document.getElementById("username").value;	
+        let firstname = document.getElementById("firstname").value;	
+        let lastname = document.getElementById("lastname").value;	
+        let email = document.getElementById("email").value;	
+        let password = document.getElementById("password").value;
 
-	// console.log(pass); // affiche ce qui est contenu dans la balise name
-	
-	// var buttonRegister = document.getElementById("registerButton");
-	// buttonRegister.disabled = true;
-	// document.getElementsById("registerButton").setAttribute("disabled", true);
-    if (!this.checkEmail() || !this.checkPasswords())
-    {
-        return false;
-    }
-    fetch('http://127.0.0.1:8000/api/users/register/', {
-		method: 'POST',
-		headers: {
-			'Accept': 'application/json, text/plain, */*',
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({
-            "avatar": "/avatar/default.png",
-            "username": username,
-            "firstname": firstname,
-            "lastname": lastname,
-            "email": email,
-            "password": password
+        fetch('http://127.0.0.1:8000/api/users/register/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "avatar": "/avatar/default.png",
+                "username": username,
+                "firstname": firstname,
+                "lastname": lastname,
+                "email": email,
+                "password": password
+            })
+        })	
+        .then((response) =>
+        {
+            if (response.ok || response.status === 400)
+                return Promise.all([response.json(), response.ok, response.status]);
+            else
+                throw new Error('Network response was not ok.');
         })
-	})
-	// .then(res => console.log("bravo"))
-	// // .then(res => res.json())
-    // .then(res => console.log(res));
-	
-	.then((response) =>
-	{
-        console.log("RES", response, response.status)
-		if (response.status === 201) {
-
-            // TODO Receptionner JSON user et l'enregistrer dans le localStorage
-        }
-        else if (response.status === 400)
-        {
-            console.log("BAD REQUEST")
-            document.getElementById("errors").classList.remove("d-none");
-            document.querySelector('.error[for="username"]').classList.remove("d-none");
-            document.querySelector('.error[for="username"]').innerHTML = "error huhu "
-            document.getElementById("errors").innerHTML = "A user with this email address already exists.";
-		}
-		else
-        {
-            console.warn("BAD REQUEST")
-            document.getElementById("errors").classList.remove("d-none");
-            document.getElementById("errors").innerHTML = "An error occured ! check console logs.";
-        }
-			
-	})
-	//window.localStorage.setItem("username", uname);
-
-	// userData = [{
-	// 	username: document.getElementById('form3Example1c').value
-	//   }, {
-	// 	password: document.getElementById('form3Example4c').value
-	//   }];
-	//   usersr = JSON.parse(localStorage.getItem('Users')) || [];
-	//   usersr.push(userData);
-	//   localStorage.setItem('Users', JSON.stringify(usersr));
-	//   location.reload()
-	//   console.log(userData)
-	  //continuer a checker: https://stackoverflow.com/questions/61162022/how-to-check-if-user-exist-in-local-storage
+        .then(([jsonData, ok, status]) => {
+            if (!ok)
+            {
+                for (const key in jsonData) {
+                    if (Object.hasOwnProperty.call(jsonData, key)) {
+                        const value = jsonData[key];
+                        this.printError(key, 1, value)
+                    }
+                }
+            }
+            else
+            {
+                console.log("Bravo !");
+            }
+            console.log("JSON Data:", jsonData);
+            console.log("Response status:", status)
+        })
+        .catch((error) => {
+            // Gérer les erreurs de requête ou de conversion JSON
+            console.error('There was a problem with the fetch operation:', error);
+        });
     }
-
-
-
 
     checkEmail = () => {
-            console.log("checkEmail")
-            let inputEmail = document.querySelector('input#email').value
-            if (inputEmail.match(EMAIL_REGEX) )
-            {
-                document.querySelector('.error[for="email"]').classList.add("d-none");
-                document.querySelector('.error[for="email"]').innerHTML = "";
-                return true;
-            }
-            else
-            {
-                document.querySelector('.error[for="email"]').classList.remove("d-none");
-                document.querySelector('.error[for="email"]').innerHTML = "Wrong email address";
-                return false;
-            }
+        let inputEmail = document.querySelector('#registerForm input#email').value
+        if (inputEmail.match(EMAIL_REGEX) )
+        {
+            this.printError("email", false, "")
+            return true;
         }
-        checkPasswords = () => {
-            let pass1 = document.querySelector('input#password').value
-            let pass2 = document.querySelector('input#repeat-password').value
-            if ((pass1 === pass2) && (pass1 !== "")){
-                document.querySelector('.error[for="repeat-password"]').classList.add("d-none");
-                document.querySelector('.error[for="repeat-password"]').innerHTML = "";
-                return true;
-            }
-            else
-            {
-                document.querySelector('.error[for="repeat-password"]').classList.remove("d-none");
-                document.querySelector('.error[for="repeat-password"]').innerHTML = "The passwords are not the same.";
-                return false;
-            }
+        else
+        {
+            this.printError("email", true, "Wrong email address")
+            return false;
         }
+    }
+    checkPassword = () => {
+            let pass1 = document.querySelector('#registerForm input#password').value
 
+            if (!this.isPasswordStrong(pass1))
+            {
+                this.printError("password", true, "The password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one digit, and one special character.")
+                return false;
+            }
+            else 
+            {
+                this.printError("password", false, "")
+                return true
+            }
+
+        }
+    checkRepeatPassword = () =>
+    {
+        let pass1 = document.querySelector('#registerForm input#password').value
+        let pass2 = document.querySelector('#registerForm input#repeat-password').value
+
+        if (pass1 === pass2){
+            this.printError("repeat-password", false, "");
+            return true;
+        }
+        else
+        {
+            this.printError("repeat-password", true, "The passwords are not the same.");
+            return false;
+        }
+    }
+    isPasswordStrong = (password) =>
+    {
+            if (password.length < 8)
+                return false;
+            if (!/[A-Z]/.test(password))
+                return false;
+            if (!/[a-z]/.test(password))
+                return false;        
+            if (!/\d/.test(password))
+                return false;
+            if (!/[^A-Za-z0-9]/.test(password))
+                return false;
+        return true;
+    }
+    checkBlankField(event)
+    {
+        let value = event.target.value;
+        let field = event.target.getAttribute("id");
+        console.log("checkBlankField", field, value) 
+        if (value === "")
+        {
+            document.querySelector(`#registerForm .error[for="` + field + `"]`).classList.remove("d-none");
+            document.querySelector(`#registerForm .error[for="` + field + `"]`).innerHTML = "this fields must not be blank";
+            return false;
+        }
+        else
+        {
+            document.querySelector(`#registerForm .error[for="` + field + `"]`).classList.add("d-none");
+            return true;
+        }
+    }
+    checkAllFields = () =>
+    {
+        return true;
+        // Récupérer tous les champs du formulaire
+        let fields = document.querySelectorAll("#registerForm input[type='text']");
+
+        // Vérifier chaque champ
+        let isValid = true;
+        fields.forEach(field => {
+            if (!this.checkBlankField({ target: field })) {
+                isValid = false;
+            }
+        });
+        let check_pass = this.checkPassword;
+        let check_pass2 = this.checkRepeatPassword;
+        let check_email = this.checkEmail;
+        if (isValid && check_pass && check_pass2 && check_email)
+            return true;
+        return false
+    }
+    printError = (field, isError, innerText) =>
+    {
+        if (isError)
+            document.querySelector(`#registerForm .error[for="` + field + `"]`).classList.remove("d-none");
+        else
+            document.querySelector(`#registerForm .error[for="` + field + `"]`).classList.add("d-none");
+        document.querySelector(`#registerForm .error[for="` + field + `"]`).innerHTML = innerText;
+    }
 }
