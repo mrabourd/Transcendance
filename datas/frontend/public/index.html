@@ -88,7 +88,7 @@
                     console.log("sending message");
                     var inputMessage = document.getElementById('message');
                     webSocket.send(inputMessage.value)
-                    inputMessage.value = ""
+                    inputMessage.value = "" 
                 }
                 // document.getElementById('input-form').preventDefault();
                 document.getElementById('input-form').addEventListener('submit', sendMessage);
