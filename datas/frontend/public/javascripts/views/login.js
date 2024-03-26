@@ -1,5 +1,7 @@
 import AbstractView from "./AbstractView.js";
 
+/* UTILS */
+import * as utils from "../utils_form.js"
 
 export default class extends AbstractView {
     constructor(params) {
@@ -18,17 +20,34 @@ export default class extends AbstractView {
             let body = doc.querySelector('#app');
             DOM.innerHTML = body.innerHTML;
 
-
+            /* ADD FORM FIELDS */
+            let RegisterForm = document.querySelector("#loginForm");
+            new Map([
+                ['username', { libelle: "Username *", type: "text" }],
+                ['password', { libelle: "Password *", type: "password" }],
+            ]).forEach((value, key, map) => {
+                let main_div    = utils.FormcreateElement("div",  ["d-flex", "flex-row", "align-items-center", "mb-4"]);
+                let inner_div   = utils.FormcreateElement("div",  ["form-outline", "flex-fill", "mb-0"]);
+                let label       = utils.FormcreateElement("label", ["form-label"], { "for": `${key}`, "innerText": value.libelle });
+                let input       = utils.FormcreateElement("input", ["form-control"], { "type": value.type, "id": `${key}` });
+                let error       = utils.FormcreateElement("div",  ["error", "alert", "alert-danger", "d-none"], { "for": `${key}` });
+                utils.FormAppendElements(inner_div, label, input, error);
+                utils.FormAppendElements(main_div, inner_div);
+                RegisterForm.appendChild(main_div);
+            });
+            let submitBt    = utils.FormcreateElement("button",  ["btn", "btn-primary", "btn-lg"],
+                {   "innerText": "Sign In!",
+                    "id": `loginButton`,
+                    "type": "button"
+                });
+            RegisterForm.appendChild(submitBt);
         }).catch(function (err) {
             // There was an error
             console.warn('Something went wrong.', err);
         });
     }
-    async fillHtml(DOM) {
-        console.log("fillHtml")
-    }
+
     addEvents () {
-        console.log("Add Events")
         document.querySelector('#loginButton').addEventListener("click", this.login);
         document.querySelector('#login42Button').addEventListener("click", this.login42);
     }
@@ -37,12 +56,12 @@ export default class extends AbstractView {
     login()
     {
         console.log("login() called")
-        let baliseNom = document.getElementById("NameId");
+        let baliseNom = document.getElementById("username");
         // console.log(baliseNom);
         let UserName = baliseNom.value;
         // console.log(uname); // affiche ce qui est contenu dans la balise name
         
-        let balisePassword = document.getElementById("PasswordId");
+        let balisePassword = document.getElementById("password");
         let UserPassword = balisePassword.value;
           
         // const nameUser = JSON.parse(localStorage.getItem("username")) || [];

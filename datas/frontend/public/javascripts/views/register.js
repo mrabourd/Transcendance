@@ -1,20 +1,9 @@
 import AbstractView from "./AbstractView.js";
 
-var EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-function FormcreateElement(tag, classes = [], attributes = {}) {
-    const element = document.createElement(tag);
-    element.classList.add(...classes);
-    for (const [key, value] of Object.entries(attributes)) {
-        if (key === 'innerText')
-            element.innerText = value
-        else
-            element.setAttribute(key, value);
-    }
-    return element;
-}
-function FormAppendElements(parent, ...children) {
-    children.forEach(child => parent.appendChild(child));
-}
+/* UTILS */
+import * as utils from "../utils_form.js"
+
+
 export default class extends AbstractView {
     constructor(params) {
         super(params);
@@ -31,28 +20,27 @@ export default class extends AbstractView {
             let doc = parser.parseFromString(html, 'text/html');
             let body = doc.querySelector('#app');
             DOM.innerHTML = body.innerHTML;
+
             /* ADD FORM FIELDS */
            let RegisterForm = document.querySelector("#registerForm");
             new Map([
                 ['username', { libelle: "Username *", type: "text" }],
-                ['firstname', { libelle: "Firstname *", type: "text" }],
-                ['lastname', { libelle: "Lastname *", type: "text" }],
+                ['first_name', { libelle: "Firstname *", type: "text" }],
+                ['last_name', { libelle: "Lastname *", type: "text" }],
                 ['email', { libelle: "Email *", type: "email" }],
                 ['password', { libelle: "Password *", type: "password" }],
                 ['repeat-password', { libelle: "repeat your password *", type: "password" }],
             ]).forEach((value, key, map) => {
-                let main_div    = FormcreateElement("div",  ["d-flex", "flex-row", "align-items-center", "mb-4"]);
-                let inner_div   = FormcreateElement("div",  ["form-outline", "flex-fill", "mb-0"]);
-                let label       = FormcreateElement("label", ["form-label"], { "for": `${key}`, "innerText": value.libelle });
-                let input       = FormcreateElement("input", ["form-control"], { "type": value.type, "id": `${key}` });
-                let error       = FormcreateElement("div",  ["error", "alert", "alert-danger", "d-none"], { "for": `${key}` });
-                
-                FormAppendElements(inner_div, label, input, error);
-                FormAppendElements(main_div, inner_div);
+                let main_div    = utils.FormcreateElement("div",  ["d-flex", "flex-row", "align-items-center", "mb-4"]);
+                let inner_div   = utils.FormcreateElement("div",  ["form-outline", "flex-fill", "mb-0"]);
+                let label       = utils.FormcreateElement("label", ["form-label"], { "for": `${key}`, "innerText": value.libelle });
+                let input       = utils.FormcreateElement("input", ["form-control"], { "type": value.type, "id": `${key}` });
+                let error       = utils.FormcreateElement("div",  ["error", "alert", "alert-danger", "d-none"], { "for": `${key}` });
+                utils.FormAppendElements(inner_div, label, input, error);
+                utils.FormAppendElements(main_div, inner_div);
                 RegisterForm.appendChild(main_div);
-
             });
-            let submitBt    = FormcreateElement("button",  ["btn", "btn-primary", "btn-lg"],
+            let submitBt    = utils.FormcreateElement("button",  ["btn", "btn-primary", "btn-lg"],
                 {   "innerText": "Register!",
                     "id": `registerButton`,
                     "type": "button"
@@ -66,26 +54,18 @@ export default class extends AbstractView {
 
     addEvents () {
         document.querySelector('#registerForm  #registerButton').addEventListener("click", this.register);
-        document.querySelector('#registerForm #email').addEventListener("focusout", this.checkEmail);
+        document.querySelector('#registerForm #email').addEventListener("focusout", utils.checkEmail);
         document.querySelector('#registerForm #password').addEventListener("focusout", this.checkPassword);
         document.querySelector('#registerForm #repeat-password').addEventListener("focusout", this.checkRepeatPassword);
 
         document.querySelectorAll('#registerForm input[type="text"]').forEach(input => {
-            input.addEventListener("focusout", this.checkBlankField);
+            input.addEventListener("focusout", utils.checkBlankField);
         });
     }
-
-
 
     register = () => {
         if (!this.checkAllFields())
             return false;
-	
-        let username = document.getElementById("username").value;	
-        let firstname = document.getElementById("firstname").value;	
-        let lastname = document.getElementById("lastname").value;	
-        let email = document.getElementById("email").value;	
-        let password = document.getElementById("password").value;
 
         fetch('http://127.0.0.1:8000/api/users/register/', {
             method: 'POST',
@@ -95,11 +75,11 @@ export default class extends AbstractView {
             },
             body: JSON.stringify({
                 "avatar": "/avatar/default.png",
-                "username": username,
-                "firstname": firstname,
-                "lastname": lastname,
-                "email": email,
-                "password": password
+                "username": document.getElementById("username").value,
+                "first_name": document.getElementById("first_name").value,
+                "last_name": document.getElementById("last_name").value,
+                "email": document.getElementById("email").value,
+                "password": document.getElementById("password").value
             })
         })	
         .then((response) =>
@@ -113,18 +93,15 @@ export default class extends AbstractView {
             if (!ok)
             {
                 for (const key in jsonData) {
-                    if (Object.hasOwnProperty.call(jsonData, key)) {
-                        const value = jsonData[key];
-                        this.printError(key, 1, value)
-                    }
+                    if (Object.hasOwnProperty.call(jsonData, key))
+                        utils.printError(key, 1, jsonData[key])
                 }
             }
             else
             {
-                console.log("Bravo !");
+                // TODO "envoyer" login pour reecuperer le token
+                this.user.datas = jsonData;
             }
-            console.log("JSON Data:", jsonData);
-            console.log("Response status:", status)
         })
         .catch((error) => {
             // Gérer les erreurs de requête ou de conversion JSON
@@ -132,30 +109,17 @@ export default class extends AbstractView {
         });
     }
 
-    checkEmail = () => {
-        let inputEmail = document.querySelector('#registerForm input#email').value
-        if (inputEmail.match(EMAIL_REGEX) )
-        {
-            this.printError("email", false, "")
-            return true;
-        }
-        else
-        {
-            this.printError("email", true, "Wrong email address")
-            return false;
-        }
-    }
     checkPassword = () => {
             let pass1 = document.querySelector('#registerForm input#password').value
 
             if (!this.isPasswordStrong(pass1))
             {
-                this.printError("password", true, "The password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one digit, and one special character.")
+                utils.printError("password", true, "The password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, one digit, and one special character.")
                 return false;
             }
             else 
             {
-                this.printError("password", false, "")
+                utils.printError("password", false, "")
                 return true
             }
 
@@ -166,12 +130,12 @@ export default class extends AbstractView {
         let pass2 = document.querySelector('#registerForm input#repeat-password').value
 
         if (pass1 === pass2){
-            this.printError("repeat-password", false, "");
+            utils.printError("repeat-password", false, "");
             return true;
         }
         else
         {
-            this.printError("repeat-password", true, "The passwords are not the same.");
+            utils.printError("repeat-password", true, "The passwords are not the same.");
             return false;
         }
     }
@@ -189,49 +153,25 @@ export default class extends AbstractView {
                 return false;
         return true;
     }
-    checkBlankField(event)
-    {
-        let value = event.target.value;
-        let field = event.target.getAttribute("id");
-        console.log("checkBlankField", field, value) 
-        if (value === "")
-        {
-            document.querySelector(`#registerForm .error[for="` + field + `"]`).classList.remove("d-none");
-            document.querySelector(`#registerForm .error[for="` + field + `"]`).innerHTML = "this fields must not be blank";
-            return false;
-        }
-        else
-        {
-            document.querySelector(`#registerForm .error[for="` + field + `"]`).classList.add("d-none");
-            return true;
-        }
-    }
+
     checkAllFields = () =>
     {
-        return true;
         // Récupérer tous les champs du formulaire
         let fields = document.querySelectorAll("#registerForm input[type='text']");
 
         // Vérifier chaque champ
         let isValid = true;
         fields.forEach(field => {
-            if (!this.checkBlankField({ target: field })) {
+            if (!utils.checkBlankField({ target: field })) {
                 isValid = false;
             }
         });
         let check_pass = this.checkPassword;
         let check_pass2 = this.checkRepeatPassword;
-        let check_email = this.checkEmail;
+        let check_email = utils.checkEmail({ target: document.querySelector('#registerForm input#email') });
         if (isValid && check_pass && check_pass2 && check_email)
             return true;
         return false
     }
-    printError = (field, isError, innerText) =>
-    {
-        if (isError)
-            document.querySelector(`#registerForm .error[for="` + field + `"]`).classList.remove("d-none");
-        else
-            document.querySelector(`#registerForm .error[for="` + field + `"]`).classList.add("d-none");
-        document.querySelector(`#registerForm .error[for="` + field + `"]`).innerHTML = innerText;
-    }
+
 }
