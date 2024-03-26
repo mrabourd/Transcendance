@@ -99,6 +99,7 @@ export default class extends AbstractView {
             }
             else
             {
+                
                 // TODO "envoyer" login pour reecuperer le token
                 this.user.datas = jsonData;
             }

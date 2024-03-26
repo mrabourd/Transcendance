@@ -31,8 +31,8 @@ export default class extends AbstractView {
         document.querySelector("#email span").innerText = this.user.datas.email;
         document.querySelector("#password span").innerText = this.user.datas.password;
         document.querySelector("#biography span").innerText = this.user.datas.biography;
-        document.querySelector("#token span").innerText = this.user.datas.token;
-        document.querySelector("#socket_id span").innerText = this.user.datas.socket_id;
+        document.querySelector("#refresh span").innerText = this.user.datas.refresh;
+        document.querySelector("#access span").innerText = this.user.datas.access;
         
     }
 

@@ -1,7 +1,6 @@
 import AbstractView from "./AbstractView.js";
-
-/* UTILS */
 import * as utils from "../utils_form.js"
+import * as router from "../router.js";
 
 export default class extends AbstractView {
     constructor(params) {
@@ -48,80 +47,51 @@ export default class extends AbstractView {
     }
 
     addEvents () {
+        document.querySelectorAll('#loginForm input').forEach(input => {
+            input.addEventListener("focusout", utils.checkBlankField);
+        });
         document.querySelector('#loginButton').addEventListener("click", this.login);
         document.querySelector('#login42Button').addEventListener("click", this.login42);
     }
 
 
-    login()
-    {
-        console.log("login() called")
-        let baliseNom = document.getElementById("username");
-        // console.log(baliseNom);
-        let UserName = baliseNom.value;
-        // console.log(uname); // affiche ce qui est contenu dans la balise name
-        
-        let balisePassword = document.getElementById("password");
-        let UserPassword = balisePassword.value;
-          
-        // const nameUser = JSON.parse(localStorage.getItem("username")) || [];
-        // loginData = [{
-        // 	loginName: UserName}, {
-        // 	loginPass: UserPassword
-        // 	}];
-        // nameUser.push(loginData)
-        // localStorage.setItem("username", JSON.stringify(nameUser))
-        // console.log(nameUser)
-        // location.reload()
-        fetch('http://127.0.0.1:8000/api/users/login/', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json, text/plain, */*',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({username: UserName, password: UserPassword})
-      })
-        .then(res => res.json())
-        // .then(res => console.log(res));
-        // .then((res) =>
-        // {
-        // 	if (!res.ok) {
-        // 		document.getElementById("finishLogin").innerHTML = "This user doesn't exist!";
-        // 	}
-        // 	else
-        // 		console.log("bravo, you are logged in")
-        // })
-        .then(data => {
-            if (data.success) {
-                localStorage.setItem("username", UserName);
-                localStorage.setItem("password", UserPassword);
-                console.log("bravo, you are logged in")
-            } else {
-                console.log(data.detail);
+    login = () => {
+        if (!this.checkAllFields())
+            return false;        
+        let username = document.querySelector("#loginForm #username").value;
+        let password = document.querySelector("#loginForm #password").value;
+
+        this.user.login(username, password)
+        .then(result => {
+            if (result === true)
+                router.navigateTo("/profile", this.user)
+            else
+            {
+                let errDiv = document.querySelector("#loginForm #errors");
+                errDiv.classList.remove("d-none")
+                errDiv.innerHTML = result;
             }
+
         })
-        // .catch(error => {
-        // 	console.error('Erreur:', error);
-        // })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
     }
-/*
-const tokenData = {
-    refresh: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcxMjM0OTg3MywiaWF0IjoxNzExMDUzODczLCJqdGkiOiIyYmQyYzVhOTBkNjc0ODg5OTIwYzZmNDFjZmJhYTBjZiIsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoiZ2xhIiwiZW1haWwiOiJnbGFAZ2xvdS5jb20ifQ.vYlYzmyvC9Gk-XgcAO3623Qa2YXldVvAKxaG4jYAZ1Y",
-    access: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzExMDU0MTczLCJpYXQiOjE3MTEwNTM4NzMsImp0aSI6IjhlMThiMzk3MTgxMDQ1YTA4Y2RkNzYzODI5NTk3YjA1IiwidXNlcl9pZCI6MiwidXNlcm5hbWUiOiJnbGEiLCJlbWFpbCI6ImdsYUBnbG91LmNvbSJ9.UKOY4Xb1xrW2W5bqhcB1Fz6benfMjqXQYNuxgROtIBg"
-};
-// Convertir les données en format JSON
-const tokenDataJSON = JSON.stringify(tokenData);
 
-// Stocker les données dans le stockage local
-localStorage.setItem('tokens', tokenDataJSON);
+    checkAllFields = () =>
+    {
+        // Récupérer tous les champs du formulaire
+        let fields = document.querySelectorAll("#loginForm input[type='text']");
 
-// Pour récupérer les données ultérieurement :
-const storedTokenDataJSON = localStorage.getItem('tokens');
-const storedTokenData = JSON.parse(storedTokenDataJSON);
-
-// Maintenant vous pouvez utiliser storedTokenData.refresh et storedTokenData.access comme nécessaire dans vos appels d'API.
-*/
-
+        // Vérifier chaque champ
+        let isValid = true;
+        fields.forEach(field => {
+            if (!utils.checkBlankField({ target: field })) {
+                isValid = false;
+            }
+        });
+        return isValid;
+    }
     login42()
     {
         console.log("login42() called")

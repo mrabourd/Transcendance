@@ -45,13 +45,13 @@ export function checkBlankField(event)
     let field = event.target.getAttribute("id");
     if (value === "")
     {
-        document.querySelector(`#registerForm .error[for="` + field + `"]`).classList.remove("d-none");
-        document.querySelector(`#registerForm .error[for="` + field + `"]`).innerHTML = "this fields must not be blank";
+        document.querySelector(`form .error[for="` + field + `"]`).classList.remove("d-none");
+        document.querySelector(`form .error[for="` + field + `"]`).innerHTML = "this fields must not be blank";
         return false;
     }
     else
     {
-        document.querySelector(`#registerForm .error[for="` + field + `"]`).classList.add("d-none");
+        document.querySelector(`form .error[for="` + field + `"]`).classList.add("d-none");
         return true;
     }
 }

@@ -44,16 +44,7 @@ app.listen(port, function () {
 	console.log('Example app listening on port %s!', port)
 })
 
-/*
-const jsdom = require("jsdom").jsdom;
-const {JSDOM} = jsdom;
 
-class DOMParser {
-	parseFromString(s, contentType = 'text/html') {
-		return new JSDOM(s, {contentType}).window.document;
-	}
-}
-*/
 
 
 // const WebSocket = require('ws');
