@@ -3,8 +3,7 @@ from rest_framework.settings import api_settings
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.auth.hashers import make_password
+from users.models import Profile
 
 User = get_user_model() # Get reference to the model
 
@@ -14,6 +13,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 	@classmethod
 	def get_token(cls, user):
 		token = super(CustomTokenObtainPairSerializer, cls).get_token(user)
+		print(token)
+		print("User: ", user)
 
 		# Add custom claims
 		token['username'] = user.username
@@ -24,7 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('email', 'username', 'password')
+		fields = ('email', 'username', 'password', 'first_name', 'last_name')
 		extra_kwargs = {
 			'password': {'write_only': True},
 			'email': {
@@ -34,6 +35,27 @@ class UserSerializer(serializers.ModelSerializer):
 
 	def create(self, validated_data):
 		return User.objects.create_user(**validated_data)
+	
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = Profile
+		fields = ('user', 'follows')
+		extra_kwargs = {
+			'follows': {'required': False}
+		}
+	def create(self, validated_data):
+		return Profile.objects.create(**validated_data)
+	
+	def update(self, instance, validated_data):
+		for attr, value in validated_data.items():
+			setattr(instance, attr, value)
+		instance.save()
+		return instance
+	
+
+
 
 """ 
 def update(self, instance, validated_data):

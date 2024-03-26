@@ -10,6 +10,13 @@ class Profile(models.Model):
         symmetrical=False,
         blank=True
     )
+    
+""" def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+post_save.connect(create_user_profile, sender=User)
 
 def __str__(self):
         return self.name
+ """

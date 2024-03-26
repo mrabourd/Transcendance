@@ -2,7 +2,8 @@ from django.urls import path
 from users.views import CustomObtainTokenPairView, UserRegistrationAPIView
 from rest_framework_simplejwt.views import TokenRefreshView
 from django.views.decorators.csrf import csrf_exempt
-
+from django.contrib.auth.views import LogoutView
+from users.views import UserProfileAPIView
 
 
 urlpatterns = [
@@ -11,4 +12,6 @@ urlpatterns = [
     path('register/',
          UserRegistrationAPIView.as_view(),
          name='user-register'),
+	path('logout/', LogoutView.as_view(), name='logout'),
+	path('profile/', UserProfileAPIView.as_view(), name='profile'),
 ]
