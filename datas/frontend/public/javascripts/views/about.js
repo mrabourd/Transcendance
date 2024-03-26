@@ -6,12 +6,25 @@ export default class extends AbstractView {
         this.setTitle("About");
     }
 
-    async getHtml() {
-        return `
-            <h1>About</h1>
-            <p>
-                Fugiat voluptate et nisi Lorem cillum anim sit do eiusmod occaecat irure do. Reprehenderit anim fugiat sint exercitation consequat. Sit anim laborum sit amet Lorem adipisicing ullamco duis. Anim in do magna ea pariatur et.
-            </p>
-        `;
+    async getHtml(DOM) {
+        await fetch('/template/about').then(function (response) {
+            // The API call was successful!
+            return response.text();
+        }).then(function (html) {
+            // This is the HTML from our response as a text string
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(html, 'text/html');
+            let body = doc.querySelector('#app');
+            DOM.innerHTML = body.innerHTML;
+
+
+        }).catch(function (err) {
+            // There was an error
+            console.warn('Something went wrong.', err);
+        });
+    }
+
+    addEvents () {
+        console.log("Add Events")
     }
 }

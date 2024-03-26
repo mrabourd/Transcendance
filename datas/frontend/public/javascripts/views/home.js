@@ -3,15 +3,27 @@ import AbstractView from "./AbstractView.js";
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("Home");
+        this.setTitle("home");
     }
 
-    async getHtml() {
-        return `
-            <h1>Home</h1>
-            <p>
-                Fugiat voluptate et nisi Lorem cillum anim sit do eiusmod occaecat irure do. Reprehenderit anim fugiat sint exercitation consequat. Sit anim laborum sit amet Lorem adipisicing ullamco duis. Anim in do magna ea pariatur et.
-            </p>
-        `;
+
+    async getHtml(DOM) {
+        await fetch('/template/home').then(function (response) {
+            return response.text();
+        }).then(function (html) {
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(html, 'text/html');
+            let body = doc.querySelector('#app');
+            DOM.innerHTML = body.innerHTML;
+        }).catch(function (err) {
+            console.warn('Something went wrong.', err);
+        });
     }
+    async fillHtml(DOM) {
+        console.log("fillHtml")
+    }
+    addEvents () {
+        console.log("Add Events")
+    }
+    // fonction specifiques a la vue
 }
