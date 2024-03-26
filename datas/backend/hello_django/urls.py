@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include         
-from users.views import UserRegistrationAPIView, CustomObtainTokenPairView, UserProfileAPIView
+from users.views import UserRegistrationAPIView, CustomObtainTokenPairView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.views.decorators.csrf import csrf_exempt
 

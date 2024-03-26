@@ -33,7 +33,7 @@ class UserRegistrationAPIView(APIView):
         # Let's update the response code to 201 to follow the standards
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class UserProfileAPIView(APIView):
+""" class UserProfileAPIView(APIView):
 
     def get(self, request, format=None):
         serializer = UserSerializer(instance=request.user)
@@ -51,4 +51,4 @@ class UserProfileAPIView(APIView):
        # serializer instantiation above
        serializer.save()
 
-       return Response(serializer.data)
+       return Response(serializer.data) """

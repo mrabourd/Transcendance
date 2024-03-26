@@ -3,7 +3,7 @@ from rest_framework.settings import api_settings
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from users.models import Profile
+#from users.models import Profile
 
 User = get_user_model() # Get reference to the model
 
@@ -37,22 +37,22 @@ class UserSerializer(serializers.ModelSerializer):
 		return User.objects.create_user(**validated_data)
 	
 
-class ProfileSerializer(serializers.ModelSerializer):
+""" class ProfileSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Profile
 		fields = ('user', 'follows')
 		extra_kwargs = {
 			'follows': {'required': False}
-		}
-	def create(self, validated_data):
+		} """
+""" 	def create(self, validated_data):
 		return Profile.objects.create(**validated_data)
 	
 	def update(self, instance, validated_data):
 		for attr, value in validated_data.items():
 			setattr(instance, attr, value)
 		instance.save()
-		return instance
+		return instance """
 	
 
 

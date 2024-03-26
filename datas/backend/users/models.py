@@ -1,22 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 import uuid
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+class User(AbstractUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    avatar = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    biography = models.TextField(max_length=500, blank=True)
     follows = models.ManyToManyField(
         "self",
         related_name="followed_by",
         symmetrical=False,
         blank=True
     )
-    
-""" def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-post_save.connect(create_user_profile, sender=User)
-
-def __str__(self):
-        return self.name
- """
