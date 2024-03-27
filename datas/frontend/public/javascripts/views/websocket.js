@@ -23,7 +23,7 @@ export default class extends AbstractView {
         const webSocket = new WebSocket('ws://localhost:8080/');
         webSocket.onmessage = (event) => {
             console.log("onmessage:", event)
-            document.getElementById('messages').innerHTML += 'Message from server: ' + event.data + "<br>";
+            document.getElementById('messages').innerHTML += `<div class="received-message"><p>` + event.data + `</p></div>`;
         };
         webSocket.addEventListener("open", () => {
             console.log("We are connected");
@@ -41,8 +41,10 @@ export default class extends AbstractView {
         console.log("sending message");
 
         event.preventDefault();
-        var inputMessage = document.getElementById('message');
-        webSocket.send(inputMessage.value)
+        let inputMessage = document.getElementById('message');
+        webSocket.send(this.user.datas.username + `: ` + inputMessage.value)
+        document.getElementById('messages').innerHTML += 
+        `<div class="sent-message"><p>` + inputMessage.value + `</p></div>`;
         inputMessage.value = "" 
     }
 }

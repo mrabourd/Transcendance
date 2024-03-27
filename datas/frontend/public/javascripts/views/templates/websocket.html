@@ -11,17 +11,20 @@
 <body class="m-5">
 <main>
     <div id="app">
-        <h1>WEBSOCKET</h1>
-            <!-- WEBSOCKET PART  -->
-            <form id="input-form">
-                <label for="message">Enter Message:</label>
-                <input type="text" id="message" name="message"><br><br>
-                <input id="send" type="submit" value="Send" >
-              </form>
-              <div id="messages">
-                
+
+        <div id="app">
+            <div class="jumbotron">
+                <h1 class="display-4">WebSocket</h1>
+                <p class="lead">run node server.js to start</p>
+                <hr class="my-4">
+                <div id="messages">
+                </div>
+                <form id="input-form">
+                    <input type="text" id="message" name="message">
+                    <input id="send" type="submit" value="Send" >
+                </form>
               </div>
-              <!-- END OF WEBSOCKET PART  -->
+        </div>
     </div>
 </main>
 </body>
