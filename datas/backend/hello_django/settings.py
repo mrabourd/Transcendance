@@ -16,6 +16,21 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+
+# HTTPS CONFIG / SELEN
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+# Activer le HSTS (Strict Transport Security)
+SECURE_HSTS_SECONDS = 31536000  # Par exemple, un an (60 * 60 * 24 * 365)
+# Indiquer aux navigateurs de précharger le site via HTTPS pour une meilleure sécurité
+SECURE_HSTS_PRELOAD = True
+# Activer le HSTS uniquement pour les connexions sécurisées
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 

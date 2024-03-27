@@ -13,6 +13,7 @@ RUN npm install jsdom --save
 RUN npm install ws
 RUN npm install http
 RUN npm install url
+RUN npm install cors
 
 COPY --chown=node:node . .
 

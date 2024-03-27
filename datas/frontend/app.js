@@ -1,6 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
 const router = express.Router();
+app.use(cors());
+router.use(cors());
 
 const path = __dirname + '/public/';
 const port = 3000;

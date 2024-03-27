@@ -44,10 +44,11 @@ export default class User {
     async login(userName, passWord) {
         console.log("user login()")
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/users/login/', {
+            const response = await fetch('https://127.0.0.1:443/api/users/login/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
+                    'Origin': 'http://127.0.0.1:3000',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({username: userName, password: passWord})
@@ -120,11 +121,12 @@ export default class User {
         console.log("verifyToken")
         // TODO : WAIT FOR DJANGO CHECK TOKEN API
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/users/login/', {
+            const response = await fetch('https://127.0.0.1:8000/api/users/login/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
                     'Content-Type': 'application/json',
+                    'Origin': 'http://127.0.0.1:3000',
                     'Authorization': `Bearer ${token}` // Envoyer le token dans l'en-tête Authorization
                 }
             });
@@ -142,11 +144,12 @@ export default class User {
 
         let token = this.getLocalToken()
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/users/logout/', {
+            const response = await fetch('https://127.0.0.1:8000/api/users/logout/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
                     'Content-Type': 'application/json',
+                    'Origin': 'http://127.0.0.1:3000',
                     'Authorization': `Bearer ${token}` // Envoyer le token dans l'en-tête Authorization
                 }
             });

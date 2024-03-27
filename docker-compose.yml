@@ -14,9 +14,9 @@ services:
     container_name: backend
     build: ./datas/backend/
     restart: on-failure
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:443
     ports:
-      - "8000:8000"
+      - "8000:443"
     volumes:
       - backend-data:/usr/src/app/
     env_file:
