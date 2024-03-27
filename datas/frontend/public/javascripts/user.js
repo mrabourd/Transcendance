@@ -1,3 +1,5 @@
+import * as header from "./header.js";
+
 export default class User {
     constructor() {
         console.log("User constructor called")
@@ -56,6 +58,8 @@ export default class User {
                 const jsonData = await response.json();
                 this.saveLocalToken(jsonData)
                 this.isConnected = true;
+                // todo >> recuperer les datas.
+                header.printHeader(this);
                 return true;
             } else if (response.status === 401) {
                 const jsonData = await response.json();
@@ -96,7 +100,14 @@ export default class User {
         // TODO recuperer un cookie pour plus de securite
         return JSON.parse(token)
     }
-
+    deleteLocalToken = () =>
+    {
+        console.log("deleteLocalToken");
+        window.localStorage.removeItem("LocalToken");
+        window.localStorage.clear();
+        this.token = null;
+        return ;
+    }
     saveLocalToken = (jsonData) =>
     {
         console.log("saveLocalToken");
@@ -105,7 +116,6 @@ export default class User {
         // TODO enregistrer un cookie pour plus de securite
         return window.localStorage.getItem("LocalToken");
     }
-
     verifyToken = async(token) =>{
         console.log("verifyToken")
         // TODO : WAIT FOR DJANGO CHECK TOKEN API
@@ -119,10 +129,8 @@ export default class User {
                 }
             });
             if (response.ok) {
-                //console.log("Token is valid");
                 return true;
             } else {
-                //console.log("Token is invalid");
                 return true; // pass to false
             }
         } catch (error) {
@@ -130,9 +138,9 @@ export default class User {
             throw error;
         }
     }
-
     logout = async() =>{
-        token = this.getLocalToken()
+
+        let token = this.getLocalToken()
         try {
             const response = await fetch('http://127.0.0.1:8000/api/users/logout/', {
                 method: 'POST',
@@ -142,9 +150,11 @@ export default class User {
                     'Authorization': `Bearer ${token}` // Envoyer le token dans l'en-tête Authorization
                 }
             });
-            if (response.ok) {
-                return true;
-            }
+            //if (response.ok) {
+                this.deleteLocalToken();
+                this.isConnected = false;
+                header.printHeader(this);
+            //}
         } catch (error) {
             console.error('user.logout : There was a problem :', error);
             throw error;

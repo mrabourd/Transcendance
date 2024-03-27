@@ -20,37 +20,21 @@ export default class {
     async fillHtml() {
         return "";
     }
-    printHeader()
-    {
-        if (this.user.isConnected)
-        {
-            console.log("isConnected")
-            document.querySelector("nav div div").innerHTML = 
-            `<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item active">
-              <a class="nav-link" aria-current="page" href="/home" data-link>Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/" data-link>Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/play" data-link>Play</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/contact" data-link>Contact</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/profile" data-link>Profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/websocket" data-link>websocket</a>
-            </li>
-          </ul>`;
-        }
-        else
-            console.log("login")
-    }
+
     addEvents () {
 
     }
 }
+
+/*
+        { id:0, path: "/", view: login },
+        { id:1, path: "/login", view: login },
+        { id:2, path: "/register", view: register },
+        { id:3, path: "/home", view: home },
+        { id:4, path: "/profile", view: profile },
+        { id:5, path: "/profile/:id", view: profile },
+        { id:6, path: "/about", view: about },
+        { id:7, path: "/contact", view: contact },
+        { id:7, path: "/websocket", view: websocket },
+        { id:8, path: "/play", view: play }
+*/
