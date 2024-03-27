@@ -1,7 +1,6 @@
 import AbstractView from "./AbstractView.js";
-
-/* UTILS */
 import * as utils from "../utils_form.js"
+import * as router from "../router.js";
 
 
 export default class extends AbstractView {
@@ -96,13 +95,26 @@ export default class extends AbstractView {
                     if (Object.hasOwnProperty.call(jsonData, key))
                         utils.printError(key, 1, jsonData[key])
                 }
+                return "An error occured ! Please check fields below ..."
             }
             else
             {
-                
-                // TODO "envoyer" login pour reecuperer le token
-                this.user.datas = jsonData;
+                let username = document.getElementById("username").value
+                let password = document.getElementById("password").value
+                let response = this.user.login(username, password);
+                return response;
             }
+        })
+        .then(result => {
+            if (result === true)
+                router.navigateTo("/home", this.user)
+            else
+            {
+                let errDiv = document.querySelector("#registerForm #errors");
+                errDiv.classList.remove("d-none")
+                errDiv.innerHTML = result;
+            }
+
         })
         .catch((error) => {
             // Gérer les erreurs de requête ou de conversion JSON
@@ -160,16 +172,18 @@ export default class extends AbstractView {
         // Récupérer tous les champs du formulaire
         let fields = document.querySelectorAll("#registerForm input[type='text']");
 
-        // Vérifier chaque champ
+        // Vérifier chaque champ * de type text / ne dois pas etre vide.
         let isValid = true;
         fields.forEach(field => {
             if (!utils.checkBlankField({ target: field })) {
                 isValid = false;
             }
         });
+
         let check_pass = this.checkPassword;
         let check_pass2 = this.checkRepeatPassword;
         let check_email = utils.checkEmail({ target: document.querySelector('#registerForm input#email') });
+       
         if (isValid && check_pass && check_pass2 && check_email)
             return true;
         return false

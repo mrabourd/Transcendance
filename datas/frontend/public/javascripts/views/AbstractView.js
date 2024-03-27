@@ -42,6 +42,9 @@ export default class {
             <li class="nav-item">
               <a class="nav-link" href="/profile" data-link>Profile</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/websocket" data-link>websocket</a>
+            </li>
           </ul>`;
         }
         else

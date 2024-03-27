@@ -56,15 +56,15 @@ export default class extends AbstractView {
 
 
     login = () => {
+        console.log("login login()")
         if (!this.checkAllFields())
             return false;        
         let username = document.querySelector("#loginForm #username").value;
         let password = document.querySelector("#loginForm #password").value;
-
         this.user.login(username, password)
         .then(result => {
             if (result === true)
-                router.navigateTo("/profile", this.user)
+                router.navigateTo("/home", this.user)
             else
             {
                 let errDiv = document.querySelector("#loginForm #errors");
@@ -74,7 +74,7 @@ export default class extends AbstractView {
 
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error('login.js (76) : There was a problem with the fetch operation:', error);
         });
     }
 

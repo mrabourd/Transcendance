@@ -5,6 +5,7 @@ import contact from "./views/contact.js";
 import play from "./views/play.js";
 import profile from "./views/profile.js";
 import register from "./views/register.js";
+import websocket from "./views/websocket.js";
 
 
 export const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -25,14 +26,16 @@ export const navigateTo = (url, user) => {
 
 export const router = async (user) => {
     const routes = [
-        { path: "/", view: login },
-        { path: "/register", view: register },
-        { path: "/home", view: home },
-        { path: "/profile", view: profile },
-        { path: "/profile/:id", view: profile },
-        { path: "/about", view: about },
-        { path: "/contact", view: contact },
-        { path: "/play", view: play }
+        { id:0, path: "/", view: login },
+        { id:1, path: "/login", view: login },
+        { id:2, path: "/register", view: register },
+        { id:3, path: "/home", view: home },
+        { id:4, path: "/profile", view: profile },
+        { id:5, path: "/profile/:id", view: profile },
+        { id:6, path: "/about", view: about },
+        { id:7, path: "/contact", view: contact },
+        { id:7, path: "/websocket", view: websocket },
+        { id:8, path: "/play", view: play }
     ];
 
     // Test each route for potential match
@@ -44,19 +47,31 @@ export const router = async (user) => {
     });
 
     let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
-
     if (!match) {
         match = {
             route: routes[0],
             result: [location.pathname]
         };
     }
+    // check user.isConnected & rediriger si necessaire
+    let path = location.pathname;
+    let isConnected = user.isConnected;
+    if (match.route.id > 2 && !isConnected)
+    {
+        navigateTo("/login", user);
+        return;
+    }
+    if (match.route.id < 3 && isConnected)
+    {
+        navigateTo("/home", user);
+        return;
+    }
 
     user.view = new match.route.view(getParams(match));
     user.view.user = user;
     
-   await user.view.getHtml(document.querySelector("#app"));
-   await user.view.fillHtml();
-   await user.view.printHeader();
-   await user.view.addEvents();
+    await user.view.getHtml(document.querySelector("#app"));
+    await user.view.fillHtml();
+    await user.view.printHeader();
+    await user.view.addEvents();
 };

@@ -3,10 +3,11 @@ import * as router from "./router.js";
 
 window.addEventListener("popstate", router.router);
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async() => {
 
     const user = new User();
-    user.checkLocalStorage();
+    const result = await user.checkLocalStorage();
+    console.log("checkLocalStorage", "result", result)
 
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
@@ -14,5 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
             router.navigateTo(e.target.href, user);
         }
     });
+    console.log("index.js", "user", user)
     router.router(user);
 });

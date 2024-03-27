@@ -3,7 +3,8 @@ export default class User {
         console.log("User constructor called")
         this._isConnected = false;
         this._view = null;
-        this._datas = null;
+        this._datas = {username:"john"};
+        this._token = null;
     }
     set isConnected(n)
     {
@@ -21,6 +22,14 @@ export default class User {
     {
         return this._view;
     }
+    set token(n)
+    {
+        this._token = n;
+    }
+    get token()
+    {
+        return this._token;
+    }
     set datas(n)
     {
         this._datas = n;
@@ -30,31 +39,8 @@ export default class User {
         return this._datas;
     }
 
-    checkLocalStorage = async() => {
-        console.log("checkLocalStorage")
-        /*
-        const reponse = await fetch("http://localhost:3000/user.json")
-        const JsonUser = await reponse.json();
-        const strJsonUser = JSON.stringify(JsonUser);
-        window.localStorage.setItem("LocalUser", strJsonUser);
-        */
-        let LocalUser = window.localStorage.getItem("LocalUser");
-        if (LocalUser !== null)
-        {
-            this.datas = JSON.parse(LocalUser);
-            this._isConnected = true;
-            this.verifyToken(this.datas)
-            /*
-            TODO
-            Renvoyer le token au back et checker si le token correspond
-            */
-        }
-        else
-        {
-            this._isConnected = false;
-        }
-    }
     async login(userName, passWord) {
+        console.log("user login()")
         try {
             const response = await fetch('http://127.0.0.1:8000/api/users/login/', {
                 method: 'POST',
@@ -64,12 +50,11 @@ export default class User {
                 },
                 body: JSON.stringify({username: userName, password: passWord})
             });
-
+            console.log("user login()", "response",response)
             if (response.ok)
             {
                 const jsonData = await response.json();
-                window.localStorage.setItem("LocalUser", JSON.stringify(jsonData));
-                this.datas = jsonData;
+                this.saveLocalToken(jsonData)
                 this.isConnected = true;
                 return true;
             } else if (response.status === 401) {
@@ -77,16 +62,55 @@ export default class User {
                 return jsonData.detail;
             }
         } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error('user.js (88) There was a problem with the fetch operation:', error);
             throw error;
         }
     }
+    checkLocalStorage = async() => {
+        console.log("checkLocalStorage")
+        let token = this.getLocalToken();
+        if (token !== null)
+        {
+            let response = await this.verifyToken(token);
+            if (response == true)
+            {
+                this.token = token
+                this._isConnected = true;
+            }
+            else
+            {
+                this.token = null;
+                this._isConnected = false;
+            }
+        }
+        else
+        {
+            this._isConnected = false;
+        }
+        return this._isConnected;
+    }
+    getLocalToken = () =>
+    {
+        console.log("getLocalToken");
+        let token = window.localStorage.getItem("LocalToken");
+        // TODO recuperer un cookie pour plus de securite
+        return JSON.parse(token)
+    }
 
+    saveLocalToken = (jsonData) =>
+    {
+        console.log("saveLocalToken");
+        window.localStorage.setItem("LocalToken", JSON.stringify(jsonData));
+        this.token = jsonData;
+        // TODO enregistrer un cookie pour plus de securite
+        return window.localStorage.getItem("LocalToken");
+    }
 
-
-    async verifyToken(token) {
+    verifyToken = async(token) =>{
+        console.log("verifyToken")
+        // TODO : WAIT FOR DJANGO CHECK TOKEN API
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/verify/token/', {
+            const response = await fetch('http://127.0.0.1:8000/api/users/login/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
@@ -94,34 +118,36 @@ export default class User {
                     'Authorization': `Bearer ${token}` // Envoyer le token dans l'en-tête Authorization
                 }
             });
-
             if (response.ok) {
-                console.log("Token is valid");
+                //console.log("Token is valid");
                 return true;
             } else {
-                console.log("Token is invalid");
-                return false;
+                //console.log("Token is invalid");
+                return true; // pass to false
             }
         } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error('user.verifyToken : There was a problem :', error);
+            throw error;
+        }
+    }
+
+    logout = async() =>{
+        token = this.getLocalToken()
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/users/logout/', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Envoyer le token dans l'en-tête Authorization
+                }
+            });
+            if (response.ok) {
+                return true;
+            }
+        } catch (error) {
+            console.error('user.logout : There was a problem :', error);
             throw error;
         }
     }
 }
-/*
-const tokenData = {
-    refresh: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcxMjM0OTg3MywiaWF0IjoxNzExMDUzODczLCJqdGkiOiIyYmQyYzVhOTBkNjc0ODg5OTIwYzZmNDFjZmJhYTBjZiIsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoiZ2xhIiwiZW1haWwiOiJnbGFAZ2xvdS5jb20ifQ.vYlYzmyvC9Gk-XgcAO3623Qa2YXldVvAKxaG4jYAZ1Y",
-    access: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzExMDU0MTczLCJpYXQiOjE3MTEwNTM4NzMsImp0aSI6IjhlMThiMzk3MTgxMDQ1YTA4Y2RkNzYzODI5NTk3YjA1IiwidXNlcl9pZCI6MiwidXNlcm5hbWUiOiJnbGEiLCJlbWFpbCI6ImdsYUBnbG91LmNvbSJ9.UKOY4Xb1xrW2W5bqhcB1Fz6benfMjqXQYNuxgROtIBg"
-};
-// Convertir les données en format JSON
-const tokenDataJSON = JSON.stringify(tokenData);
-
-// Stocker les données dans le stockage local
-localStorage.setItem('tokens', tokenDataJSON);
-
-// Pour récupérer les données ultérieurement :
-const storedTokenDataJSON = localStorage.getItem('tokens');
-const storedTokenData = JSON.parse(storedTokenDataJSON);
-
-// Maintenant vous pouvez utiliser storedTokenData.refresh et storedTokenData.access comme nécessaire dans vos appels d'API.
-*/
