@@ -6,12 +6,11 @@ import Pong from "../pong.js";
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        console.log(this.id);
         this.setTitle("Play fun");
     }
 
     async getHtml(DOM) {
-        await fetch('/template/player').then(function (response) {
+        await fetch('/template/play').then(function (response) {
             // The API call was successful!
             return response.text();
         }).then(function (html) {
