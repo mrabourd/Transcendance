@@ -41,6 +41,23 @@ export default class User {
         return this._datas;
     }
 
+    getCookie = (name) =>
+    {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     async login(userName, passWord) {
         console.log("user login()")
         try {
@@ -141,20 +158,24 @@ export default class User {
     logout = async() =>{
 
         let token = this.getLocalToken()
+        const csrftoken = this.getCookie('csrftoken');
+        console.log(csrftoken);
         try {
             const response = await fetch('http://127.0.0.1:8000/api/users/logout/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Envoyer le token dans l'en-tête Authorization
-                }
+                    'Content-Type': 'text/plain',
+                    'X-CSRFToken': csrftoken,
+                    'Authorization': `Token ${token.access}` // Envoyer le token dans l'en-tête Authorization
+                },
+                body: "bye"
             });
-            //if (response.ok) {
+            if (response.ok) {
                 this.deleteLocalToken();
                 this.isConnected = false;
                 header.printHeader(this);
-            //}
+            }
         } catch (error) {
             console.error('user.logout : There was a problem :', error);
             throw error;
