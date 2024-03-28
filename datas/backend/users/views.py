@@ -33,22 +33,3 @@ class UserRegistrationAPIView(APIView):
         # Let's update the response code to 201 to follow the standards
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-""" class UserProfileAPIView(APIView):
-
-    def get(self, request, format=None):
-        serializer = UserSerializer(instance=request.user)
-        return Response(serializer.data)
-
-    def put(self, request, format=None):
-       # Note how we pass the `instance` this time
-       serializer = UserSerializer(instance=request.user, data=request.data)
-       serializer.is_valid(raise_exceptions=True) # Validation
-
-       # Note: we use the same `save()` method we used in the `post()` method
-       # of the user registration view to create a new record. The `save()` 
-       # method is able to determine that this time we want to update an
-       # existing record, because we passed the `instance` during the
-       # serializer instantiation above
-       serializer.save()
-
-       return Response(serializer.data) """

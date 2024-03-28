@@ -7,7 +7,7 @@ from django.contrib.auth.views import LogoutView
 
 
 urlpatterns = [
-    path('login/', csrf_exempt(CustomObtainTokenPairView.as_view()), name='token_obtain_pair'),
+    path('login/', CustomObtainTokenPairView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/',
          UserRegistrationAPIView.as_view(),
