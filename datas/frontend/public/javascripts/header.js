@@ -37,13 +37,18 @@ export function printHeader(user)
 			// li.setAttribute("aria-label", "Toggle navigation");
 			li.innerHTML = `<div class="dropdown">
 			<button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
-			  Play
+			  play
 			</button>
-			<ul class="dropdown-menu">
-			  <li><a class="dropdown-item" href="/play/vs_computer">with robot</a></li>
-			  <li><a class="dropdown-item" href="#">with player</a></li>
+			<ul class="dropdown-menu" id="sousmenu">
+				<li><a class="dropdown-item" id=link-` + route.sousmenu[0].libelle + ` aria-current="page" href="` + route.path + route.sousmenu[0].path + `" data-link>`+route.sousmenu[0].libelle+`</a></li>
+				<li><a class="dropdown-item" id=link-` + route.sousmenu[1].libelle + ` aria-current="page" href="` + route.path + route.sousmenu[1].path + `" data-link>`+route.sousmenu[1].libelle+`</a></li>
 			</ul>
 		  </div>`;
+		//   let child = document.getElementById("route.sousmenu[0]menu");
+		//   console.log(child);
+		//   route.sousmenu.forEach(sous => {
+		// 	child.innerHTML +=  `<li><a class="dropdown-item" id=link-` + sous.libelle + ` aria-current="page" href="` + sous.path + `" data-link>`+sous.libelle+`</a></li>`
+		//   })
 			
 		// 	let div;
 		// 	div = document.createElement("div");
