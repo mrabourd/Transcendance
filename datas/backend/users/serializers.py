@@ -11,6 +11,7 @@ User = get_user_model() # Get reference to the model
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
+
 	def validate(self, attrs):
 		data = super().validate(attrs)
 		refresh = self.get_token(self.user)

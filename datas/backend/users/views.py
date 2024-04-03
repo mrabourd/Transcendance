@@ -5,11 +5,22 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 # We import our serializer here
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer
+from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 
 from django.contrib.auth.decorators import login_required
 
+User = get_user_model()
+
+class UsersAPIView(APIView):
+	permission_classes = [IsAuthenticated]
+	serializer = UserSerializer
+	def get(self, request):
+		users = User.objects.all()
+		serializer = self.serializer(users, many=True)
+		return Response(serializer.data)
 
 
 
