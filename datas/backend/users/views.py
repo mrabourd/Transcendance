@@ -8,6 +8,10 @@ from .serializers import UserSerializer, CustomTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.views.decorators.csrf import csrf_exempt
 
+from django.contrib.auth.decorators import login_required
+
+
+
 
 # We extend the TokenObtainPairView to use our custom serializer
 class CustomObtainTokenPairView(TokenObtainPairView):
