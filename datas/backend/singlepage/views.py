@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -16,3 +17,8 @@ def section(request, num):
         return HttpResponse(texts[num-1])
     else:
         raise Http404("No such section")
+
+
+def healthcheck(request):
+    # Insérez ici la logique de vérification de l'état de santé de votre application
+    return JsonResponse({'status': 'ok'})

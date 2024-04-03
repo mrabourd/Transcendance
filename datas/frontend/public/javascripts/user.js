@@ -61,7 +61,7 @@ export default class User {
     async login(userName, passWord) {
         console.log("user login()")
         try {
-            const response = await fetch('https://127.0.0.1:443/api/users/login/', {
+            const response = await fetch('https://127.0.0.1:8443/api/users/login/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
@@ -138,7 +138,7 @@ export default class User {
         console.log("verifyToken")
         // TODO : WAIT FOR DJANGO CHECK TOKEN API
         try {
-            const response = await fetch('https://127.0.0.1:8000/api/users/login/', {
+            const response = await fetch('https://127.0.0.1:8443/api/users/login/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
@@ -163,7 +163,7 @@ export default class User {
         const csrftoken = this.getCookie('csrftoken');
         console.log(csrftoken);
         try {
-            const response = await fetch('https://127.0.0.1:8000/api/users/logout/', {
+            const response = await fetch('https://127.0.0.1:8443/api/users/logout/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',

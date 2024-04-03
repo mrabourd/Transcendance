@@ -50,15 +50,59 @@ app.listen(port, function () {
 
 
 
-
-// const WebSocket = require('ws');
-// const socket = new WebSocket.Server("ws://localhost:8080");
-
-// socket.addEventListener("open", (event) => {
-// 	console.log("Message from server ", event.data);
-// 	socket.send("Hello Server!");
-// })
+const https = require('https');
 
 
-// tuto: https://www.pubnub.com/blog/nodejs-websocket-programming-examples/
-// debug: https://github.com/websockets/ws/issues/348#issuecomment-967803525
+const backendUrl = 'backend'; // Utilisez simplement 'backend' sans le préfixe 'http://'
+const hostnameUrl = `${backendUrl}:8443`;
+
+const options = {
+    hostname: hostnameUrl,
+    port: 8443,
+    path: '/',
+    method: 'GET',
+    rejectUnauthorized: false // Ignorer la vérification du certificat SSL
+};
+
+const req = https.request(options, (res) => {
+    console.log('statusCode:', res.statusCode);
+    console.log('headers:', res.headers);
+
+    res.on('data', (d) => {
+        process.stdout.write(d);
+    });
+});
+
+req.on('error', (e) => {
+    console.error(e);
+});
+
+req.end();
+
+/*
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+    hostname: 'your-django-backend-host',
+    port: 8443,
+    path: '/',
+    method: 'GET',
+    ca: fs.readFileSync('path/to/your/certificate.pem') // Chemin vers votre certificat SSL auto-signé
+};
+
+const req = https.request(options, (res) => {
+    console.log('statusCode:', res.statusCode);
+    console.log('headers:', res.headers);
+
+    res.on('data', (d) => {
+        process.stdout.write(d);
+    });
+});
+
+req.on('error', (e) => {
+    console.error(e);
+});
+
+req.end();
+*/

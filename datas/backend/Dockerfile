@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # copy project
 COPY . .
 
-EXPOSE 443
+EXPOSE 8000
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

@@ -18,15 +18,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # HTTPS CONFIG / SELEN
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-# Activer le HSTS (Strict Transport Security)
-SECURE_HSTS_SECONDS = 31536000  # Par exemple, un an (60 * 60 * 24 * 365)
-# Indiquer aux navigateurs de précharger le site via HTTPS pour une meilleure sécurité
-SECURE_HSTS_PRELOAD = True
-# Activer le HSTS uniquement pour les connexions sécurisées
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# settings.py
+# Assurez-vous que Django redirige toutes les connexions HTTP vers HTTPS en production
+SECURE_SSL_REDIRECT = False  # Mettre à True en production
+
+# Configurez le header sécurisé utilisé pour indiquer que la connexion est sécurisée
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Configurez la redirection HTTPS sécurisée pour tous les cookies de session et persistants
+SESSION_COOKIE_SECURE = False  # Mettre à True en production
+CSRF_COOKIE_SECURE = False  # Mettre à True en production
+
+# Configurez la politique HSTS (HTTP Strict Transport Security)
+SECURE_HSTS_SECONDS = 0  # Désactivé en développement, mettre à 31536000 (1 an) en production
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False  # Désactivé en développement, mettre à True en production
+SECURE_HSTS_PRELOAD = False  # Désactivé en développement, mettre à True en production
 
 
 

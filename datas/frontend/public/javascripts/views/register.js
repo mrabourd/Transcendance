@@ -66,7 +66,7 @@ export default class extends AbstractView {
         if (!this.checkAllFields())
             return false;
 
-        fetch('https://127.0.0.1:8000/api/users/register/', {
+        fetch('https://127.0.0.1:8443/api/users/register/', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
