@@ -171,11 +171,11 @@ export default class User {
                 },
                 body: "bye"
             });
-            if (response.ok) {
+            //if (response.ok) {
                 this.deleteLocalToken();
                 this.isConnected = false;
                 header.printHeader(this);
-            }
+            //}
         } catch (error) {
             console.error('user.logout : There was a problem :', error);
             throw error;

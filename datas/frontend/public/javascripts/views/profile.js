@@ -27,7 +27,7 @@ export default class extends AbstractView {
         document.querySelector("#id span").innerText = this.user.datas.id;
         document.querySelector("#avatar span").innerText = this.user.datas.avatar;
         document.querySelector("#username span").innerText = this.user.datas.username;
-        document.querySelector("#realname span").innerText = this.user.datas.realname;
+        // document.querySelector("#realname span").innerText = this.user.datas.realname;
         document.querySelector("#email span").innerText = this.user.datas.email;
         document.querySelector("#password span").innerText = this.user.datas.password;
         document.querySelector("#biography span").innerText = this.user.datas.biography;
