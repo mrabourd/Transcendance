@@ -1,13 +1,12 @@
 import AbstractView from "./AbstractView.js";
 import pongComputer from "../pongComputer.js";
-import pongPlayer from "../pongPlayer.js";
 
 
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("Play PlayJS");
+        this.setTitle("Play fun");
     }
 
     async getHtml(DOM) {
@@ -28,13 +27,10 @@ export default class extends AbstractView {
 
     addEvents () {
         let canvas = document.getElementById('canvas');
-        let player_score = document.getElementById('player-score')
-        let computer_score = document.getElementById('computer-score')
+        let player_score = document.querySelector('#player-score')
+        let computer_score = document.querySelector('#computer-score')
         
-        if (this.params.id === "vs_computer")
-            this._game = new pongComputer(canvas, player_score, computer_score);
-        else
-            this._game = new pongPlayer(canvas, player_score, computer_score);
+        this._game = new Pong(canvas, player_score, computer_score);
 
         document.querySelector('#start-game').addEventListener('click',  this._game.start);
         document.querySelector('#stop-game').addEventListener('click',  this._game.stop);

@@ -35,7 +35,7 @@ export const router = async (user) => {
         { id:6, path: "/about", view: about },
         { id:7, path: "/contact", view: contact },
         { id:7, path: "/websocket", view: websocket },
-        { id:8, path: "/play", view: play }
+        { id:8, path: "/play/:id", view: play }
     ];
 
     // Test each route for potential match
@@ -66,7 +66,7 @@ export const router = async (user) => {
         navigateTo("/home", user);
         return;
     }
-
+    console.log("path",path)
     user.view = new match.route.view(getParams(match));
     user.view.user = user;
     
