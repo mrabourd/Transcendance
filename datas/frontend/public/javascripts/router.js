@@ -2,7 +2,7 @@ import login from "./views/login.js";
 import home from "./views/home.js";
 import about from "./views/about.js";
 import contact from "./views/contact.js";
-import play from "./views/vs_computer.js";
+import play from "./views/play.js";
 import profile from "./views/profile.js";
 import register from "./views/register.js";
 import websocket from "./views/websocket.js";
@@ -66,7 +66,7 @@ export const router = async (user) => {
         navigateTo("/home", user);
         return;
     }
-
+    console.log("path",path)
     user.view = new match.route.view(getParams(match));
     user.view.user = user;
     

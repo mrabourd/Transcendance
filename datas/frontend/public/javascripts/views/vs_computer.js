@@ -1,5 +1,5 @@
 import AbstractView from "./AbstractView.js";
-import Pong from "../pong.js";
+import pongComputer from "../pongComputer.js";
 
 
 

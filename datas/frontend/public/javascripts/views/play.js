@@ -1,17 +1,17 @@
 import AbstractView from "./AbstractView.js";
-import Pong from "../pong.js";
+import pongComputer from "../pongComputer.js";
+import pongPlayer from "../pongPlayer.js";
 
 
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        console.log(this.id);
-        this.setTitle("Play fun");
+        this.setTitle("Play PlayJS");
     }
 
     async getHtml(DOM) {
-        await fetch('/template/player').then(function (response) {
+        await fetch('/template/play').then(function (response) {
             // The API call was successful!
             return response.text();
         }).then(function (html) {
@@ -28,10 +28,13 @@ export default class extends AbstractView {
 
     addEvents () {
         let canvas = document.getElementById('canvas');
-        let player_score = document.querySelector('#player-score')
-        let computer_score = document.querySelector('#computer-score')
+        let player_score = document.getElementById('player-score')
+        let computer_score = document.getElementById('computer-score')
         
-        this._game = new Pong(canvas, player_score, computer_score);
+        if (this.params.id === "vs_computer")
+            this._game = new pongComputer(canvas, player_score, computer_score);
+        else
+            this._game = new pongPlayer(canvas, player_score, computer_score);
 
         document.querySelector('#start-game').addEventListener('click',  this._game.start);
         document.querySelector('#stop-game').addEventListener('click',  this._game.stop);

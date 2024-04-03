@@ -2,12 +2,17 @@ const PLAYER_HEIGHT = 100;
 const PLAYER_WIDTH = 5;
 //https://lawrencewhiteside.com/courses/game-mechanics-in-javascript/the-game-loop/
 
-export default class Pong {
+export default class AbstractPong {
 
     constructor(canvas, player_score, computer_score) {
         this._canvas = canvas;
-        this._player_score = player_score;
-        this._computer_score = computer_score;
+        //this._player_score = player_score;
+        //this._computer_score = computer_score;
+
+        //let canvas = document.getElementById('canvas');
+        this._player_score= document.getElementById('player-score')
+        this._computer_score  = document.getElementById('computer-score')
+
         this._game = {
             player: {
                 y: this._canvas.height / 2 - PLAYER_HEIGHT / 2,
@@ -155,9 +160,9 @@ export default class Pong {
         this._game.ball.y += this._game.ball.speed.y;
     }
     
-    computerMove() {
-        this._game.computer.y += this._game.ball.speed.y * 0.85;
-    }
+    // computerMove() {
+    //     this._game.computer.y += this._game.ball.speed.y * 0.85;
+    // }
 
     stop = () => {
         cancelAnimationFrame(this.ANIMATION.id );
