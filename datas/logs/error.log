@@ -36,3 +36,4 @@
 2024/04/04 09:02:13 [emerg] 1#1: cannot load certificate "/etc/ssl/key.pem": PEM_read_bio_X509_AUX() failed (SSL: error:0480006C:PEM routines::no start line:Expecting: TRUSTED CERTIFICATE)
 2024/04/04 09:09:18 [emerg] 1#1: directive "ssl_certificate_key" is not terminated by ";" in /etc/nginx/nginx.conf:16
 2024/04/04 09:12:53 [emerg] 1#1: cannot load certificate "/etc/ssl/certs/nginx-selfsigned.crt": BIO_new_file() failed (SSL: error:80000002:system library::No such file or directory:calling fopen(/etc/ssl/certs/nginx-selfsigned.crt, r) error:10000080:BIO routines::no such file)
+2024/04/04 11:37:26 [error] 28#28: *108 connect() failed (111: Connection refused) while connecting to upstream, client: 127.0.0.1, server: localhost, request: "GET /healthcheck HTTP/1.1", upstream: "http://192.168.240.4:8000/healthcheck", host: "localhost:8443"
