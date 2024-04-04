@@ -49,13 +49,10 @@ app.listen(port, function () {
 })
 
 
-
+/*
 const https = require('https');
-
-
 const backendUrl = 'backend'; // Utilisez simplement 'backend' sans le préfixe 'http://'
 const hostnameUrl = `${backendUrl}:8443`;
-
 const options = {
     hostname: hostnameUrl,
     port: 8443,
@@ -78,17 +75,18 @@ req.on('error', (e) => {
 });
 
 req.end();
-
+*/
 /*
 const https = require('https');
 const fs = require('fs');
-
+const backendUrl = 'backend'; // Utilisez simplement 'backend' sans le préfixe 'http://'
+const hostnameUrl = `${backendUrl}:8443`;
 const options = {
-    hostname: 'your-django-backend-host',
+    hostname: hostnameUrl,
     port: 8443,
     path: '/',
     method: 'GET',
-    ca: fs.readFileSync('path/to/your/certificate.pem') // Chemin vers votre certificat SSL auto-signé
+    ca: fs.readFileSync('/etc/ssl/nginx-selfsigned.crt') // Chemin vers votre certificat SSL auto-signé
 };
 
 const req = https.request(options, (res) => {

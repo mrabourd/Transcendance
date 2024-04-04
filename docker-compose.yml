@@ -42,9 +42,9 @@ services:
       - "8443:8443"
     volumes:
       - logs-data:/var/log/nginx/
-      - certs-data:/etc/ssl/
     depends_on:
       - backend
+      - frontend
     networks:
       - server
     healthcheck:
@@ -59,9 +59,9 @@ services:
     build: datas/frontend/
     expose:
       - "3000"
-    depends_on:
-      nginx:
-        condition: service_healthy
+    # depends_on:
+    #   nginx:
+    #     condition: service_healthy
     volumes:
       - frontend-data:/home/node/app/
     networks:
@@ -74,12 +74,6 @@ volumes:
       type: 'none'
       o: 'bind'
       device: "${DATA_FOLDER}/logs"
-  certs-data:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: "${DATA_FOLDER}/certs"
   frontend-data:
     driver: local
     driver_opts:

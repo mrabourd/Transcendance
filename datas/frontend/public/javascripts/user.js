@@ -65,7 +65,7 @@ export default class User {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
-                    'Origin': 'http://127.0.0.1:3000',
+                    'Origin': 'http://127.0.0.1:8080',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({username: userName, password: passWord})
@@ -143,7 +143,7 @@ export default class User {
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
                     'Content-Type': 'application/json',
-                    'Origin': 'http://127.0.0.1:3000',
+                    'Origin': 'http://127.0.0.1:8080',
                     'Authorization': `Bearer ${token}` // Envoyer le token dans l'en-tête Authorization
                 }
             });

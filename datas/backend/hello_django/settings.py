@@ -26,8 +26,8 @@ SECURE_SSL_REDIRECT = False  # Mettre à True en production
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Configurez la redirection HTTPS sécurisée pour tous les cookies de session et persistants
-SESSION_COOKIE_SECURE = False  # Mettre à True en production
-CSRF_COOKIE_SECURE = False  # Mettre à True en production
+SESSION_COOKIE_SECURE = True  # Mettre à True en production
+CSRF_COOKIE_SECURE = True  # Mettre à True en production
 
 # Configurez la politique HSTS (HTTP Strict Transport Security)
 SECURE_HSTS_SECONDS = 0  # Désactivé en développement, mettre à 31536000 (1 an) en production
@@ -35,6 +35,9 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = False  # Désactivé en développement, mettre 
 SECURE_HSTS_PRELOAD = False  # Désactivé en développement, mettre à True en production
 
 
+# Chemins vers le certificat et la clé privée
+SSL_CERTIFICATE = '/etc/ssl/cert.pem'
+SSL_KEY = '/etc/ssl/key.pem'
 
 
 # Quick-start development settings - unsuitable for production

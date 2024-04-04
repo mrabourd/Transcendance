@@ -70,7 +70,7 @@ export default class extends AbstractView {
             method: 'POST',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
-                'Origin': 'http://127.0.0.1:3000',
+                'Origin': 'http://127.0.0.1:8080',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
