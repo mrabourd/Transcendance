@@ -1,6 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
 const router = express.Router();
+app.use(cors());
+router.use(cors());
 
 const path = __dirname + '/public/';
 const port = 3000;
@@ -45,16 +49,58 @@ app.listen(port, function () {
 })
 
 
+/*
+const https = require('https');
+const backendUrl = 'backend'; // Utilisez simplement 'backend' sans le préfixe 'http://'
+const hostnameUrl = `${backendUrl}:8443`;
+const options = {
+    hostname: hostnameUrl,
+    port: 8443,
+    path: '/',
+    method: 'GET',
+    rejectUnauthorized: false // Ignorer la vérification du certificat SSL
+};
 
+const req = https.request(options, (res) => {
+    console.log('statusCode:', res.statusCode);
+    console.log('headers:', res.headers);
 
-// const WebSocket = require('ws');
-// const socket = new WebSocket.Server("ws://localhost:8080");
+    res.on('data', (d) => {
+        process.stdout.write(d);
+    });
+});
 
-// socket.addEventListener("open", (event) => {
-// 	console.log("Message from server ", event.data);
-// 	socket.send("Hello Server!");
-// })
+req.on('error', (e) => {
+    console.error(e);
+});
 
+req.end();
+*/
+/*
+const https = require('https');
+const fs = require('fs');
+const backendUrl = 'backend'; // Utilisez simplement 'backend' sans le préfixe 'http://'
+const hostnameUrl = `${backendUrl}:8443`;
+const options = {
+    hostname: hostnameUrl,
+    port: 8443,
+    path: '/',
+    method: 'GET',
+    ca: fs.readFileSync('/etc/ssl/nginx-selfsigned.crt') // Chemin vers votre certificat SSL auto-signé
+};
 
-// tuto: https://www.pubnub.com/blog/nodejs-websocket-programming-examples/
-// debug: https://github.com/websockets/ws/issues/348#issuecomment-967803525
+const req = https.request(options, (res) => {
+    console.log('statusCode:', res.statusCode);
+    console.log('headers:', res.headers);
+
+    res.on('data', (d) => {
+        process.stdout.write(d);
+    });
+});
+
+req.on('error', (e) => {
+    console.error(e);
+});
+
+req.end();
+*/

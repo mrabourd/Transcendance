@@ -34,8 +34,8 @@ export const router = async (user) => {
         { id:5, path: "/profile/:id", view: profile },
         { id:6, path: "/about", view: about },
         { id:7, path: "/contact", view: contact },
-        { id:7, path: "/websocket", view: websocket },
-        { id:8, path: "/play/:id", view: play }
+        { id:8, path: "/websocket", view: websocket },
+        { id:9, path: "/play/:id", view: play }
     ];
 
     // Test each route for potential match

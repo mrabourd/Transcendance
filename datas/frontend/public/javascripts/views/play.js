@@ -31,14 +31,19 @@ export default class extends AbstractView {
         let player_score = document.getElementById('player-score')
         let computer_score = document.getElementById('computer-score')
         
-        if (this.params.id === "vs_computer")
+        if (this.params.id === "vs_computer"){
             this._game = new pongComputer(canvas, player_score, computer_score);
-        else
+            // document.querySelector('#start-game').addEventListener('click',  this._game.computerMove);
+        }
+        else{
             this._game = new pongPlayer(canvas, player_score, computer_score);
-
+            // document.addEventListener('keydown', this._game.secondPlayerMove);
+        }
+        
         document.querySelector('#start-game').addEventListener('click',  this._game.start);
         document.querySelector('#stop-game').addEventListener('click',  this._game.stop);
         document.addEventListener('keydown', this._game.playerMoveKey);
+        // if (this.params.id === "vs_computer")
     }
 
 }

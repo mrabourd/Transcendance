@@ -1,32 +1,6 @@
 version: "3"
 
 services:
-  frontend:
-    container_name: frontend
-    env_file: .env
-    build: datas/frontend/
-    ports:
-      - 3000:3000
-    volumes:
-      - frontend-data:/home/node/app/
-  
-  backend:
-    container_name: backend
-    build: ./datas/backend/
-    restart: on-failure
-    command: python manage.py runserver 0.0.0.0:8000
-    ports:
-      - "8000:8000"
-    volumes:
-      - backend-data:/usr/src/app/
-    env_file:
-      - .env
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - server
-  
   db:
     container_name: db
     image: postgres:15
@@ -43,21 +17,75 @@ services:
         timeout: 5s
         retries: 5
 
+  backend:
+    container_name: backend
+    build: ./datas/backend/
+    restart: on-failure
+    command: python manage.py runserver 0.0.0.0:8000
+    expose:
+      - "8000"
+    volumes:
+      - backend-data:/usr/src/app/
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - server
+        
+  nginx:
+    container_name: nginx
+    build: ./datas/nginx/
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - logs-data:/var/log/nginx/
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - server
+    healthcheck:
+        test: ["CMD-SHELL", "curl --fail --insecure https://localhost:8443/healthcheck || exit 1"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+  
+  frontend:
+    container_name: frontend
+    env_file: .env
+    build: datas/frontend/
+    expose:
+      - "3000"
+    # depends_on:
+    #   nginx:
+    #     condition: service_healthy
+    volumes:
+      - frontend-data:/home/node/app/
+    networks:
+      - server
+
 volumes:
+  logs-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: "${DATA_FOLDER}/logs"
   frontend-data:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
       device: "${DATA_FOLDER}/frontend"
-
   backend-data:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
       device: "${DATA_FOLDER}/backend"
-
   db-data:
 
 networks:
