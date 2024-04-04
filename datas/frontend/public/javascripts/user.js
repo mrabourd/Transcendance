@@ -144,7 +144,7 @@ export default class User {
                     'Accept': 'application/json, text/plain, */*',
                     'Content-Type': 'application/json',
                     'Origin': 'http://127.0.0.1:8080',
-                    'Authorization': `Bearer ${token}` // Envoyer le token dans l'en-tête Authorization
+                    'Authorization': `Token ${token}` // Envoyer le token dans l'en-tête Authorization
                 }
             });
             if (response.ok) {
@@ -157,26 +157,41 @@ export default class User {
             throw error;
         }
     }
+
+    getCsrfToken() {
+        const csrfCookie = document.cookie.split('; ')
+            .find(cookie => cookie.startsWith('csrftoken='));
+        return csrfCookie ? csrfCookie.split('=')[1] : null;
+    }
+
     logout = async() =>{
 
         let token = this.getLocalToken()
-        const csrftoken = this.getCookie('csrftoken');
-        console.log(csrftoken);
+        const csrftoken = this.getCsrfToken();
+        console.log("csrftoken : [", csrftoken, "]");
+        //console.log("token : ", token);
+        console.log("token.access : [", token.access, "]");
         try {
             const response = await fetch('https://127.0.0.1:8443/api/users/logout/', {
                 method: 'POST',
                 headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'text/plain',
+                    'Authorization': `Bearer ${token.access}`,
                     'X-CSRFToken': csrftoken,
-                    'Authorization': `Token ${token.access}` // Envoyer le token dans l'en-tête Authorization
+                    'Origin': 'http://127.0.0.1:8080/',
+                    'Content-Type': 'application/json'
                 },
-                body: "bye"
+                body: JSON.stringify({ csrfmiddlewaretoken: csrftoken }) // Inclure le jeton CSRF dans le corps de la requête
             });
             if (response.ok) {
+                console.error('user.logout OK :', response);
+
                 this.deleteLocalToken();
                 this.isConnected = false;
                 header.printHeader(this);
+            }
+            else
+            {
+                console.error('user.logout KO :', response);
             }
         } catch (error) {
             console.error('user.logout : There was a problem :', error);
