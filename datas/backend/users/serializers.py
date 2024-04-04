@@ -7,26 +7,40 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model() # Get reference to the model
 
+# Custom TokenObtainPairSerializer to include user info
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
-	@classmethod
-	def get_token(cls, user):
-		token = super(CustomTokenObtainPairSerializer, cls).get_token(user)
-		print(token)
-		print("User: ", user)
 
-		# Add custom claims
-		token['username'] = user.username
-		token['email'] = user.email
-		return token
-    
+	def validate(self, attrs):
+		data = super().validate(attrs)
+		refresh = self.get_token(self.user)
+
+		data["refresh"] = str(refresh)
+		data["access"] = str(refresh.access_token)
+		data["test"] = "value"
+		# Add your extra responses here
+		data['user'] = ({"username" : self.user.username,
+				   		"email" : self.user.email, 
+						"first_name" : self.user.first_name, 
+						"last_name" :self.user.last_name,
+						"id" :self.user.id,
+						"avatar" : self.user.avatar if self.user.avatar else None,
+						"biography" : self.user.biography,
+						"follows" : self.user.follows.all().values_list('id', flat=True),
+						"followed_by" : self.user.followed_by.all().values_list('id', flat=True)}
+						)
+
+		return data
+
+
 class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('email', 'username', 'password', 'first_name', 'last_name')
+		fields = ('email', 'username', 'password', 'first_name', 'last_name', 'biography')
 		extra_kwargs = {
+			'avatar': {'required': False}, # 'avatar' is not required
 			'password': {'write_only': True},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]
@@ -37,36 +51,8 @@ class UserSerializer(serializers.ModelSerializer):
 		return User.objects.create_user(**validated_data)
 	
 
-""" class ProfileSerializer(serializers.ModelSerializer):
-
-	class Meta:
-		model = Profile
-		fields = ('user', 'follows')
-		extra_kwargs = {
-			'follows': {'required': False}
-		} """
-""" 	def create(self, validated_data):
-		return Profile.objects.create(**validated_data)
-	
-	def update(self, instance, validated_data):
-		for attr, value in validated_data.items():
-			setattr(instance, attr, value)
-		instance.save()
-		return instance """
-	
-
-
 
 """ 
-def update(self, instance, validated_data):
-# Note: it's important to return the updated instance here
-# as it will be used by `serializer.data` in our view
-	for attr, value in validated_data.items():
-		setattr(instance, attr, value)
-	instance.save()
-	return instance 
-    
-
 def validate_password(self, value):
 		if len(value) < 8:
 			raise serializers.ValidationError( 
@@ -87,23 +73,4 @@ def validate_email(self, value):
         return value
 
     
-def validate(self, attrs):
-        # Here we don't need to check whether a user with the given
-        # email or username exists, as this would have already
-        # been done by the one of our `validate_...` methods
-        email, username = attrs.get('email', None), attrs.get('username', None)
-        if email is None and username is None:
-            # Here is how we raise an error with a dict value
-            raise serializers.ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: 
-                    'Either an email or a username must be provided.'
-            })
-        # If we reached this line, then at least one field was provided.
-        # Since username is a non-nullable model field, we use the email
-        # as a value for it, and vice versa.
-        if username is None:
-            attrs['username'] = email
-        if email is None:
-            attrs['email'] = username
-        # Note: it's important to return attrs at the end of this method
-        return attrs """
+"""

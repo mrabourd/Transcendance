@@ -2,7 +2,7 @@ import login from "./views/login.js";
 import home from "./views/home.js";
 import about from "./views/about.js";
 import contact from "./views/contact.js";
-import play from "./views/vs_computer.js";
+import play from "./views/play.js";
 import profile from "./views/profile.js";
 import register from "./views/register.js";
 import websocket from "./views/websocket.js";
@@ -34,8 +34,8 @@ export const router = async (user) => {
         { id:5, path: "/profile/:id", view: profile },
         { id:6, path: "/about", view: about },
         { id:7, path: "/contact", view: contact },
-        { id:7, path: "/websocket", view: websocket },
-        { id:8, path: "/play/:id", view: play }
+        { id:8, path: "/websocket", view: websocket },
+        { id:9, path: "/play/:id", view: play }
     ];
 
     // Test each route for potential match
@@ -66,7 +66,7 @@ export const router = async (user) => {
         navigateTo("/home", user);
         return;
     }
-
+    console.log("path",path)
     user.view = new match.route.view(getParams(match));
     user.view.user = user;
     

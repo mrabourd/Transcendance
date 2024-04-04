@@ -5,8 +5,23 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 # We import our serializer here
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer
+from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
+
+from django.contrib.auth.decorators import login_required
+
+User = get_user_model()
+
+class UsersAPIView(APIView):
+	permission_classes = [IsAuthenticated]
+	serializer = UserSerializer
+	def get(self, request):
+		users = User.objects.all()
+		serializer = self.serializer(users, many=True)
+		return Response(serializer.data)
+
 
 
 # We extend the TokenObtainPairView to use our custom serializer
@@ -33,22 +48,3 @@ class UserRegistrationAPIView(APIView):
         # Let's update the response code to 201 to follow the standards
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-""" class UserProfileAPIView(APIView):
-
-    def get(self, request, format=None):
-        serializer = UserSerializer(instance=request.user)
-        return Response(serializer.data)
-
-    def put(self, request, format=None):
-       # Note how we pass the `instance` this time
-       serializer = UserSerializer(instance=request.user, data=request.data)
-       serializer.is_valid(raise_exceptions=True) # Validation
-
-       # Note: we use the same `save()` method we used in the `post()` method
-       # of the user registration view to create a new record. The `save()` 
-       # method is able to determine that this time we want to update an
-       # existing record, because we passed the `instance` during the
-       # serializer instantiation above
-       serializer.save()
-
-       return Response(serializer.data) """
