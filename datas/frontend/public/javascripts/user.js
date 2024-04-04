@@ -1,5 +1,3 @@
-import * as header from "./header.js";
-
 export default class User {
     constructor() {
         console.log("User constructor called")
@@ -84,7 +82,7 @@ export default class User {
                 this.datas.email = jsonData.user.email;
                 this.datas.id = jsonData.user.id;
                 console.log("datas:", this._datas);
-                header.printHeader(this);
+                this.view.printHeader();
                 return true;
             } else if (response.status === 401) {
                 const jsonData = await response.json();

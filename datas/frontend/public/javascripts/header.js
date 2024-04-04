@@ -1,4 +1,4 @@
-export function printHeader(user)
+export function print(user)
 {
 	let routes = null;
 	if (user.isConnected)
