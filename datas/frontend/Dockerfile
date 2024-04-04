@@ -8,11 +8,14 @@ COPY package*.json ./
 
 USER node
 
+
 RUN npm install
 RUN npm install jsdom --save
 RUN npm install ws
 RUN npm install http
+RUN npm install https
 RUN npm install url
+RUN npm install cors
 
 COPY --chown=node:node . .
 
