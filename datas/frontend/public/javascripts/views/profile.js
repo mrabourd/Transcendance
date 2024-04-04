@@ -5,8 +5,8 @@ export default class extends AbstractView {
         super(params);
         this.setTitle("Profile");
     }
-
-
+    
+    
     async getHtml(DOM) {
         await fetch('/template/profile').then(function (response) {
             // The API call was successful!
@@ -23,17 +23,21 @@ export default class extends AbstractView {
         });
     }
     async fillHtml(DOM) {
+        console.log("salut")
         console.log("fillHtml")
-        document.querySelector("#id span").innerText = this.user.datas.id;
-        document.querySelector("#avatar span").innerText = this.user.datas.avatar;
-        document.querySelector("#first_name span").innerText = this.user.datas.first_name;
-        document.querySelector("#last_name span").innerText = this.user.datas.last_name;
-        // document.querySelector("#realname span").innerText = this.user.datas.realname;
-        document.querySelector("#email span").innerText = this.user.datas.email;
-        document.querySelector("#password span").innerText = this.user.datas.password;
-        document.querySelector("#biography span").innerText = this.user.datas.biography;
-        document.querySelector("#refresh span").innerText = this.user.datas.refresh;
-        document.querySelector("#access span").innerText = this.user.datas.access;
+        // document.querySelector("#id span").innerText = this.user.datas.id;
+        document.querySelector("#username").innerText = this.user.datas.username;
+        // document.querySelector("#biography").placeholder = this.user.datas.biography;
+        // document.querySelector("#avatar span").innerText = this.user.datas.avatar;
+        // console.log(document.querySelectors("#first_name"))
+        // console.log("data " + this.user.datas.first_name)
+        document.querySelector("#first_name").value = this.user.datas.first_name;
+        document.querySelector("#last_name").value = this.user.datas.last_name;
+        document.querySelector("#email").value = this.user.datas.email;
+        // document.querySelector("#password span").innerText = this.user.datas.password;
+        // document.querySelector("#refresh span").innerText = this.user.datas.refresh;
+        // document.querySelector("#access span").innerText = this.user.datas.access;
+        // document.querySelector("#isConnected span").innerText = this.user.datas.isConnected;
         
     }
 

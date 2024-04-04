@@ -6,7 +6,6 @@ export default class User {
         this._isConnected = false;
         this._view = null;
         this._datas = {username:"john"};
-        console.log("datas:", this._datas);
         this._token = null;
     }
     set isConnected(n)
@@ -79,6 +78,7 @@ export default class User {
                 this.saveLocalToken(jsonData)
                 this.isConnected = true;
                 // todo >> recuperer les datas.
+                this.datas.username = jsonData.user.username;
                 this.datas.first_name = jsonData.user.first_name;
                 this.datas.last_name = jsonData.user.last_name;
                 this.datas.email = jsonData.user.email;
@@ -96,25 +96,34 @@ export default class User {
         }
     }
     checkLocalStorage = async() => {
-        console.log("checkLocalStorage")
+        console.log("checkLocalStorage");
         let token = this.getLocalToken();
+        console.log("token blablablablba: ", token);
         if (token !== null)
         {
             let response = await this.verifyToken(token);
             if (response == true)
             {
-                this.datas = token
+                this.datas = token;
                 this._isConnected = true;
+                this.datas.isConnected = "yes";
+                this.datas.username = token.user.username;
+                this.datas.first_name = token.user.first_name;
+                this.datas.last_name = token.user.last_name;
+                this.datas.email = token.user.email;
+                this.datas.id = token.user.id;
             }
             else
             {
                 this.token = null;
                 this._isConnected = false;
+                this.datas.isConnected = "no";
             }
         }
         else
         {
             this._isConnected = false;
+            this.datas.isConnected = "no";
         }
         return this._isConnected;
     }
