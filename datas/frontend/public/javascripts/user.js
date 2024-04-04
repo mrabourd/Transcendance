@@ -6,6 +6,7 @@ export default class User {
         this._isConnected = false;
         this._view = null;
         this._datas = {username:"john"};
+        console.log("datas:", this._datas);
         this._token = null;
     }
     set isConnected(n)
@@ -74,9 +75,15 @@ export default class User {
             if (response.ok)
             {
                 const jsonData = await response.json();
+                console.log("jsonData:", jsonData);
                 this.saveLocalToken(jsonData)
                 this.isConnected = true;
                 // todo >> recuperer les datas.
+                this.datas.first_name = jsonData.user.first_name;
+                this.datas.last_name = jsonData.user.last_name;
+                this.datas.email = jsonData.user.email;
+                this.datas.id = jsonData.user.id;
+                console.log("datas:", this._datas);
                 header.printHeader(this);
                 return true;
             } else if (response.status === 401) {
@@ -96,7 +103,7 @@ export default class User {
             let response = await this.verifyToken(token);
             if (response == true)
             {
-                this.token = token
+                this.datas = token
                 this._isConnected = true;
             }
             else
@@ -147,11 +154,11 @@ export default class User {
                     'Authorization': `Bearer ${token}` // Envoyer le token dans l'en-tête Authorization
                 }
             });
-            if (response.ok) {
+           // if (response.ok) {
                 return true;
-            } else {
-                return true; // pass to false
-            }
+          //  } else {
+           //     return true; // pass to false
+//}
         } catch (error) {
             console.error('user.verifyToken : There was a problem :', error);
             throw error;
