@@ -1,3 +1,5 @@
 .env
 
 datas/logs/access.log
+
+datas/frontend/node_modules/*
