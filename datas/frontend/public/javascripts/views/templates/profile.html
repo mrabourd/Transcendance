@@ -10,23 +10,6 @@
     </head>
 <body class="m-5">
 <main>
-    <!-- <div id="app">
-        <div class="jumbotron">
-            <h1 class="display-4" id="username"><span>username</span></h1>
-            <p class="lead" id="biography"><span>biography</span></p>
-            <hr class="my-4">
-            <div id="id">id: <span>id</span></div>
-            <div id="avatar">avatar: <span>avatar</span></div>
-            <div id="first_name">first_name: <span>first_name</span></div>
-            <div id="last_name">last_name: <span>last_name</span></div>
-            <div id="email">email: <span>email</span></div>
-            <div id="password">password: <span>password</span></div>
-            <div id="refresh" class="col-8">refresh: <span>refresh</span></div>
-            <div id="access" class="col-8">access: <span>access</span></div>
-            <div id="isConnected">connected: <span>isConnected</span></div>
-          </div>
-    </div> -->
-
 
 
     <div id="app" class="col">
@@ -37,10 +20,10 @@
                 <div class="e-profile">
                   <div class="row">
                     <div class="col-12 col-sm-auto mb-3">
-                      <div class="mx-auto" style="width: 140px;">
-                        <div class="d-flex justify-content-center align-items-center rounded" style="height: 140px; background-color: rgb(233, 236, 239);">
-                          <span style="color: rgb(166, 168, 170); font: bold 8pt Arial;">140x140</span>
-                        </div>
+                      <div class="mx-auto picture" style="width: 140px;">
+                        <img id="photo" src="../../../avatars/default.png" class="rounded float-start picture-src" style="height: 140px; width: 140px; background-color: rgb(233, 236, 239);">
+                        <!-- <span style="color: rgb(166, 168, 170); font: bold 8pt Arial;">140x140</span> -->
+                      </img>
                       </div>
                     </div>
                     <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
@@ -49,14 +32,15 @@
                         <!-- <p class="mb-0">@johnny.s</p>
                         <div class="text-muted"><small>Last seen 2 hours ago</small></div> -->
                         <div class="mt-2">
-                          <button class="btn btn-primary" type="button">
+                          <input type="file" id="chooseFile" class="">
                             <i class="fa fa-fw fa-camera"></i>
-                            <span>Change Photo</span>
-                          </button>
+                            <!-- <span>Change Photo</span> -->
+                          <!-- </button> -->
                         </div>
+                        <p id="status"></p>
                       </div>
                       <!-- <div class="text-center text-sm-right">
-                        <span class="badge badge-secondary">administrator</span>
+                        <span class="badge badge-secondary">administrators</span>
                         <div class="text-muted"><small>Joined 09 Dec 2017</small></div>
                       </div> -->
                     </div>
@@ -153,7 +137,7 @@
                         </div>
                         <div class="row">
                           <div class="col d-flex justify-content-end">
-                            <button class="btn btn-primary" type="submit">Save Changes</button>
+                            <button class="btn btn-primary" id="saveChanges">Save Changes</button>
                           </div>
                         </div>
                       </form>
