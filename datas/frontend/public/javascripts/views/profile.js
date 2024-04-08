@@ -28,7 +28,7 @@ export default class extends AbstractView {
 		// document.querySelector("#id span").innerText = this.user.datas.id;
 		document.querySelector("#username").innerText = this.user.datas.username;
 		// document.querySelector("#biography").placeholder = this.user.datas.biography;
-		// document.querySelector("#avatar span").innerText = this.user.datas.avatar;
+		document.querySelector("#avatar").src = this.user.datas.user.avatar;
 		// console.log(document.querySelectors("#first_name"))
 		// console.log("data " + this.user.datas.first_name)
 		document.querySelector("#first_name").value = this.user.datas.first_name;
@@ -50,6 +50,7 @@ export default class extends AbstractView {
 			console.log('this:', this);
 			readURL(this);
 		});
+		let avatar;
 		function readURL(input) {
 			console.log("inside readURL");
 			if (input.files && input.files[0]) {
@@ -57,9 +58,11 @@ export default class extends AbstractView {
 				let reader = new FileReader();
 
 				reader.onload = function (e) {
-					document.getElementById("photo").setAttribute('src', e.target.result);
+					document.getElementById("avatar").setAttribute('src', e.target.result);
 					console.log("photo uploaded");
 					document.querySelector("#status").innerText = "File uploaded!";
+					avatar = document.getElementById("avatar").src;
+					console.log("img:", avatar);
 				}
 				reader.readAsDataURL(input.files[0]);
 			}
@@ -67,9 +70,13 @@ export default class extends AbstractView {
 		}
 
 		document.getElementById("saveChanges").addEventListener('click', function() {
-			let avatar = document.getElementById("photo");
-			console.log("img:", avatar);
-			avatar.src = localStorage.getItem("photo");
+			console.log("enter save changes");
+			let token = window.localStorage.getItem("LocalToken");
+			let data = JSON.parse(token);
+			console.log(data);
+			data.user.avatar = avatar;
+			window.localStorage.setItem("LocalToken", JSON.stringify(data));
+			console.log("new data:", data);
 		});
 
 	}

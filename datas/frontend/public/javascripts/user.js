@@ -191,6 +191,8 @@ export default class User {
             });
            // if (response.ok) {
                 this.deleteLocalToken();
+                localStorage.removeItem("LocalToken");
+                console.log("item removed");
                 this.isConnected = false;
                 header.printHeader(this);
            // }
