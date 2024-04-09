@@ -47,11 +47,6 @@ services:
       - frontend
     networks:
       - server
-    healthcheck:
-        test: ["CMD-SHELL", "curl --fail --insecure https://localhost:8443/healthcheck || exit 1"]
-        interval: 10s
-        timeout: 5s
-        retries: 5
   
   frontend:
     container_name: frontend
@@ -59,9 +54,6 @@ services:
     build: datas/frontend/
     expose:
       - "3000"
-    # depends_on:
-    #   nginx:
-    #     condition: service_healthy
     volumes:
       - frontend-data:/home/node/app/
     networks:

@@ -3,12 +3,13 @@ export function print(user)
 	let routes = null;
 	if (user.isConnected)
 	{
-        console.log("print aside")
-        let token = user.getLocalToken()
-        const csrftoken = user.getCsrfToken();
-        console.log("csrftoken : [", csrftoken, "]");
-        console.log("token.access : [", token.access, "]");
+        console.log("print aside connected")
+        //let token = user.getLocalToken()
+        //const csrftoken = user.getCsrfToken();
+        //console.log("csrftoken : [", csrftoken, "]");
+        //console.log("token.access : [", token.access, "]");
 
+        /*
         try {
             const response = fetch('https://127.0.0.1:8443/api/users/all/', {
                 method: 'POST',
@@ -28,8 +29,9 @@ export function print(user)
             console.error('user.logout : There was a problem :', error);
             throw error;
         }
+        */
 	}else{
-        console.log("print aside")
+        console.log("print aside not connected")
 	}
 }
 
