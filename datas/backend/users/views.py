@@ -22,6 +22,29 @@ class UsersAPIView(APIView):
 		serializer = self.serializer(users, many=True)
 		return Response(serializer.data)
 
+class UserDetail(APIView):
+
+	def get_user(self, id):
+		try:
+			return User.objects.get(id=id)
+		except User.DoesNotExist:
+			raise Http404
+
+	def get(self, request, id, format=None):
+		user = self.get_user(id)
+		serializer = UserSerializer(user)
+		return Response(serializer.data)
+
+	# permission_classes = [IsAuthenticated]
+	serializer = UserSerializer
+	def put(self, request, id, format=None):
+		user = self.get_user(id)
+		serializer = UserSerializer(user, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 # We extend the TokenObtainPairView to use our custom serializer
@@ -48,3 +71,11 @@ class UserRegistrationAPIView(APIView):
         # Let's update the response code to 201 to follow the standards
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+# class ProfilePatchView(APIView):
+#     permission_classes = [IsAuthenticated]
+#     serializer = UserSerializer
+#     def patch(self, request):
+#         users = User.objects.all()
+# 		serializer = self.serializer(users, many=True)
+# 		return Response(serializer.data)
