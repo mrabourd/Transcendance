@@ -79,6 +79,7 @@ INSTALLED_APPS = [
 	'singlepage', 
 	'users',
 	'rest_framework_simplejwt',
+    'oauth2_provider',
 ]
 
 MIDDLEWARE = [
@@ -186,6 +187,7 @@ REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
 # ...
 		'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
 	]
 
 }
