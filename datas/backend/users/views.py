@@ -14,6 +14,15 @@ from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
+from django.http import JsonResponse
+from django.views.generic import View
+from django.middleware.csrf import get_token
+class GetCSRFTokenView(View):
+    def get(self, request, *args, **kwargs):
+        csrf_token = get_token(request)
+        return JsonResponse({'csrf_token': csrf_token})
+
+
 class UsersAPIView(APIView):
 	permission_classes = [IsAuthenticated]
 	serializer = UserSerializer

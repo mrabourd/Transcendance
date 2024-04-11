@@ -38,11 +38,7 @@ export default class User {
         let RQ_Body = {username: userName, password: passWord}
         let response = await this.request.post('/api/users/login/', RQ_Body)
         if (response.ok)
-        {
-            //const csrfToken = cookie.parse(response.headers['set-cookie'])['csrftoken'];
-            
-            console.log("csrfToken:", csrfToken);
-
+        {          
             const jsonData = await response.json();
 
             console.log("jsonData.access:", jsonData.access);

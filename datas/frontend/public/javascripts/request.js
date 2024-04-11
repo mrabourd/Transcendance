@@ -18,10 +18,14 @@ export default class Request {
 
     async post(RQ_url, RQ_body) {
         
-        let CSRF = this.getCsrfToken();
+        let CSRF = await this.getCsrfToken();
         console.log("CSRF : ", CSRF)
-        RQ_body.csrfmiddlewaretoken = CSRF;
-        RQ_body.csrf_token = CSRF;
+        if (CSRF)
+        {
+            RQ_body.csrfmiddlewaretoken = CSRF;
+            RQ_body.csrf_token = CSRF;
+        }
+
         try {
             const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
                 method: 'POST',
@@ -43,7 +47,7 @@ export default class Request {
 
 
     async get(RQ_url) {
-        console.log("Request GET() ", RQ_url);
+
         try {
             const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
                 method: 'GET',
@@ -51,7 +55,7 @@ export default class Request {
                     'Accept': 'application/json, text/plain, */*',
                     'Origin': 'https://127.0.0.1:8483',
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.token.access}`,
+                    'Authorization': `Bearer ${this.token ? this.token.access : null}`,
                 }
             });
             if (response.status == 401)
@@ -129,10 +133,33 @@ export default class Request {
         return cookieValue;
     }
 
-    getCsrfToken() {
+    setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    async getCsrfToken() {
         const csrfCookie = document.cookie.split('; ')
             .find(cookie => cookie.startsWith('csrftoken='));
-        return csrfCookie ? csrfCookie.split('=')[1] : null;
+        if (csrfCookie)
+        {
+            return csrfCookie.split('=')[1]
+        }
+        else 
+        {
+            let response = await this.get("/api/users/get_csrf_token/")
+            const jsonData = await response.json();
+            console.log('get_csrf_token', jsonData.csrf_token)
+            this.setCookie('csrftoken', jsonData.csrf_token, 1)
+            return jsonData.csrf_token;
+    
+        }
+        return null;
     }
     
 
