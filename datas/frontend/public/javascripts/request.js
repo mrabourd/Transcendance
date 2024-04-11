@@ -27,8 +27,9 @@ export default class Request {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
-                    'Origin': 'http://127.0.0.1:8080/',
-                    'Content-Type': 'application/json'
+                    'Origin': 'https://127.0.0.1:8483/',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': CSRF
                 },
                 body: JSON.stringify(RQ_body)
             });
@@ -48,7 +49,7 @@ export default class Request {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json, text/plain, */*',
-                    'Origin': 'http://127.0.0.1:8080',
+                    'Origin': 'https://127.0.0.1:8483',
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.token.access}`,
                 }
