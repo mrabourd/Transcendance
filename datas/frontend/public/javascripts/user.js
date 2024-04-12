@@ -60,11 +60,12 @@ export default class User {
     checkLocalStorage = async() => {
         console.log("checkLocalStorage");
         this.datas = this.getLocalDatas();
-                if (this.datas !== null)
+        if (this.datas !== null)
         {
             let TockenCheck = await this.request.checkLocalToken();
             if (TockenCheck == true)
             {
+
                 this._isConnected = true;
             }
             else
@@ -83,9 +84,8 @@ export default class User {
 
     getLocalDatas = () =>
     {
-        console.log("getLocalDatas");
         let datas = window.localStorage.getItem("LocalDatas");
-        // TODO recuperer un cookie pour plus de securite
+        this.datas = datas
         return JSON.parse(datas)
     }
     rmLocalDatas = () =>
@@ -96,7 +96,7 @@ export default class User {
     
     setLocalDatas = (jsonData) =>
     {
-        console.log("setLocalDatas");
+        this.datas = jsonData;
         window.localStorage.setItem("LocalDatas", JSON.stringify(jsonData));
         //this.token = jsonData;
         // TODO enregistrer un cookie pour plus de securite

@@ -44,6 +44,34 @@ export default class Request {
         }
     }
 
+    async put(RQ_url, RQ_body) {
+        
+        let CSRF = await this.getCsrfToken();
+        console.log("CSRF : ", CSRF)
+        if (CSRF)
+        {
+            RQ_body.csrfmiddlewaretoken = CSRF;
+            RQ_body.csrf_token = CSRF;
+        }
+
+        try {
+            const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Origin': 'https://127.0.0.1:8483/',
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': CSRF
+                },
+                body: JSON.stringify(RQ_body)
+            });
+            return response;
+        } catch (error) {
+            console.error('REQUEST POST / ERROR (49) :', error);
+            throw error;
+        }
+    }
+
 
 
     async get(RQ_url) {
