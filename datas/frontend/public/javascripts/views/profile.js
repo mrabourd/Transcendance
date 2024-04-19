@@ -36,50 +36,14 @@ export default class extends AbstractView {
 	}
 
 	
-	addEvents () {
+	async addEvents () {
 		console.log("fillHtml");
 
-		document.getElementById("fileInput").addEventListener('change', function() {
+		document.getElementById("fileInput").addEventListener('change', async () =>  {
 			document.querySelector("#status").innerText = "reading URL";
-			readURL(this);
+			this.readURL(this);
 		});
 		
-		function readURL(input) {
-			console.log("inside readURL");
-			if (input.files && input.files[0]) {
-				console.log("inside if");
-				let reader = new FileReader();
-
-				reader.onload = function (e) {
-					document.getElementById("avatar").setAttribute('src', e.target.result);
-
-					console.log("uploadFile")
-					//const fileInput = document.getElementById('chooseFile');
-					const file = input.files[0];
-					const formData = new FormData();
-					formData.append('image', file);
-				
-					fetch('/upload', {
-						method: 'POST',
-						enctype: 'multipart/form-data',
-						body: formData
-					})
-					.then(response => {
-						if (response.ok) {
-							document.getElementById('status').innerText = 'Image uploadée avec succès !';
-						} else {
-							document.getElementById('status').innerText = 'Erreur lors de l\'upload de l\'image.';
-						}
-					})
-					.catch(error => {
-						console.error('Erreur lors de l\'upload de l\'image :', error);
-					});
-
-
-				}
-				reader.readAsDataURL(input.files[0]);
-			}
-		}
 
 		document.getElementById("saveChanges").addEventListener('click', async () =>  {
 			let RQ_Body = {
@@ -91,10 +55,49 @@ export default class extends AbstractView {
 				biography: document.querySelector("#biography").value
 			}
 			let response = await this.user.request.put(`/api/users/profiles/${this.user.datas.id}/`, RQ_Body)
-			
 		})
 
 
+	}
+
+	async readURL(input) {
+		console.log("inside readURL");
+		if (input.files && input.files[0]) {
+			console.log("inside if");
+			let reader = new FileReader();
+
+			reader.onload = async function (e) {
+
+				console.log("uploadFile")
+				//const fileInput = document.getElementById('chooseFile');
+				const file = input.files[0];
+				const formData = new FormData();
+				formData.append('avatar', file);
+			
+				fetch('/upload', {
+					method: 'POST',
+					enctype: 'multipart/form-data',
+					body: formData
+				})
+				.then(response => {
+					console.log(response);
+					if (response.ok) {
+						const jsonData = response.json().then()
+						document.getElementById("avatar").setAttribute('src', './avatars/' + response.message);
+
+						document.getElementById('status').innerText = 'Image uploadée avec succès !';
+					} else {
+						document.getElementById('status').innerText = 'Erreur lors de l\'upload de l\'image.';
+					}
+				})
+				.catch(error => {
+					console.error('Erreur lors de l\'upload de l\'image :', error);
+				});
+
+
+			}
+			reader.readAsDataURL(input.files[0]);
+		}
 	}
 	
 }
