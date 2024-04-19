@@ -42,8 +42,25 @@ export default class extends AbstractView {
         
         document.querySelector('#start-game').addEventListener('click',  this._game.start);
         document.querySelector('#stop-game').addEventListener('click',  this._game.stop);
-        document.addEventListener('keydown', this._game.playerMoveKey);
-        // if (this.params.id === "vs_computer")
+        
+		document.addEventListener('keydown', this._game.playerMoveKey);
+
+
+        // document.addEventListener('keydown', () => {
+		// 	if (controller[KeyboardEvent.code]) {
+		// 		controller[KeyboardEvent.code].pressed = true
+		// 	}
+		// });
+        
+		// document.addEventListener('keyup', () => {
+		// 	if (controller[KeyboardEvent.code]) {
+		// 		controller[KeyboardEvent.code].pressed = true
+		// 	}
+		// });
+		
+		// if (this.params.id === "vs_computer")
+
+		// https://stackoverflow.com/questions/57740422/i-cant-move-two-paddles-at-the-same-time-in-pong-game-i-am-making
     }
 
 }
