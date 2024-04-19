@@ -3,3 +3,5 @@
 datas/logs/access.log
 
 datas/frontend/node_modules/*
+
+datas/frontend/public/avatars/*
