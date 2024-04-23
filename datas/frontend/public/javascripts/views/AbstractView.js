@@ -1,3 +1,6 @@
+import * as header from "../header.js";
+import * as aside from "../aside.js";
+
 export default class {
     constructor(params) {
         this.params = params;
@@ -24,6 +27,15 @@ export default class {
 
     addEvents () {
 
+    }
+
+    printHeader()
+    {
+        header.print(this.user)
+    }
+    printAside()
+    {
+        aside.print(this.user)
     }
 }
 

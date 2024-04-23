@@ -58,6 +58,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_ALLOWED_ORIGINS").split(" ")
 #CSRF_COOKIE_SECURE = True
 
@@ -78,6 +79,7 @@ INSTALLED_APPS = [
 	'singlepage', 
 	'users',
 	'rest_framework_simplejwt',
+    'oauth2_provider',
 ]
 
 MIDDLEWARE = [
@@ -185,6 +187,7 @@ REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
 # ...
 		'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
 	]
 
 }

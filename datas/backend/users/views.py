@@ -14,6 +14,15 @@ from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
+from django.http import JsonResponse
+from django.views.generic import View
+from django.middleware.csrf import get_token
+class GetCSRFTokenView(View):
+    def get(self, request, *args, **kwargs):
+        csrf_token = get_token(request)
+        return JsonResponse({'csrf_token': csrf_token})
+
+
 class UsersAPIView(APIView):
 	permission_classes = [IsAuthenticated]
 	serializer = UserSerializer
@@ -27,6 +36,30 @@ class CustomTokenRefreshView(TokenRefreshView):
 	serializer_class = CustomTokenObtainPairSerializer
 	def get (self, request):
 		return Response('ok')
+class UserDetail(APIView):
+
+	def get_user(self, id):
+		try:
+			return User.objects.get(id=id)
+		except User.DoesNotExist:
+			raise Http404
+
+	def get(self, request, id, format=None):
+		user = self.get_user(id)
+		serializer = UserSerializer(user)
+		return Response(serializer.data)
+
+	# permission_classes = [IsAuthenticated]
+	serializer = UserSerializer
+	def put(self, request, id, format=None):
+		user = self.get_user(id)
+		serializer = UserSerializer(user, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 # We extend the TokenObtainPairView to use our custom serializer
 class CustomObtainTokenPairView(TokenObtainPairView):
@@ -52,3 +85,11 @@ class UserRegistrationAPIView(APIView):
         # Let's update the response code to 201 to follow the standards
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+# class ProfilePatchView(APIView):
+#     permission_classes = [IsAuthenticated]
+#     serializer = UserSerializer
+#     def patch(self, request):
+#         users = User.objects.all()
+# 		serializer = self.serializer(users, many=True)
+# 		return Response(serializer.data)
