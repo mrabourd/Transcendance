@@ -26,8 +26,8 @@ SECURE_SSL_REDIRECT = False  # Mettre à True en production
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Configurez la redirection HTTPS sécurisée pour tous les cookies de session et persistants
-SESSION_COOKIE_SECURE = True  # Mettre à True en production
-CSRF_COOKIE_SECURE = True  # Mettre à True en production
+#SESSION_COOKIE_SECURE = True  # Mettre à True en production
+#CSRF_COOKIE_SECURE = True  # Mettre à True en production
 
 # Configurez la politique HSTS (HTTP Strict Transport Security)
 SECURE_HSTS_SECONDS = 0  # Désactivé en développement, mettre à 31536000 (1 an) en production
@@ -52,7 +52,7 @@ DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+DJANGO_ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 #DJANGO_ALLOWED_HOSTS="localhost 127.0.0.1 [::1]"
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -60,9 +60,9 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_ALLOWED_ORIGINS").split(" ")
-#CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
-AUTH_USER_MODEL = 'authenticate.User'
+AUTH_USER_MODEL = 'users.User'
 # Application definition
 
 

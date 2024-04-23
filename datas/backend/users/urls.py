@@ -11,7 +11,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 
 urlpatterns = [
-    path('get_csrf_token/', GetCSRFTokenView.as_view(), name='get_csrf_token'),
+    #path('get_csrf_token/', GetCSRFTokenView.as_view(), name='get_csrf_token'),
     path('login/', CustomObtainTokenPairView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
     path('register/',
@@ -21,7 +21,7 @@ urlpatterns = [
 
 	path('all/', UsersAPIView.as_view(), name='users-list'),
 
-    path('profiles/<uuid:id>/', UserDetail.as_view(), name='profile-id')
+    path('profile/<uuid:id>/', UserDetail.as_view(), name='profile-id')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])

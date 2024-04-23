@@ -17,6 +17,9 @@ User = get_user_model()
 from django.http import JsonResponse
 from django.views.generic import View
 from django.middleware.csrf import get_token
+from django.http import Http404
+
+
 class GetCSRFTokenView(View):
     def get(self, request, *args, **kwargs):
         csrf_token = get_token(request)
@@ -36,6 +39,7 @@ class CustomTokenRefreshView(TokenRefreshView):
 	serializer_class = CustomTokenObtainPairSerializer
 	def get (self, request):
 		return Response('ok')
+	
 class UserDetail(APIView):
 
 	def get_user(self, id):
