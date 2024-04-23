@@ -20,7 +20,7 @@ urlpatterns = [
 
 	path('all/', UsersAPIView.as_view(), name='users-list'),
 
-    path('profiles/<uuid:id>/', UserDetail.as_view(), name='profile-id')
+    path('profile/<uuid:id>/', UserDetail.as_view(), name='profile-id')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])

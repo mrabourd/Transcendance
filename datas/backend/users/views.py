@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 # We import our serializer here
-from .serializers import UserSerializer, CustomTokenObtainPairSerializer
+from .serializers import UserSerializer, CustomTokenObtainPairSerializer, UpdateUserSerializer
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
@@ -45,10 +45,10 @@ class UserDetail(APIView):
 		return Response(serializer.data)
 
 	# permission_classes = [IsAuthenticated]
-	serializer = UserSerializer
+
 	def put(self, request, id, format=None):
 		user = self.get_user(id)
-		serializer = UserSerializer(user, data=request.data)
+		serializer = UpdateUserSerializer(user, data=request.data)
 		if serializer.is_valid():
 			serializer.save()
 			return Response(serializer.data)

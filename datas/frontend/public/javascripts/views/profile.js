@@ -28,7 +28,7 @@ export default class extends AbstractView {
 		// document.querySelector("#id span").innerText = this.user.datas.id;
 		document.querySelector("#username").innerText = this.user.datas.username;
 		// document.querySelector("#biography").placeholder = this.user.datas.biography;
-		document.querySelector("#avatar").src = this.user.datas.user.avatar;
+		// document.querySelector("#avatar").src = this.user.datas.user.avatar;
 		// console.log(document.querySelectors("#first_name"))
 		// console.log("data " + this.user.datas.first_name)
 		document.querySelector("#first_name").value = this.user.datas.first_name;
@@ -45,40 +45,73 @@ export default class extends AbstractView {
 	addEvents () {
 		console.log("fillHtml");
 
-		document.getElementById("chooseFile").addEventListener('change', function() {
-			document.querySelector("#status").innerText = "reading URL";
-			console.log('this:', this);
-			readURL(this);
-		});
-		let avatar;
-		function readURL(input) {
-			console.log("inside readURL");
-			if (input.files && input.files[0]) {
-				console.log("inside if");
-				let reader = new FileReader();
+		// document.getElementById("chooseFile").addEventListener('change', function() {
+		// 	document.querySelector("#status").innerText = "reading URL";
+		// 	console.log('this:', this);
+		// 	readURL(this);
+		// });
+		// let avatar;
+		// function readURL(input) {
+		// 	console.log("inside readURL");
+		// 	if (input.files && input.files[0]) {
+		// 		console.log("inside if");
+		// 		let reader = new FileReader();
 
-				reader.onload = function (e) {
-					document.getElementById("avatar").setAttribute('src', e.target.result);
-					console.log("photo uploaded");
-					document.querySelector("#status").innerText = "File uploaded!";
-					avatar = document.getElementById("avatar").src;
-					console.log("img:", avatar);
-				}
-				reader.readAsDataURL(input.files[0]);
-			}
-			console.log("outside if");
+		// 		reader.onload = function (e) {
+		// 			document.getElementById("avatar").setAttribute('src', e.target.result);
+		// 			console.log("photo uploaded");
+		// 			document.querySelector("#status").innerText = "File uploaded!";
+		// 			avatar = document.getElementById("avatar").src;
+		// 			console.log("img:", avatar);
+		// 		}
+		// 		reader.readAsDataURL(input.files[0]);
+		// 	}
+		// 	console.log("outside if");
+		// }
+
+		let RQ_Body =  {
+			// "avatar": "/avatar/default.png",
+			"username": document.querySelector("#username").value,
+			"first_name": document.getElementById("first_name").value,
+			"last_name": document.getElementById("last_name").value,
+			"email": document.getElementById("email").value,
+			"biography": document.querySelector("#biography").value
+			// "password": document.getElementById("password").value
 		}
 
-		document.getElementById("saveChanges").addEventListener('click', function() {
-			console.log("enter save changes");
-			let token = window.localStorage.getItem("LocalToken");
-			let data = JSON.parse(token);
-			console.log(data);
-			data.user.avatar = avatar;
-			window.localStorage.setItem("LocalToken", JSON.stringify(data));
-			console.log("new data:", data);
-		});
+		document.getElementById("saveChanges").addEventListener('click', this.updateProfile(RQ_Body));
 
+			// console.log("enter save changes");
+			// let token = window.localStorage.getItem("LocalToken");
+			// let data = JSON.parse(token);
+			// console.log(data);
+			// data.user.avatar = avatar;
+			// window.localStorage.setItem("LocalToken", JSON.stringify(data));
+			// console.log("new data:", data);console.log("user login()")
+
+	}
+
+	async updateProfile(RQ_Body) {
+		console.log("coucou!!")
+		let response = await this.user.request.put('/api/users/profile/'+this.user.datas.id+'/', RQ_Body)
+		console.log("this: ", this)
+		if (response.ok)
+		{          
+			const jsonData = await response.json();
+
+			console.log("jsonData:", jsonData);
+
+
+			// this.setLocalDatas(jsonData.user)
+			// this.request.setLocalToken(jsonData.access, jsonData.refresh)
+
+			// this.isConnected = true;
+			// this.view.printHeader();
+			return true;
+		} else if (response.status === 401) {
+			const jsonData = await response.json();
+			return jsonData.detail;
+		}
 	}
 	
 }
