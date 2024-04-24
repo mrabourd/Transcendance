@@ -57,6 +57,8 @@ class UserDetail(APIView):
 
 	def put(self, request, id, format=None):
 		user = self.get_user(id)
+		if user.id != request.user.id:
+			return Response(status=status.HTTP_401_UNAUTHORIZED)
 		serializer = UpdateUserSerializer(user, data=request.data)
 		if serializer.is_valid():
 			serializer.save()
