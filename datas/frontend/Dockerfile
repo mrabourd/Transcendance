@@ -20,7 +20,7 @@ RUN npm install http
 RUN npm install https
 RUN npm install url
 RUN npm install cors
-RUN npm install multer
+RUN npm install --save multer
 
 #RUN chown -R node:node /home/node/app/public/
 EXPOSE 3000

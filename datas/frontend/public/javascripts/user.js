@@ -49,7 +49,6 @@ export default class User {
             this.request.setLocalToken(jsonData.access, jsonData.refresh)
 
             this.isConnected = true;
-            this.view.printHeader();
             return true;
         } else if (response.status === 401) {
             const jsonData = await response.json();

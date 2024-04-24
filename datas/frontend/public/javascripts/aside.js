@@ -1,37 +1,32 @@
-export function print(user)
+export async function print(user)
 {
 	let routes = null;
+   
 	if (user.isConnected)
 	{
+        let response = await user.request.get('/api/users/all/')
+        document.getElementById("friends").innerHTML = "Here are my friends: (connected)"
         console.log("print aside connected")
-        //let token = user.getLocalToken()
-        //const csrftoken = user.getCsrfToken();
-        //console.log("csrftoken : [", csrftoken, "]");
-        //console.log("token.access : [", token.access, "]");
+        if (response.ok)
+        {   
+            // const users = await response.json();
+            
+            // users.forEach(user => {
+                console.log("users:", user[0].username);
+                
+            // })
 
-        /*
-        try {
-            const response = fetch('https://127.0.0.1:8443/api/users/all/', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer '${token.access}'`,
-                    'X-CSRFToken': csrftoken,
-                    'Origin': 'http://127.0.0.1:8080/',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ csrfmiddlewaretoken: csrftoken }) // Inclure le jeton CSRF dans le corps de la requête
-            });
-            console.log("Response :", response)
-           // if (response.ok) {
-           // }
 
-        } catch (error) {
-            console.error('user.logout : There was a problem :', error);
-            throw error;
+            return true;
+        } else if (response.status === 401) {
+            const users = await response.json();
+            return users.detail;
         }
-        */
+
 	}else{
         console.log("print aside not connected")
+        document.getElementById("friends").innerHTML = "(not connected)"
+
 	}
 }
 
@@ -72,5 +67,4 @@ async function refreshAccessToken(refreshToken) {
 // Utilisation de la fonction refreshAccessToken avec le jeton de rafraîchissement
 const refreshToken = 'votre_refresh_token_ici'; // Remplacez par le véritable jeton de rafraîchissement
 refreshAccessToken(refreshToken);
-
 */
