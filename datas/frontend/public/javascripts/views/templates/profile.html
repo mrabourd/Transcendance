@@ -32,7 +32,7 @@
                         <!-- <p class="mb-0">@johnny.s</p>
                         <div class="text-muted"><small>Last seen 2 hours ago</small></div> -->
                         <div class="mt-2">
-                          <input type="file" id="chooseFile" class="">
+                          <input type="file" id="fileInput" class="">
                             <i class="fa fa-fw fa-camera"></i>
                             <!-- <span>Change Photo</span> -->
                           <!-- </button> -->
@@ -58,12 +58,14 @@
                                 <div class="form-group">
                                   <label>First Name</label>
                                   <input class="form-control" id="first_name" type="text"></input>
+                                  <div class="error alert alert-danger d-none" for="first_name"></div>
                                 </div>
                               </div>
                               <div class="col">
                                 <div class="form-group">
                                   <label>Last Name</label>
                                   <input class="form-control" id="last_name" type="text"></input>
+                                  <div class="error alert alert-danger d-none" for="last_name"></div>
                                 </div>
                               </div>
                             </div>
@@ -72,6 +74,7 @@
                                 <div class="form-group">
                                   <label>Email</label>
                                   <input class="form-control" id="email" type="text">
+                                  <div class="error alert alert-danger d-none" for="email"></div>
                                 </div>
                               </div>
                             </div>
@@ -112,32 +115,10 @@
                               </div>
                             </div>
                           </div>
-                          <!-- <div class="col-12 col-sm-5 offset-sm-1 mb-3">
-                            <div class="mb-2"><b>Keeping in Touch</b></div>
-                            <div class="row">
-                              <div class="col">
-                                <label>Email Notifications</label>
-                                <div class="custom-controls-stacked px-2">
-                                  <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="notifications-blog" checked="">
-                                    <label class="custom-control-label" for="notifications-blog">Blog posts</label>
-                                  </div>
-                                  <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="notifications-news" checked="">
-                                    <label class="custom-control-label" for="notifications-news">Newsletter</label>
-                                  </div>
-                                  <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="notifications-offers" checked="">
-                                    <label class="custom-control-label" for="notifications-offers">Personal Offers</label>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div> -->
                         </div>
                         <div class="row">
                           <div class="col d-flex justify-content-end">
-                            <button class="btn btn-primary" onclick="return false" id="saveChanges">Save Changes</button>
+                            <button class="btn btn-primary" id="saveChanges">Save Changes</button>
                           </div>
                         </div>
                       </form>
