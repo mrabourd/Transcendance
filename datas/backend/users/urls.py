@@ -1,4 +1,5 @@
 from django.urls import path
+from users.views import CustomObtainTokenPairView, CustomTokenRefreshView, UserRegistrationAPIView, UsersAPIView
 from users.views import GetCSRFTokenView, CustomObtainTokenPairView, UserRegistrationAPIView, UsersAPIView, UserDetail
 from rest_framework_simplejwt.views import TokenRefreshView
 from django.views.decorators.csrf import csrf_exempt
@@ -10,9 +11,9 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 
 urlpatterns = [
-    path('get_csrf_token/', GetCSRFTokenView.as_view(), name='get_csrf_token'),
+    #path('get_csrf_token/', GetCSRFTokenView.as_view(), name='get_csrf_token'),
     path('login/', CustomObtainTokenPairView.as_view(), name='token_obtain_pair'),
-    path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('login/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
     path('register/',
          UserRegistrationAPIView.as_view(),
          name='user-register'),

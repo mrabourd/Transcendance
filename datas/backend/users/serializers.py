@@ -2,15 +2,20 @@ from django.contrib.auth import get_user_model
 from rest_framework.settings import api_settings
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 #from users.models import Profile
 
 User = get_user_model() # Get reference to the model
 
 # Custom TokenObtainPairSerializer to include user info
 
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+class CustomTokenRefreshSerializer(TokenRefreshSerializer):
 
+	def validate(self, attrs):
+		data = super().validate(attrs)
+		return data
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 	def validate(self, attrs):
 		data = super().validate(attrs)
@@ -61,7 +66,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 				'validators': [UniqueValidator(queryset=User.objects.all())]}
 			}
 
-	
+
 	def update(self, instance, validated_data):
 		# instance.avatar = validated_data['avatar']
 		instance.first_name = validated_data['first_name']

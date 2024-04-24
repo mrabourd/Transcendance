@@ -6,7 +6,7 @@ from rest_framework import status
 # We import our serializer here
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer, UpdateUserSerializer
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 
@@ -17,6 +17,9 @@ User = get_user_model()
 from django.http import JsonResponse
 from django.views.generic import View
 from django.middleware.csrf import get_token
+from django.http import Http404
+
+
 class GetCSRFTokenView(View):
     def get(self, request, *args, **kwargs):
         csrf_token = get_token(request)
@@ -31,6 +34,12 @@ class UsersAPIView(APIView):
 		serializer = self.serializer(users, many=True)
 		return Response(serializer.data)
 
+class CustomTokenRefreshView(TokenRefreshView):
+	permission_classes = [AllowAny]
+	serializer_class = CustomTokenObtainPairSerializer
+	def get (self, request):
+		return Response('ok')
+	
 class UserDetail(APIView):
 
 	def get_user(self, id):
