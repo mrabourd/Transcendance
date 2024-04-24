@@ -49,7 +49,29 @@ class UserSerializer(serializers.ModelSerializer):
 
 	def create(self, validated_data):
 		return User.objects.create_user(**validated_data)
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+
+	class Meta:
+		model = User
+		fields = ('avatar','first_name', 'last_name', 'biography', 'email')
+		extra_kwargs = {
+			'avatar': {'required': False},
+			'email': {
+				'validators': [UniqueValidator(queryset=User.objects.all())]}
+			}
+
 	
+	def update(self, instance, validated_data):
+		# instance.avatar = validated_data['avatar']
+		instance.first_name = validated_data['first_name']
+		instance.last_name = validated_data['last_name']
+		instance.email = validated_data['email']
+		instance.biography = validated_data['biography']
+
+		instance.save()
+
+		return instance
 
 
 """ 

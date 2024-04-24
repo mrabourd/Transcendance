@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 })
 const MulterUpload = multer({ storage: storage })
 router.post('/upload', MulterUpload.single('avatar'), function (req, res, next) {
-  res.json({message: req.file.filename});
+  res.json({message: req.file.filename, ok: 1});
 })
 
 

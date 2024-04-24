@@ -40,12 +40,15 @@ export default class extends AbstractView {
 		console.log("fillHtml");
 
 		document.getElementById("fileInput").addEventListener('change', async () =>  {
+			
+			document.getElementById("fileInput")
 			document.querySelector("#status").innerText = "reading URL";
-			this.readURL(this);
+			this.readURL(document.getElementById("fileInput"));
 		});
 		
 
-		document.getElementById("saveChanges").addEventListener('click', async () =>  {
+		document.getElementById("saveChanges").addEventListener('click', async (event) =>  {
+			event.preventDefault();
 			let RQ_Body = {
 				avatar: document.querySelector("#avatar").src,
 				username: document.querySelector("#username").innerHTML,
@@ -54,7 +57,7 @@ export default class extends AbstractView {
 				email: document.querySelector("#email").value,
 				biography: document.querySelector("#biography").value
 			}
-			let response = await this.user.request.put(`/api/users/profiles/${this.user.datas.id}/`, RQ_Body)
+			let response = await this.user.request.put('/api/users/profile/'+this.user.datas.id+'/', RQ_Body)
 		})
 
 
@@ -79,10 +82,12 @@ export default class extends AbstractView {
 					enctype: 'multipart/form-data',
 					body: formData
 				})
+			    .then(response => {
+					return response.json()
+				})
 				.then(response => {
 					console.log(response);
 					if (response.ok) {
-						const jsonData = response.json().then()
 						document.getElementById("avatar").setAttribute('src', './avatars/' + response.message);
 
 						document.getElementById('status').innerText = 'Image uploadée avec succès !';

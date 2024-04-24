@@ -56,7 +56,7 @@ export default class User {
             return jsonData.detail;
         }
     }
-
+    
     checkLocalStorage = async() => {
         console.log("checkLocalStorage");
         this.datas = this.getLocalDatas();
