@@ -66,7 +66,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 				'validators': [UniqueValidator(queryset=User.objects.all())]}
 			}
 
-	
+
 	def update(self, instance, validated_data):
 		# instance.avatar = validated_data['avatar']
 		instance.first_name = validated_data['first_name']
