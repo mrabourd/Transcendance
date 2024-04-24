@@ -29,10 +29,8 @@
                     <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
                       <div class="text-sm-left mb-2 mb-sm-0">
                         <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap" id="username"></h4>
-                        <!-- <p class="mb-0">@johnny.s</p>
-                        <div class="text-muted"><small>Last seen 2 hours ago</small></div> -->
                         <div class="mt-2">
-                          <input type="file" id="fileInput" class="">
+                          <input type="file" id="fileInput"  accept="image/*"  class="">
                             <i class="fa fa-fw fa-camera"></i>
                             <!-- <span>Change Photo</span> -->
                           <!-- </button> -->
@@ -46,84 +44,13 @@
                     </div>
                   </div>
                   <ul class="nav nav-tabs">
-                    <li class="nav-item"><a href="" class="active nav-link">Settings</a></li>
+                    <li class="nav-item"><a href="" class="active nav-link">Profile</a></li>
+                    <li class="nav-item"><a href="" class="nav-link">Stats</a></li>
+                    <li class="nav-item"><a href="" class="nav-link">History</a></li>
                   </ul>
+
                   <div class="tab-content pt-3">
-                    <div class="tab-pane active">
-                      <form class="form" novalidate="">
-                        <div class="row">
-                          <div class="col">
-                            <div class="row">
-                              <div class="col">
-                                <div class="form-group">
-                                  <label>First Name</label>
-                                  <input class="form-control" id="first_name" type="text"></input>
-                                  <div class="error alert alert-danger d-none" for="first_name"></div>
-                                </div>
-                              </div>
-                              <div class="col">
-                                <div class="form-group">
-                                  <label>Last Name</label>
-                                  <input class="form-control" id="last_name" type="text"></input>
-                                  <div class="error alert alert-danger d-none" for="last_name"></div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col">
-                                <div class="form-group">
-                                  <label>Email</label>
-                                  <input class="form-control" id="email" type="text">
-                                  <div class="error alert alert-danger d-none" for="email"></div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col mb-3">
-                                <div class="form-group">
-                                  <label>About</label>
-                                  <textarea class="form-control" id="biography" rows="3" placeholder="My Bio"></textarea>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col-12 col-sm-6 mb-3">
-                            <div class="mb-2"><b>Change Password</b></div>
-                            <div class="row">
-                              <div class="col">
-                                <div class="form-group">
-                                  <label>Current Password</label>
-                                  <input class="form-control" id="passwordToCheck" type="password" placeholder="••••••">
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col">
-                                <div class="form-group">
-                                  <label>New Password</label>
-                                  <input class="form-control" id="passwordToAdd1" type="password" placeholder="••••••">
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row">
-                              <div class="col">
-                                <div class="form-group">
-                                  <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
-                                  <input class="form-control" type="password" placeholder="••••••"></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col d-flex justify-content-end">
-                            <button class="btn btn-primary" id="saveChanges">Save Changes</button>
-                          </div>
-                        </div>
-                      </form>
-    
-                    </div>
+
                   </div>
                 </div>
               </div>
