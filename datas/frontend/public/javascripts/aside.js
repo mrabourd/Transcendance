@@ -1,3 +1,5 @@
+import * as utils from "./utils_form.js"
+
 export async function print(user)
 {
 	let routes = null;
@@ -9,13 +11,18 @@ export async function print(user)
         console.log("print aside connected")
         if (response.ok)
         {   
-            // const users = await response.json();
+            const users = await response.json();
             
-            // users.forEach(user => {
-                console.log("users:", user[0].username);
-                
-            // })
-
+            let displayFriends = document.querySelector("#friends");
+            users.forEach(user => {
+                user.avatar = (user.avatar == undefined) ? './avatars/default.png' : user.avatar
+                let main_div       = utils.FormcreateElement("div", ["aside"]);
+                let f_username = utils.FormcreateElement("p", ["aside-username"],{"innerText": user.username})
+                let f_avatar  =  utils.FormcreateElement("img", ["aside-avatar"], {"src": user.avatar, "width":"25px"});
+                utils.FormAppendElements(main_div, f_username);
+                utils.FormAppendElements(main_div, f_avatar);
+                displayFriends.appendChild(main_div);
+            }); 
 
             return true;
         } else if (response.status === 401) {
