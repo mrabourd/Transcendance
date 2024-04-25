@@ -91,6 +91,14 @@ class UserRegistrationAPIView(APIView):
         # Let's update the response code to 201 to follow the standards
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+# class AddFollowed(APIView):
+# 	permission_classes = [IsAuthenticated]
+# 	def post(self, request, format=None):
+# 		user = self.get_user(id)
+# 		followed = User.objects.get(user_id=self.request.data.get('follows'))
+# 		user.followed.add(followed)
+# 		user.save()
+# 		print(str(user) + ", " + str(followed))
 
 # class ProfilePatchView(APIView):
 #     permission_classes = [IsAuthenticated]
