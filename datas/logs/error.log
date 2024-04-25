@@ -66,3 +66,4 @@
 2024/04/24 14:01:05 [emerg] 1#1: host not found in upstream "frontend" in /etc/nginx/nginx.conf:19
 2024/04/24 14:01:44 [emerg] 1#1: host not found in upstream "frontend" in /etc/nginx/nginx.conf:19
 
+2024/04/25 12:44:31 [emerg] 1#1: host not found in upstream "frontend" in /etc/nginx/nginx.conf:19

@@ -26,7 +26,7 @@ export async function print(user)
                 console.log("list_user", list_user)
                 f_link.addEventListener('click', async () =>  {
 			
-                    user.router.navigateTo("profile/" + list_user.id, user);
+                    user.router.navigateTo("/profile/" + list_user.id, user);
                 });
 
                 displayFriends.appendChild(main_div);
