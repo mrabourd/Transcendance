@@ -14,45 +14,65 @@ export async function print(user)
             const users = await response.json();
             
             let displayFriends = document.querySelector("#friends");
-            console.log("list_user data: ", users[1].username, users[1].avatar, users[1].isConnected);
             users.forEach(list_user => {
-                let avatar = (list_user.avatar == undefined) ? './avatars/default.png' : list_user.avatar;
+                if (list_user.username === "root" || list_user.username === user.datas.username)
+                    return;
+                let avatar = (list_user.avatar == undefined) ? '/avatars/default.png' : list_user.avatar;
                 let main_div       = utils.FormcreateElement("div", ["aside"]);
                 let row = utils.FormcreateElement("row", ["row"], {"style":"padding: 20px; border-top: 1px solid #f1f2f2;"});
                 let data = utils.FormcreateElement("data", ["col-5"]);
-                let contact = utils.FormcreateElement("div", ["col-2"]);
-                let msg = utils.FormcreateElement("button", ["btn-primary"], {"innerText": "msg"});
+                let follow = utils.FormcreateElement("div", ["col-2"]);
+                let msg = utils.FormcreateElement("button", ["btn", "btn-primary"], {"innerText": "Follow!",
+                    "id": `followButton`,
+                    "type": "button"
+                });
                 let f_avatar  =  utils.FormcreateElement("img", ["col-3"], {"src": avatar, "style":"border-radius: 50%;"});
-                let f_link = utils.FormcreateElement("a", ["username"], {"innerText": list_user.username});
-                let f_status = utils.FormcreateElement("p", ["status"], {"innerText": "status:"});
-                // utils.FormAppendElements(row, f_username);
-                utils.FormAppendElements(contact, msg);
-                utils.FormAppendElements(data, f_link);
+                let f_name = utils.FormcreateElement("div", ["h5"]);
+                let f_link = utils.FormcreateElement("a", ["profile-link", "#href"], {"innerText": list_user.username});
+                let f_status = utils.FormcreateElement("p", ["status"], {"innerText": "status:"}); //add status here
+                utils.FormAppendElements(follow, msg);
+                utils.FormAppendElements(data, f_name);
                 utils.FormAppendElements(data, f_status);
                 utils.FormAppendElements(row, f_avatar);
+                utils.FormAppendElements(f_name, f_link);
                 utils.FormAppendElements(row, data);
-                utils.FormAppendElements(row, contact);
+                utils.FormAppendElements(row, follow);
                 utils.FormAppendElements(main_div, row);
                 console.log("list_user avatar", list_user.username, avatar, list_user.isConnected);
                 f_link.addEventListener('click', async () =>  {
 			
                     user.router.navigateTo("/profile/" + list_user.id, user);
                 });
-
+                
                 displayFriends.appendChild(main_div);
-                //
-            }); 
+                
+                document.getElementById("followButton").addEventListener("click", async() => {
+                    let value =  document.getElementById("followButton").innerText;
+                    if (value === "Follow!"){
+                        console.log("I want to follow: ", list_user.username)
+                        document.getElementById("followButton").innerText = "Unfollow"
+                        // add follow
+                    }
+                    else{
+                        console.log("I don't want to follow: ", list_user.username)
+                        document.getElementById("followButton").innerText = "Follow!"
+                        // add unfollow
+                    }
+                });
 
+                
+            }); 
+            
             return true;
         } else if (response.status === 401) {
             const users = await response.json();
             return users.detail;
         }
-
+        
 	}else{
         console.log("print aside not connected")
         document.getElementById("friends").innerHTML = "(not connected)"
-
+        
 	}
 }
 
