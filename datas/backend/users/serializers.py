@@ -26,11 +26,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 		data["test"] = "value"
 		# Add your extra responses here
 		data['user'] = ({"username" : self.user.username,
-				   		"email" : self.user.email, 
-						"first_name" : self.user.first_name, 
+				   		"email" : self.user.email,
+						"first_name" : self.user.first_name,
 						"last_name" :self.user.last_name,
 						"id" :self.user.id,
-						"avatar" : self.user.avatar if self.user.avatar else None,
+						"avatar" : self.user.avatar,
 						"biography" : self.user.biography,
 						"follows" : self.user.follows.all().values_list('id', flat=True),
 						"followed_by" : self.user.followed_by.all().values_list('id', flat=True)}
@@ -78,19 +78,19 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 		return instance
 
 
-""" 
+"""
 def validate_password(self, value):
 		if len(value) < 8:
-			raise serializers.ValidationError( 
+			raise serializers.ValidationError(
 				'The password must be at least 8 characters long.')
 		return value
-        
+
 
 def validate_email(self, value):
         # Skip validation if no value provided
         if value is None:
             return value
-	
+
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError(
                 'A user with this email address already exists.')
@@ -98,5 +98,5 @@ def validate_email(self, value):
         # Note: it's important to return the value at the end of this method
         return value
 
-    
+
 """
