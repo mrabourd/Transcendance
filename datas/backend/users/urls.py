@@ -1,7 +1,7 @@
 from django.urls import path
 from users.views import CustomObtainTokenPairView, CustomTokenRefreshView, UserRegistrationAPIView, UsersAPIView
 from users.views import GetCSRFTokenView, CustomObtainTokenPairView, UserRegistrationAPIView, UsersAPIView, UserDetail
-from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.views import LogoutView
 import uuid
@@ -17,7 +17,7 @@ urlpatterns = [
     path('register/',
          UserRegistrationAPIView.as_view(),
          name='user-register'),
-	path('logout/', LogoutView.as_view(), name='logout'),
+	path('logout/', TokenBlacklistView.as_view(), name='logout'),
 
 	path('all/', UsersAPIView.as_view(), name='users-list'),
 

@@ -38,7 +38,7 @@ export default class User {
         let RQ_Body = {username: userName, password: passWord}
         let response = await this.request.post('/api/users/login/', RQ_Body)
         if (response.ok)
-        {          
+        {
             const jsonData = await response.json();
 
             console.log("jsonData.access:", jsonData.access);
@@ -55,7 +55,7 @@ export default class User {
             return jsonData.detail;
         }
     }
-    
+
     checkLocalStorage = async() => {
         console.log("checkLocalStorage");
         this.datas = this.getLocalDatas();
@@ -92,7 +92,7 @@ export default class User {
         this.datas = null
         localStorage.removeItem("LocalDatas");
     }
-    
+
     setLocalDatas = (jsonData) =>
     {
         this.datas = jsonData;
@@ -105,13 +105,14 @@ export default class User {
 
     logout = async() =>{
         console.log("user logout()")
-        let RQ_Body = {};
+        let RQ_Body = this.request._token;
+		console.log("RQ_Body:", RQ_Body)
         let response = await this.request.post('/api/users/logout/', RQ_Body)
-        //if (response.ok) {
+        if (response.ok) {
             this.rmLocalDatas();
             this.request.rmLocalToken();
             this._isConnected = false;
             this.view.printHeader();
-        //}
+        }
     }
 }
