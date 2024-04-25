@@ -4,14 +4,28 @@ export default class extends AbstractView {
 	constructor(params) {
 		super(params);
 		this.setTitle("Profile");
+
 	}
 	
-	
+	is_user_page()
+	{
+		if (this.params.user_id)
+		{
+			console.log("this.params.user_id : ", this.params.user_id)
+			if (this.params.user_id == this.user.datas.id)
+				return true
+			else
+				return false
+		}
+		else
+			return true
+	}
+
 	async getHtml(DOM) {
 		await fetch('/template/profile').then(function (response) {
 			// The API call was successful!
 			return response.text();
-		}).then(async function (html) {
+		}).then(async html =>  {
 			// This is the HTML from our response as a text string
 			let parser = new DOMParser();
 			let doc = parser.parseFromString(html, 'text/html');
@@ -19,7 +33,29 @@ export default class extends AbstractView {
 			DOM.innerHTML = body.innerHTML;
 
 			// Get profile page HTML
-			await fetch('/template/profile_profile_edit').then(function (response) {
+			let profile_url;
+			if (this.is_user_page())
+				profile_url = '/template/profile_profile_edit'
+			else
+				profile_url = '/template/profile_profile'
+			await fetch(profile_url).then(function (response) {
+				return response.text();
+			}).then(function (html) {
+				let parser = new DOMParser();
+				let doc = parser.parseFromString(html, 'text/html');
+				document.querySelector('.tab-content').append(doc.querySelector('body div'));
+			});
+
+			// Get Hitory page HTML
+			await fetch( '/template/profile_history').then(function (response) {
+				return response.text();
+			}).then(function (html) {
+				let parser = new DOMParser();
+				let doc = parser.parseFromString(html, 'text/html');
+				document.querySelector('.tab-content').append(doc.querySelector('body div'));
+			});
+			// Get Stats page HTML
+			await fetch( '/template/profile_stats').then(function (response) {
 				return response.text();
 			}).then(function (html) {
 				let parser = new DOMParser();
@@ -31,6 +67,7 @@ export default class extends AbstractView {
 			console.warn('Something went wrong.', err);
 		});
 	}
+
 	async fillHtml(DOM) {
 		document.querySelector("#username").innerHTML = this.user.datas.username;
 		document.querySelector("#first_name").value = this.user.datas.first_name;
@@ -44,7 +81,6 @@ export default class extends AbstractView {
 			document.querySelector("#avatar").src = "./avatars/default.png";
 	}
 
-	
 	async addEvents () {
 		console.log("fillHtml");
 
@@ -54,7 +90,6 @@ export default class extends AbstractView {
 			document.querySelector("#status").innerText = "reading URL";
 			this.readURL(document.getElementById("fileInput"));
 		});
-		
 
 		document.getElementById("saveChanges").addEventListener('click', async (event) =>  {
 			event.preventDefault();
