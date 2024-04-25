@@ -11,12 +11,21 @@ export default class extends AbstractView {
 		await fetch('/template/profile').then(function (response) {
 			// The API call was successful!
 			return response.text();
-		}).then(function (html) {
+		}).then(async function (html) {
 			// This is the HTML from our response as a text string
 			let parser = new DOMParser();
 			let doc = parser.parseFromString(html, 'text/html');
 			let body = doc.querySelector('#app');
 			DOM.innerHTML = body.innerHTML;
+
+			// Get profile page HTML
+			await fetch('/template/profile_profile_edit').then(function (response) {
+				return response.text();
+			}).then(function (html) {
+				let parser = new DOMParser();
+				let doc = parser.parseFromString(html, 'text/html');
+				document.querySelector('.tab-content').append(doc.querySelector('body div'));
+			});
 		}).catch(function (err) {
 			// There was an error
 			console.warn('Something went wrong.', err);

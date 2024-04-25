@@ -1,7 +1,7 @@
 .env
-
 datas/logs/access.log
-
+datas/logs/error.log
 datas/frontend/node_modules/*
-
 datas/frontend/public/avatars/*
+datas/frontend/package-lock.json
+datas/logs/*

@@ -14,14 +14,23 @@ export async function print(user)
             const users = await response.json();
             
             let displayFriends = document.querySelector("#friends");
-            users.forEach(user => {
-                user.avatar = (user.avatar == undefined) ? './avatars/default.png' : user.avatar
+            users.forEach(list_user => {
+                list_user.avatar = (list_user.avatar == undefined) ? './avatars/default.png' : list_user.avatar
                 let main_div       = utils.FormcreateElement("div", ["aside"]);
-                let f_username = utils.FormcreateElement("p", ["aside-username"],{"innerText": user.username})
-                let f_avatar  =  utils.FormcreateElement("img", ["aside-avatar"], {"src": user.avatar, "width":"25px"});
+                let f_username = utils.FormcreateElement("p", ["aside-username"],{"innerText": list_user.username})
+                let f_avatar  =  utils.FormcreateElement("img", ["aside-avatar"], {"src": list_user.avatar, "width":"25px"});
+                let f_link  =  utils.FormcreateElement("a", ["aside-link"], {"innerText": 'view profile'});
                 utils.FormAppendElements(main_div, f_username);
                 utils.FormAppendElements(main_div, f_avatar);
+                utils.FormAppendElements(main_div, f_link);
+                console.log("list_user", list_user)
+                f_link.addEventListener('click', async () =>  {
+			
+                    user.router.navigateTo("profile/" + list_user.id, user);
+                });
+
                 displayFriends.appendChild(main_div);
+                //
             }); 
 
             return true;

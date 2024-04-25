@@ -31,11 +31,11 @@ export const router = async (user) => {
         { id:2, path: "/register", view: register },
         { id:3, path: "/home", view: home },
         { id:4, path: "/profile", view: profile },
-        { id:5, path: "/profile/:id", view: profile },
+        { id:5, path: "/profile/:user_id", view: profile },
         { id:6, path: "/about", view: about },
         { id:7, path: "/contact", view: contact },
         { id:8, path: "/websocket", view: websocket },
-        { id:9, path: "/play/:id", view: play }
+        { id:9, path: "/play/:user_id", view: play }
     ];
 
     // Test each route for potential match
