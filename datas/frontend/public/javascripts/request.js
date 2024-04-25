@@ -17,7 +17,7 @@ export default class Request {
 
 
     async post(RQ_url, RQ_body) {
-        
+
         let CSRF = await this.getCsrfToken();
         console.log("CSRF : ", CSRF)
         if (CSRF)
@@ -38,15 +38,23 @@ export default class Request {
                 },
                 body: JSON.stringify(RQ_body)
             });
-            return response;
-        } catch (error) {
+            if (response.status == 401)
+            {
+                let RefreshResponse = await this.refreshToken();
+                if (RefreshResponse.ok)
+                    return await this.get(RQ_url);
+                else
+                    return response;
+            }
+            else
+                return response;        } catch (error) {
             console.error('REQUEST POST / ERROR (49) :', error);
             throw error;
         }
     }
 
     async put(RQ_url, RQ_body) {
-        
+
         let CSRF = await this.getCsrfToken();
         console.log("CSRF : ", CSRF)
         if (CSRF)
@@ -67,16 +75,20 @@ export default class Request {
                 },
                 body: JSON.stringify(RQ_body)
             });
-            return response;
-        } catch (error) {
+            if (response.status == 401)
+            {
+                let RefreshResponse = await this.refreshToken();
+                if (RefreshResponse.ok)
+                    return await this.get(RQ_url);
+                else
+                    return response;
+            }
+            else
+                return response;        } catch (error) {
             console.error('REQUEST PUT / ERROR (72) :', error);
             throw error;
         }
     }
-
-
-
-
 
     async get(RQ_url) {
 
@@ -108,7 +120,13 @@ export default class Request {
 
     async refreshToken()
     {
-        let response = await this.post('/login/refresh/', this.token);
+        let response = await this.post('/api/users/login/refresh/', this.token);
+		if (response.ok)
+		{
+			let jsonData = await response.json();
+			this.token = jsonData;
+			this.setLocalToken(jsonData.access, jsonData.refresh);
+		}
         return response;
     }
 
@@ -119,7 +137,6 @@ export default class Request {
     }
     getLocalToken()
     {
-        console.log("getLocalToken");
         let tmp = window.localStorage.getItem("LocalToken");
         this.token = JSON.parse(tmp);
         // TODO recuperer un cookie pour plus de securite
@@ -128,7 +145,7 @@ export default class Request {
 
     setLocalToken(tk_access, tk_refresh)
     {
-        this.token = 
+        this.token =
         {
             access: tk_access,
             refresh: tk_refresh,
@@ -182,69 +199,17 @@ export default class Request {
         {
             return csrfCookie.split('=')[1]
         }
-        else 
+        else
         {
             let response = await this.get("/api/users/get_csrf_token/")
             const jsonData = await response.json();
             console.log('get_csrf_token', jsonData.csrf_token)
             this.setCookie('csrftoken', jsonData.csrf_token, 1)
             return jsonData.csrf_token;
-    
+
         }
         return null;
     }
-    
+
 
 }
-
-
-/*
-    getLocalToken = () =>
-    {
-        console.log("getLocalToken");
-        let token = window.localStorage.getItem("LocalToken");
-        // TODO recuperer un cookie pour plus de securite
-        return JSON.parse(token)
-    }
-
-    deleteLocalToken = () =>
-    {
-        console.log("deleteLocalToken");
-        window.localStorage.removeItem("LocalToken");
-        window.localStorage.clear();
-        this.token = null;
-        return ;
-    }
-
-    saveLocalToken = (jsonData) =>
-    {
-        console.log("saveLocalToken");
-        window.localStorage.setItem("LocalToken", JSON.stringify(jsonData));
-        this.token = jsonData;
-        // TODO enregistrer un cookie pour plus de securite
-        return window.localStorage.getItem("LocalToken");
-    }
-
-    verifyToken = async(token) =>{
-        console.log("verifyToken")
-        // TODO : WAIT FOR DJANGO CHECK TOKEN API
-        try {
-            const response = await fetch('https://127.0.0.1:8443/api/users/login/', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json, text/plain,
-                    'Origin': 'http://127.0.0.1:8080',
-                    'Authorization': `Token ${token}`
-                }
-            });
-            if (response.ok) {
-                return true;
-
-        } catch (error) {
-            console.error('user.verifyToken : There was a problem :', error);
-            throw error;
-        }
-    }
-
-
-*/

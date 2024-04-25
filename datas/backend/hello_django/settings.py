@@ -73,12 +73,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'corsheaders', 
+	'corsheaders',
 	'rest_framework',
 	"rest_framework.authtoken",
-	'singlepage', 
+	'singlepage',
 	'users',
 	'rest_framework_simplejwt',
+	'rest_framework_simplejwt.token_blacklist',
     'oauth2_provider',
 ]
 
