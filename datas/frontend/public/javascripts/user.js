@@ -64,7 +64,6 @@ export default class User {
             let TockenCheck = await this.request.checkLocalToken();
             if (TockenCheck == true)
             {
-
                 this._isConnected = true;
             }
             else
