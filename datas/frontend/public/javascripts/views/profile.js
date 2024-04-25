@@ -4,14 +4,12 @@ export default class extends AbstractView {
 	constructor(params) {
 		super(params);
 		this.setTitle("Profile");
-
 	}
 	
 	is_user_page()
 	{
 		if (this.params.user_id)
 		{
-			console.log("this.params.user_id : ", this.params.user_id)
 			if (this.params.user_id == this.user.datas.id)
 				return true
 			else
@@ -54,6 +52,7 @@ export default class extends AbstractView {
 				let doc = parser.parseFromString(html, 'text/html');
 				document.querySelector('.tab-content').append(doc.querySelector('body div'));
 			});
+
 			// Get Stats page HTML
 			await fetch( '/template/profile_stats').then(function (response) {
 				return response.text();
@@ -69,58 +68,124 @@ export default class extends AbstractView {
 	}
 
 	async fillHtml(DOM) {
-		document.querySelector("#username").innerHTML = this.user.datas.username;
-		document.querySelector("#first_name").value = this.user.datas.first_name;
-		document.querySelector("#last_name").value = this.user.datas.last_name;
-		document.querySelector("#email").value = this.user.datas.email;
-		document.querySelector("#biography").value = this.user.datas.biography;
-
-		if(this.user.datas.avatar)
-			document.querySelector("#avatar").src = this.user.datas.avatar;
-		else
-			document.querySelector("#avatar").src = "./avatars/default.png";
+		if (!this.is_user_page())
+			document.querySelector(".mt-2.image-upload").innerHTML = "";
+		this.fillProfile()
+		this.fillStats()
+		this.fillHistory()
 	}
+
+	async fillHistory()
+	{
+		/*
+		uid = (this.params.user_id) ? this.params.user_id : this.user.datas.id
+		let response = await this.user.request.get('/api/users/history/'+uid+'/')
+		if (response.ok)
+		{
+			let jsonData = await response.json();
+		}
+		*/
+	}
+
+	async fillStats()
+	{
+		/*
+		uid = (this.params.user_id) ? this.params.user_id : this.user.datas.id
+		let response = await this.user.request.get('/api/users/stats/'+uid+'/')
+		if (response.ok)
+		{
+			let jsonData = await response.json();
+		}
+		*/
+	}
+
+	async fillProfile()
+	{
+		if (this.is_user_page())
+		{
+			document.querySelector("#username").innerHTML = this.user.datas.username;
+			if(this.user.datas.avatar)
+				document.querySelector("#avatar").src = this.user.datas.avatar;
+			else
+				document.querySelector("#avatar").src = "/avatars/default.png";
+			document.querySelector(".tab-pane.profile #first_name").value = this.user.datas.first_name;
+			document.querySelector(".tab-pane.profile #last_name").value = this.user.datas.last_name;
+			document.querySelector(".tab-pane.profile #email").value = this.user.datas.email;
+			document.querySelector(".tab-pane.profile #biography").value = this.user.datas.biography;
+		}
+		else
+		{
+			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
+			if (response.ok)
+			{
+				let jsonData = await response.json();
+				document.querySelector("#username").innerHTML = jsonData.username;
+				if(jsonData.avatar)
+					document.querySelector("#avatar").src = jsonData.avatar;
+				else
+					document.querySelector("#avatar").src = "/avatars/default.png";
+				document.querySelector(".tab-pane.profile #first_name").innerText = jsonData.first_name;
+				document.querySelector(".tab-pane.profile #last_name").innerText = jsonData.last_name;
+				document.querySelector(".tab-pane.profile #email").innerText = jsonData.email;
+				document.querySelector(".tab-pane.profile #biography").innerText = jsonData.biography;
+			}
+		}
+	}
+
 
 	async addEvents () {
-		console.log("fillHtml");
 
-		document.getElementById("fileInput").addEventListener('change', async () =>  {
-			
-			document.getElementById("fileInput")
-			document.querySelector("#status").innerText = "reading URL";
-			this.readURL(document.getElementById("fileInput"));
+		// TABS
+		document.querySelectorAll('.nav.nav-tabs li').forEach(element => {
+			element.addEventListener("click", e => {
+				e.preventDefault();
+				let link = element.getAttribute('data-target');
+				document.querySelectorAll('.nav.nav-tabs li a').forEach(element => {
+					element.classList.remove('active');
+				});
+				document.querySelector('.nav.nav-tabs li[data-target="' + link + '"] a').classList.add('active')
+
+				document.querySelectorAll('.tab-content .tab-pane').forEach(element => {
+					element.classList.remove('active');
+				});
+				document.querySelector('.tab-content .tab-pane.' + link).classList.add('active')
+			});
 		});
 
-		document.getElementById("saveChanges").addEventListener('click', async (event) =>  {
-			event.preventDefault();
-			let RQ_Body = {
-				avatar: document.querySelector("#avatar").src,
-				username: document.querySelector("#username").innerHTML,
-				first_name: document.querySelector("#first_name").value,
-				last_name: document.querySelector("#last_name").value,
-				email: document.querySelector("#email").value,
-				biography: document.querySelector("#biography").value
-			}
-			let response = await this.user.request.put('/api/users/profile/'+this.user.datas.id+'/', RQ_Body)
-		})
 
+		// USER PROFILE FORM
+		if (this.is_user_page())
+		{
+			document.getElementById("fileInput").addEventListener('change', async () =>  {
+				
+				document.getElementById("fileInput")
+				document.querySelector("#status").innerText = "reading URL";
+				this.readURL(document.getElementById("fileInput"));
+			});
+			document.getElementById("saveChanges").addEventListener('click', async (event) =>  {
+				event.preventDefault();
+				let RQ_Body = {
+					avatar: document.querySelector("#avatar").src,
+					username: document.querySelector("#username").innerHTML,
+					first_name: document.querySelector("#first_name").value,
+					last_name: document.querySelector("#last_name").value,
+					email: document.querySelector("#email").value,
+					biography: document.querySelector("#biography").value
+				}
+				let response = await this.user.request.put('/api/users/profile/'+this.user.datas.id+'/', RQ_Body)
+			})
+		}
 
 	}
 
+	// File Upload
 	async readURL(input) {
-		console.log("inside readURL");
 		if (input.files && input.files[0]) {
-			console.log("inside if");
 			let reader = new FileReader();
-
 			reader.onload = async function (e) {
-
-				console.log("uploadFile")
-				//const fileInput = document.getElementById('chooseFile');
 				const file = input.files[0];
 				const formData = new FormData();
 				formData.append('avatar', file);
-			
 				fetch('/upload', {
 					method: 'POST',
 					enctype: 'multipart/form-data',
@@ -130,7 +195,6 @@ export default class extends AbstractView {
 					return response.json()
 				})
 				.then(response => {
-					console.log(response);
 					if (response.ok) {
 						document.getElementById("avatar").setAttribute('src', './avatars/' + response.message);
 
@@ -142,8 +206,6 @@ export default class extends AbstractView {
 				.catch(error => {
 					console.error('Erreur lors de l\'upload de l\'image :', error);
 				});
-
-
 			}
 			reader.readAsDataURL(input.files[0]);
 		}
