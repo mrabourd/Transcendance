@@ -61,6 +61,15 @@ export default class extends AbstractView {
 				let doc = parser.parseFromString(html, 'text/html');
 				document.querySelector('.tab-content').append(doc.querySelector('body div'));
 			});
+
+			// Get Followed page HTML
+			await fetch( '/template/profile_followed').then(function (response) {
+				return response.text();
+			}).then(function (html) {
+				let parser = new DOMParser();
+				let doc = parser.parseFromString(html, 'text/html');
+				document.querySelector('.tab-content').append(doc.querySelector('body div'));
+			});
 		}).catch(function (err) {
 			// There was an error
 			console.warn('Something went wrong.', err);
@@ -73,7 +82,21 @@ export default class extends AbstractView {
 		this.fillProfile()
 		this.fillStats()
 		this.fillHistory()
+		this.fillFollowed()
 	}
+
+	async fillFollowed()
+	{
+		/*
+		uid = (this.params.user_id) ? this.params.user_id : this.user.datas.id
+		let response = await this.user.request.get('/api/users/history/'+uid+'/')
+		if (response.ok)
+		{
+			let jsonData = await response.json();
+		}
+		*/
+	}
+
 
 	async fillHistory()
 	{

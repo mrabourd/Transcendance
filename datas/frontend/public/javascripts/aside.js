@@ -13,6 +13,7 @@ export async function print(user)
         {   
             const users = await response.json();
             
+            
             let displayFriends = document.querySelector("#friends");
             users.forEach(list_user => {
                 list_user.avatar = (list_user.avatar == undefined) ? './avatars/default.png' : list_user.avatar
