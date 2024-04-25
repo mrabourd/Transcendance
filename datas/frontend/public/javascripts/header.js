@@ -3,17 +3,18 @@ export function print(user)
 	let routes = null;
 	if (user.isConnected)
 	{
-	routes = [
-		{ path: "/home", libelle: "home" },
-		{ path: "/profile", libelle: "profile" },
-		{ path: "/about", libelle: "about" },
-		{ path: "/contact", libelle: "contact"  },
-		{ path: "/websocket", libelle: "websocket" },
-		{ path: "/play", libelle: "play",
-		sousmenu: [{path: "/vs_computer", libelle: "play with robot"},
-		{path: "/vs_player", libelle: "play with player" }]
-		}
-	];
+		console.log("connected user: ", user.isConnected)
+		routes = [
+			{ path: "/home", libelle: "home" },
+			{ path: "/profile", libelle: "profile" },
+			{ path: "/about", libelle: "about" },
+			{ path: "/contact", libelle: "contact"  },
+			{ path: "/websocket", libelle: "websocket" },
+			{ path: "/play", libelle: "play",
+			sousmenu: [{path: "/vs_computer", libelle: "play with robot"},
+			{path: "/vs_player", libelle: "play with player" }]
+			}
+		];
 	}else{
 		routes = [
 		{ path: "/login", libelle: "login" },

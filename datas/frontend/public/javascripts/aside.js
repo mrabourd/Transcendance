@@ -14,19 +14,29 @@ export async function print(user)
             const users = await response.json();
             
             let displayFriends = document.querySelector("#friends");
+            console.log("list_user data: ", users[1].username, users[1].avatar, users[1].isConnected);
             users.forEach(list_user => {
-                list_user.avatar = (list_user.avatar == undefined) ? './avatars/default.png' : list_user.avatar
+                let avatar = (list_user.avatar == undefined) ? './avatars/default.png' : list_user.avatar;
                 let main_div       = utils.FormcreateElement("div", ["aside"]);
-                let f_username = utils.FormcreateElement("p", ["aside-username"],{"innerText": list_user.username})
-                let f_avatar  =  utils.FormcreateElement("img", ["aside-avatar"], {"src": list_user.avatar, "width":"25px"});
-                let f_link  =  utils.FormcreateElement("a", ["aside-link"], {"innerText": 'view profile'});
-                utils.FormAppendElements(main_div, f_username);
-                utils.FormAppendElements(main_div, f_avatar);
-                utils.FormAppendElements(main_div, f_link);
-                console.log("list_user", list_user)
+                let row = utils.FormcreateElement("row", ["row"], {"style":"padding: 20px; border-top: 1px solid #f1f2f2;"});
+                let data = utils.FormcreateElement("data", ["col-5"]);
+                let contact = utils.FormcreateElement("div", ["col-2"]);
+                let msg = utils.FormcreateElement("button", ["btn-primary"], {"innerText": "msg"});
+                let f_avatar  =  utils.FormcreateElement("img", ["col-3"], {"src": avatar, "style":"border-radius: 50%;"});
+                let f_link = utils.FormcreateElement("a", ["username"], {"innerText": list_user.username});
+                let f_status = utils.FormcreateElement("p", ["status"], {"innerText": "status:"});
+                // utils.FormAppendElements(row, f_username);
+                utils.FormAppendElements(contact, msg);
+                utils.FormAppendElements(data, f_link);
+                utils.FormAppendElements(data, f_status);
+                utils.FormAppendElements(row, f_avatar);
+                utils.FormAppendElements(row, data);
+                utils.FormAppendElements(row, contact);
+                utils.FormAppendElements(main_div, row);
+                console.log("list_user avatar", list_user.username, avatar, list_user.isConnected);
                 f_link.addEventListener('click', async () =>  {
 			
-                    user.router.navigateTo("profile/" + list_user.id, user);
+                    user.router.navigateTo("/profile/" + list_user.id, user);
                 });
 
                 displayFriends.appendChild(main_div);
