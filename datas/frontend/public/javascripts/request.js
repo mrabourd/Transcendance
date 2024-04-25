@@ -17,7 +17,7 @@ export default class Request {
 
 
     async post(RQ_url, RQ_body) {
-        
+
         let CSRF = await this.getCsrfToken();
         console.log("CSRF : ", CSRF)
         if (CSRF)
@@ -46,7 +46,7 @@ export default class Request {
     }
 
     async put(RQ_url, RQ_body) {
-        
+
         let CSRF = await this.getCsrfToken();
         console.log("CSRF : ", CSRF)
         if (CSRF)
@@ -108,7 +108,13 @@ export default class Request {
 
     async refreshToken()
     {
-        let response = await this.post('/login/refresh/', this.token);
+        let response = await this.post('/api/users/login/refresh/', this.token);
+		if (response.ok)
+		{
+			let jsonData = await response.json();
+			this.token = jsonData;
+			this.setLocalToken(jsonData.access, jsonData.refresh);
+		}
         return response;
     }
 
@@ -128,7 +134,7 @@ export default class Request {
 
     setLocalToken(tk_access, tk_refresh)
     {
-        this.token = 
+        this.token =
         {
             access: tk_access,
             refresh: tk_refresh,
@@ -182,18 +188,18 @@ export default class Request {
         {
             return csrfCookie.split('=')[1]
         }
-        else 
+        else
         {
             let response = await this.get("/api/users/get_csrf_token/")
             const jsonData = await response.json();
             console.log('get_csrf_token', jsonData.csrf_token)
             this.setCookie('csrftoken', jsonData.csrf_token, 1)
             return jsonData.csrf_token;
-    
+
         }
         return null;
     }
-    
+
 
 }
 
