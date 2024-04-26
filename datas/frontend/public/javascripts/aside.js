@@ -13,6 +13,7 @@ export async function print(user)
         {   
             const users = await response.json();
             
+            
             let displayFriends = document.querySelector("#friends");
             users.forEach(list_user => {
                 if (list_user.username === "root" || list_user.username === user.datas.username)

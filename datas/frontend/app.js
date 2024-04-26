@@ -44,12 +44,10 @@ router.post('/upload', function (req, res) {
 })
 
 router.use(function (req,res,next) {
-	console.log('/' + req.method);
 	next();
 });
 
 router.get('/template/:name', function (req, res) {
-	console.log(req.params.name);
 	var fileName = req.params.name
 	res.sendFile(path + '/javascripts/views/templates/' + fileName + '.html');
 })

@@ -5,7 +5,7 @@ import contact from "./views/contact.js";
 import play from "./views/play.js";
 import profile from "./views/profile.js";
 import register from "./views/register.js";
-import websocket from "./views/websocket.js";
+import chatroom from "./views/chatroom.js";
 
 
 export const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -34,7 +34,7 @@ export const router = async (user) => {
         { id:5, path: "/profile/:user_id", view: profile },
         { id:6, path: "/about", view: about },
         { id:7, path: "/contact", view: contact },
-        { id:8, path: "/websocket", view: websocket },
+        { id:8, path: "/chatroom", view: chatroom },
         { id:9, path: "/play/:user_id", view: play }
     ];
 
