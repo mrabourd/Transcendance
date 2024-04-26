@@ -78,15 +78,15 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 		return instance
 
 class EachUserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username')
+    # username = serializers.CharField(source='user.username')
     class Meta:
         model = User
-        fields = ('id','username','avatar')
-        read_only_fields = ('id','username','avatar')
+        fields = ('id')
+        read_only_fields = ('id')
 
 class FollowerSerializer(serializers.ModelSerializer):
-    followers = EachUserSerializer(many=True, read_only= True)
-    following = EachUserSerializer(many=True, read_only=True)
+    follows = EachUserSerializer(many=True, read_only= True)
+    # following = EachUserSerializer(many=True, read_only=True)
     
     class Meta:
         model = User

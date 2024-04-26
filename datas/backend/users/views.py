@@ -114,12 +114,13 @@ class UserRegistrationAPIView(APIView):
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class FollowUser(APIView):
-	print("coucou")
 	permission_classes = [IsAuthenticated]
 
 	def current_profile(self):
 		try:
-			return User.objects.get(user = self.request.user)
+			# problem here
+			print("self: ", self.request.data.get('me') ) 
+			return self.request.data.get('me')
 		except User.DoesNotExist:
 			raise Http404
 			
@@ -129,24 +130,25 @@ class FollowUser(APIView):
 		except User.DoesNotExist:
 			raise Http404
 	
-	def post(self, request, id, usertype, format=None):    
+	def post(self, request, id, format=None):    
+		pk = id         # Here pk is opposite user's profile ID
 		print("id: ", id)
-		pk = id       # Here pk is opposite user's profile ID
-		req_type = usertype        
+		print("usertype: ", request.data.get('usertype'))
+		req_type = request.data.get('usertype')       
 		
 		current_profile = self.current_profile()
 		other_profile = self.other_profile(pk)
 		
 		if req_type == 'follow':
-			if other_profile.private_account:
-				other_profile.panding_request.add(current_profile)
-				return Response({"Requested" : "Follow request has been send!!"},status=status.HTTP_200_OK)
-			else:
-				if other_profile.blocked_user.filter(pk = current_profile.id).exists():
-					return Response({"Following Fail" : "You can not follow this profile becuase your ID blocked by this user!!"},status=status.HTTP_400_BAD_REQUEST)
-				current_profile.following.add(other_profile)
-				other_profile.followers.add(current_profile)
-				return Response({"Following" : "Following success!!"},status=status.HTTP_200_OK) 
+			# if other_profile.private_account:
+				# other_profile.add(current_profile)
+				# return Response({"Requested" : "Follow request has been send!!"},status=status.HTTP_200_OK)
+			# else:
+			# if other_profile.blocked_user.filter(pk = current_profile.id).exists():
+			# 	return Response({"Following Fail" : "You can not follow this profile becuase your ID blocked by this user!!"},status=status.HTTP_400_BAD_REQUEST)
+			current_profile.follows.add(other_profile)
+			# other_profile.followers.add(current_profile)
+			return Response({"Following" : "Following success!!"},status=status.HTTP_200_OK) 
 		
 		# elif req_type == 'accept':
 		# 	current_profile.followers.add(other_profile)

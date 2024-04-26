@@ -9,6 +9,7 @@ export async function print(user)
 		let response = await user.request.get('/api/users/all/')
 		document.getElementById("friends").innerHTML = "Here are my friends: (connected)"
 		console.log("print aside connected")
+		console.log("me id: ", user.datas.id)
 		if (response.ok)
 		{   
 			const users = await response.json();
@@ -51,7 +52,7 @@ export async function print(user)
 					let value =  document.getElementById("followButton").innerText;
 					if (value === "Follow!"){
 						console.log("I want to follow: ", list_user.username)
-						let RQ_Body = {'id': list_user.id, 'usertype': 'follow'}
+						let RQ_Body = {'id': list_user.id, 'usertype': 'follow', 'me': user.datas.id}
 						document.getElementById("followButton").innerText = "Unfollow"
 						
 						// add follow
@@ -67,7 +68,7 @@ export async function print(user)
 					}
 					else{
 						console.log("I don't want to follow: ", list_user.username)
-						let RQ_Body = {'id': list_user.id, 'usertype': 'unfollow'}
+						let RQ_Body = {'id': list_user.id, 'usertype': 'unfollow', 'me': user.datas.id}
 						document.postElementById("followButton").innerText = "Follow!"
 						// add unfollow
 
