@@ -34,7 +34,7 @@ export default class User {
 
 
     async login(userName, passWord) {
-        console.log("user login()")
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>.user login()")
         let RQ_Body = {username: userName, password: passWord}
         let response = await this.request.post('/api/users/login/', RQ_Body)
         if (response.ok)

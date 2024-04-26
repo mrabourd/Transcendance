@@ -15,27 +15,48 @@ export default class Request {
     }
 
     async post(RQ_url, RQ_body) {
+        console.log("POST")
 
-        let CSRF = await this.getCsrfToken();
-        console.log("CSRF : ", CSRF)
-        if (CSRF)
+        let request_headers = 
         {
-            RQ_body.csrfmiddlewaretoken = CSRF;
-            RQ_body.csrf_token = CSRF;
+            'Accept': 'application/json, text/plain, */*',
+            'Origin': 'https://127.0.0.1:8483/',
+            'Content-Type': 'application/json',
         }
+        //let csrftoken = await this.getCsrfToken()
+        //if (csrftoken)
+         //   request_headers['X-CSRFToken'] = csrftoken
+        if (this.token)
+            request_headers['Authorization'] = `Bearer ${this.token.access}`
+
 
         try {
             const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
                 method: 'POST',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Origin': 'https://127.0.0.1:8483/',
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': CSRF,
-                    'Authorization': `Bearer ${this.token ? this.token.access : null}`,
-                },
-                body: JSON.stringify(RQ_body)
+                headers: request_headers,
+                body: JSON.stringify(RQ_body),
+                credentials: 'include'
             });
+            
+            console.log('response getSetCookie >> ', response.headers)
+            //console.log('response.headers[x-csrftoken]) !!!', response.headers.get('x-csrftoken'))
+            //console.log('response.headers.has(Set-Cookie) ???', response.headers.get('Set-Cookie'))
+            
+            /*
+            if (response.headers.get('x-csrftoken')) {
+                const csrfToken = response.headers.get('x-csrftoken');
+
+                this.setCookie('csrftoken', csrfToken, { 
+                    expires: 365, 
+                    path: '/', 
+                    sameSite: 'None', // Ajout de l'attribut SameSite
+                    secure: true // Assurez-vous que le cookie est sécurisé pour les requêtes HTTPS
+                });
+            }
+            */
+
+
+
             if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
             {
                 let RefreshResponse = await this.refreshToken();
@@ -52,25 +73,21 @@ export default class Request {
     }
 
     async put(RQ_url, RQ_body) {
-
-        let CSRF = await this.getCsrfToken();
-        console.log("CSRF : ", CSRF)
-        if (CSRF)
+        let request_headers = 
         {
-            RQ_body.csrfmiddlewaretoken = CSRF;
-            RQ_body.csrf_token = CSRF;
+            'Accept': 'application/json, text/plain, */*',
+            'Origin': 'https://127.0.0.1:8483/',
+            'Content-Type': 'application/json',
         }
+
+        //request_headers['X-CSRFToken'] = await this.getCsrfToken()
+        if (this.tokenhis.token)
+            request_headers['Authorization'] = `Bearer ${this.token.access}`
 
         try {
             const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
                 method: 'PUT',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Origin': 'https://127.0.0.1:8483/',
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': CSRF,
-                    'Authorization': `Bearer ${this.token ? this.token.access : null}`,
-                },
+                headers: request_headers,
                 body: JSON.stringify(RQ_body)
             });
             if (response.status == 401)
@@ -82,7 +99,8 @@ export default class Request {
                     return response;
             }
             else
-                return response;        } catch (error) {
+                return response;
+        } catch (error) {
             console.error('REQUEST PUT / ERROR (72) :', error);
             throw error;
         }
@@ -193,21 +211,9 @@ export default class Request {
     }
 
     async getCsrfToken() {
-        const csrfCookie = document.cookie.split('; ')
-            .find(cookie => cookie.startsWith('csrftoken='));
+        const csrfCookie = this.getCookie('csrftoken')
         if (csrfCookie)
-        {
             return csrfCookie.split('=')[1]
-        }
-        else
-        {
-            let response = await this.get("/api/users/get_csrf_token/")
-            const jsonData = await response.json();
-            console.log('get_csrf_token', jsonData.csrf_token)
-            this.setCookie('csrftoken', jsonData.csrf_token, 1)
-            return jsonData.csrf_token;
-
-        }
         return null;
     }
 

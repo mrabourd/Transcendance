@@ -18,7 +18,7 @@ from django.http import JsonResponse
 from django.views.generic import View
 from django.middleware.csrf import get_token
 from django.http import Http404
-
+from django.utils.crypto import get_random_string
 
 class GetCSRFTokenView(View):
     def get(self, request, *args, **kwargs):
@@ -89,8 +89,14 @@ class CustomObtainTokenPairView(TokenObtainPairView):
         # Si la connexion est réussie, ajout du cookie CSRF à la réponse
         if response.status_code == 200:
             response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
+            response['access-control-allow-origin'] = 'https://localhost:8483, https://localhost:8483/*'  # Ajoute l'en-tête Access-Control-Allow-Origin
+            response['access-control-allow-headers'] = 'Set-Cookie, set-cookie, accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
             
-        return response
+            response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
+            response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken, X-Frame-Options'
+            response['Access-Control-Allow-Credentials'] = True
+            
+            return response
 
 class UserRegistrationAPIView(APIView):
     # Note: we have to specify the following policy to allow 
