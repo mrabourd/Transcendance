@@ -14,8 +14,6 @@ export default class Request {
         return this._token;
     }
 
-
-
     async post(RQ_url, RQ_body) {
 
         let CSRF = await this.getCsrfToken();
@@ -38,7 +36,7 @@ export default class Request {
                 },
                 body: JSON.stringify(RQ_body)
             });
-            if (response.status == 401)
+            if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
             {
                 let RefreshResponse = await this.refreshToken();
                 if (RefreshResponse.ok)
@@ -127,6 +125,8 @@ export default class Request {
 			this.token = jsonData;
 			this.setLocalToken(jsonData.access, jsonData.refresh);
 		}
+        else
+            this.rmLocalToken()
         return response;
     }
 

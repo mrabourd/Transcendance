@@ -8,7 +8,7 @@ from .serializers import UserSerializer, CustomTokenObtainPairSerializer, Update
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.permissions import IsAuthenticated
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import get_token, csrf_exempt
 
 from django.contrib.auth.decorators import login_required
 
@@ -27,12 +27,17 @@ class GetCSRFTokenView(View):
 
 
 class UsersAPIView(APIView):
-	permission_classes = [IsAuthenticated]
-	serializer = UserSerializer
-	def get(self, request):
-		users = User.objects.all()
-		serializer = self.serializer(users, many=True)
-		return Response(serializer.data)
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    
+    def get(self, request):
+        users = User.objects.all()
+        if not users:  # Vérifie si la base de données d'utilisateurs est vide
+            return Response({"error": "Aucun utilisateur trouvé."}, status=404)  # Renvoie une réponse avec le code d'erreur 404 (NotFound)
+        
+        serializer = self.serializer_class(users, many=True)
+        return Response(serializer.data, status=200)  # Renvoie une réponse avec le code d'état 200 (OK)
+
 
 class CustomTokenRefreshView(TokenRefreshView):
 	permission_classes = [AllowAny]
@@ -67,10 +72,25 @@ class UserDetail(APIView):
 
 
 
-# We extend the TokenObtainPairView to use our custom serializer
+# Dans cet exemple, nous avons étendu la vue CustomObtainTokenPairView 
+# en surchargeant sa méthode post. Après avoir obtenu le token JWT 
+# en appelant la méthode parente super().post(), 
+# nous vérifions si la connexion est réussie (indiquée par un code d'état HTTP 200).
+# Si c'est le cas, nous ajoutons le cookie CSRF à la réponse en utilisant 
+# la fonction get_token(request) pour obtenir le jeton CSRF.
 class CustomObtainTokenPairView(TokenObtainPairView):
     permission_classes = [AllowAny]
     serializer_class = CustomTokenObtainPairSerializer
+    
+    def post(self, request, *args, **kwargs):
+        # Appel de la méthode parente pour obtenir le token d'authentification JWT
+        response = super().post(request, *args, **kwargs)
+        
+        # Si la connexion est réussie, ajout du cookie CSRF à la réponse
+        if response.status_code == 200:
+            response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
+            
+        return response
 
 class UserRegistrationAPIView(APIView):
     # Note: we have to specify the following policy to allow 
