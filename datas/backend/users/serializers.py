@@ -77,6 +77,21 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 		return instance
 
+class EachUserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username')
+    class Meta:
+        model = User
+        fields = ('id','username','avatar')
+        read_only_fields = ('id','username','avatar')
+
+class FollowerSerializer(serializers.ModelSerializer):
+    followers = EachUserSerializer(many=True, read_only= True)
+    following = EachUserSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ('follows', 'followed_by')
+        read_only_fields = ('follows','followed_by')
 
 """ 
 def validate_password(self, value):
