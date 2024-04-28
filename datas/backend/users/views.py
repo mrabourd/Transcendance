@@ -8,23 +8,23 @@ from .serializers import UserSerializer, CustomTokenObtainPairSerializer, Update
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework.permissions import IsAuthenticated
-from django.views.decorators.csrf import get_token, csrf_exempt
-
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.generic import View
 from django.middleware.csrf import get_token
 from django.http import Http404
 from django.utils.crypto import get_random_string
+from django.utils.decorators import method_decorator
 
 class GetCSRFTokenView(View):
     def get(self, request, *args, **kwargs):
         csrf_token = get_token(request)
         return JsonResponse({'csrf_token': csrf_token})
-
 
 class UsersAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -70,7 +70,12 @@ class UserDetail(APIView):
 			return Response(serializer.data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+@method_decorator(csrf_protect, name='dispatch')
+class MaVueProtegee(View):
+    # Cette méthode gère les requêtes POST
+    def post(self, request):
+        # Traitement de la requête POST ici
+        return HttpResponse("Requête POST protégée reçue avec succès.")
 
 # Dans cet exemple, nous avons étendu la vue CustomObtainTokenPairView 
 # en surchargeant sa méthode post. Après avoir obtenu le token JWT 
@@ -89,11 +94,8 @@ class CustomObtainTokenPairView(TokenObtainPairView):
         # Si la connexion est réussie, ajout du cookie CSRF à la réponse
         if response.status_code == 200:
             response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
-            response['access-control-allow-origin'] = 'https://localhost:8483, https://localhost:8483/*'  # Ajoute l'en-tête Access-Control-Allow-Origin
-            response['access-control-allow-headers'] = 'Set-Cookie, set-cookie, accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
-            
             response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
-            response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken, X-Frame-Options'
+            response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
             response['Access-Control-Allow-Credentials'] = True
             
             return response

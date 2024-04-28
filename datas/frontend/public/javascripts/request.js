@@ -1,33 +1,37 @@
 export default class Request {
     constructor() {
         console.log("Request constructor called")
-        this._token = null;
+        this._JWTtoken = null;
     }
 
-    set token(n)
+    set JWTtoken(n)
     {
-        this._token = n;
+        this._JWTtoken = n;
     }
 
-    get token()
+    get JWTtoken()
     {
-        return this._token;
+        return this._JWTtoken;
     }
 
     async post(RQ_url, RQ_body) {
-        console.log("POST")
-
+        /// REQUEST HEADERS
+        if (!RQ_body)
+            RQ_body = {}
         let request_headers = 
         {
             'Accept': 'application/json, text/plain, */*',
             'Origin': 'https://127.0.0.1:8483/',
             'Content-Type': 'application/json',
         }
-        //let csrftoken = await this.getCsrfToken()
-        //if (csrftoken)
-         //   request_headers['X-CSRFToken'] = csrftoken
-        if (this.token)
-            request_headers['Authorization'] = `Bearer ${this.token.access}`
+        let csrftoken = await this.getCsrfToken()
+        if (csrftoken)
+        {
+            request_headers['X-CSRFToken'] = csrftoken
+            RQ_body.csrfmiddlewaretoken = csrftoken
+        }
+        if (this.JWTtoken)
+            request_headers['Authorization'] = `Bearer ${this.JWTtoken.access}`
 
 
         try {
@@ -37,52 +41,47 @@ export default class Request {
                 body: JSON.stringify(RQ_body),
                 credentials: 'include'
             });
-            
-            console.log('response getSetCookie >> ', response.headers)
-            //console.log('response.headers[x-csrftoken]) !!!', response.headers.get('x-csrftoken'))
-            //console.log('response.headers.has(Set-Cookie) ???', response.headers.get('Set-Cookie'))
-            
-            /*
-            if (response.headers.get('x-csrftoken')) {
-                const csrfToken = response.headers.get('x-csrftoken');
-
-                this.setCookie('csrftoken', csrfToken, { 
-                    expires: 365, 
-                    path: '/', 
-                    sameSite: 'None', // Ajout de l'attribut SameSite
-                    secure: true // Assurez-vous que le cookie est sécurisé pour les requêtes HTTPS
-                });
-            }
-            */
-
-
-
+            if (response.headers.has('X-CSRFToken'))
+                this.setCsrfToken(response.headers.get('X-CSRFToken'))
+ 
             if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
             {
-                let RefreshResponse = await this.refreshToken();
+                let RefreshResponse = await this.refreshJWTtoken();
                 if (RefreshResponse.ok)
-                    return await this.get(RQ_url);
+                    return await this.post(RQ_url);
                 else
                     return response;
             }
             else
-                return response;        } catch (error) {
-            console.error('REQUEST POST / ERROR (49) :', error);
+                return response;
+        } catch (error) {
+            console.error('POST ERROR :', error);
             throw error;
         }
     }
 
     async put(RQ_url, RQ_body) {
+
+        /// REQUEST HEADERS
+        if (!RQ_body)
+            RQ_body = {}
         let request_headers = 
         {
             'Accept': 'application/json, text/plain, */*',
             'Origin': 'https://127.0.0.1:8483/',
             'Content-Type': 'application/json',
-        }
+            credentials: 'include'
 
-        //request_headers['X-CSRFToken'] = await this.getCsrfToken()
-        if (this.tokenhis.token)
-            request_headers['Authorization'] = `Bearer ${this.token.access}`
+        }
+        let csrftoken = await this.getCsrfToken()
+        if (csrftoken)
+        {
+            request_headers['X-CSRFToken'] = csrftoken
+            RQ_body.csrfmiddlewaretoken = csrftoken
+        }
+        if (this.JWTtoken)
+            request_headers['Authorization'] = `Bearer ${this.JWTtoken.access}`
+
 
         try {
             const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
@@ -92,9 +91,9 @@ export default class Request {
             });
             if (response.status == 401)
             {
-                let RefreshResponse = await this.refreshToken();
+                let RefreshResponse = await this.refreshJWTtoken();
                 if (RefreshResponse.ok)
-                    return await this.get(RQ_url);
+                    return await this.put(RQ_url);
                 else
                     return response;
             }
@@ -115,12 +114,12 @@ export default class Request {
                     'Accept': 'application/json, text/plain, */*',
                     'Origin': 'https://127.0.0.1:8483',
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.token ? this.token.access : null}`,
+                    'Authorization': `Bearer ${this.JWTtoken ? this.JWTtoken.access : null}`,
                 }
             });
             if (response.status == 401)
             {
-                let RefreshResponse = await this.refreshToken();
+                let RefreshResponse = await this.refreshJWTtoken();
                 if (RefreshResponse.ok)
                     return await this.get(RQ_url);
                 else
@@ -134,53 +133,51 @@ export default class Request {
         }
     }
 
-    async refreshToken()
+    async refreshJWTtoken()
     {
-        let response = await this.post('/api/users/login/refresh/', this.token);
+        let response = await this.post('/api/users/login/refresh/', this.JWTtoken);
 		if (response.ok)
 		{
 			let jsonData = await response.json();
-			this.token = jsonData;
-			this.setLocalToken(jsonData.access, jsonData.refresh);
+			this.JWTtoken = jsonData;
+			this.setJWTtoken(jsonData.access, jsonData.refresh);
 		}
         else
-            this.rmLocalToken()
+            this.rmJWTtoken()
         return response;
     }
 
-    rmLocalToken()
+    rmJWTtoken()
     {
-        window.localStorage.removeItem("LocalToken");
+        window.localStorage.removeItem("JWTtoken");
         this.token = null;
     }
-    getLocalToken()
+    getJWTtoken()
     {
-        let tmp = window.localStorage.getItem("LocalToken");
+        let tmp = window.localStorage.getItem("JWTtoken");
         this.token = JSON.parse(tmp);
         // TODO recuperer un cookie pour plus de securite
         return this.token;
     }
 
-    setLocalToken(tk_access, tk_refresh)
+    setJWTtoken(tk_access, tk_refresh)
     {
-        this.token =
+        this.JWTtoken =
         {
             access: tk_access,
             refresh: tk_refresh,
         }
-        window.localStorage.setItem("LocalToken", JSON.stringify(this.token));
+        window.localStorage.setItem("JWTtoken", JSON.stringify(this.token));
     }
 
-    async checkLocalToken()
+    async checkJWTtoken()
     {
-        this.getLocalToken();
+        this.getJWTtoken();
         let response = await this.get("/api/users/all/")
         if (response.ok)
             return true;
         else
-        {
             return false;
-        }
     }
 
     getCookie = (name) =>
@@ -190,7 +187,6 @@ export default class Request {
             const cookies = document.cookie.split(';');
             for (let i = 0; i < cookies.length; i++) {
                 const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;
@@ -213,8 +209,15 @@ export default class Request {
     async getCsrfToken() {
         const csrfCookie = this.getCookie('csrftoken')
         if (csrfCookie)
-            return csrfCookie.split('=')[1]
+        {
+            return csrfCookie
+        }
         return null;
+    }
+
+    async setCsrfToken(csrftoken)
+    {
+        this.setCookie('csrftoken', csrftoken, 1)
     }
 
 

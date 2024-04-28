@@ -34,21 +34,27 @@ export default class User {
 
 
     async login(userName, passWord) {
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>.user login()")
+        console.log("user login()")
+
+
         let RQ_Body = {username: userName, password: passWord}
         let response = await this.request.post('/api/users/login/', RQ_Body)
         if (response.ok)
         {
             const jsonData = await response.json();
 
-            console.log("jsonData.access:", jsonData.access);
-            console.log("jsonData.refresh:", jsonData.refresh);
-            console.log("jsonData.user:", jsonData.user);
-
             this.setLocalDatas(jsonData.user)
-            this.request.setLocalToken(jsonData.access, jsonData.refresh)
+            this.request.setJWTtoken(jsonData.access, jsonData.refresh)
 
             this.isConnected = true;
+
+            const resp_csrf = await this.request.post('/api/users/ma_vue_protegee/');
+            if(resp_csrf.status == 403)
+            {
+                console.warn("CSRF attack")
+                return true;
+            }
+            
             return true;
         } else if (response.status === 401) {
             const jsonData = await response.json();
@@ -61,7 +67,7 @@ export default class User {
         this.datas = this.getLocalDatas();
         if (this.datas !== null)
         {
-            let TockenCheck = await this.request.checkLocalToken();
+            let TockenCheck = await this.request.checkJWTtoken();
             if (TockenCheck == true)
             {
                 this._isConnected = true;
@@ -69,7 +75,7 @@ export default class User {
             else
             {
                 this.rmLocalDatas();
-                this.request.rmLocalToken();
+                this.request.rmJWTtoken();
                 this._isConnected = false;
             }
         }
@@ -109,7 +115,7 @@ export default class User {
         let response = await this.request.post('/api/users/logout/', RQ_Body)
         if (response.ok) {
             this.rmLocalDatas();
-            this.request.rmLocalToken();
+            this.request.rmJWTtoken();
             this._isConnected = false;
             this.view.printHeader();
         }
