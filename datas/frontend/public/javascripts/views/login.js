@@ -56,7 +56,6 @@ export default class extends AbstractView {
 
 
     login = () => {
-        console.log("login login()")
         if (!this.checkAllFields())
             return false;        
         let username = document.querySelector("#loginForm #username").value;
@@ -94,7 +93,6 @@ export default class extends AbstractView {
     }
     login42()
     {
-        console.log("login42() called")
         const authorizeUrl = 'https://api.intra.42.fr/oauth/authorize';
     
         // Paramètres requis pour l'autorisation (client_id, redirect_uri, etc. a ajouter : scope, state, etc.)

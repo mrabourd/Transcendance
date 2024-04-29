@@ -10,7 +10,6 @@ const app = express()
 const router = express.Router();
 router.use(cors());
 
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, __dirname + '/public/avatars/')
@@ -26,7 +25,6 @@ const MulterUpload = multer({ storage: storage })
 router.post('/upload', MulterUpload.single('avatar'), function (req, res, next) {
   res.json({message: req.file.filename, ok: 1});
 })
-
 
 
 router.post('/upload', function (req, res) {

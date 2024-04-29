@@ -1,7 +1,8 @@
 export default class Request {
     constructor() {
-        console.log("Request constructor called")
         this._JWTtoken = null;
+        this.url_origin = 'https://127.0.0.1:8483/'
+        this.url_backend = 'https://127.0.0.1:8443'
     }
 
     set JWTtoken(n)
@@ -21,7 +22,7 @@ export default class Request {
         let request_headers = 
         {
             'Accept': 'application/json, text/plain, */*',
-            'Origin': 'https://127.0.0.1:8483/',
+            'Origin': this.url_origin,
             'Content-Type': 'application/json',
         }
         let csrftoken = await this.getCsrfToken()
@@ -33,9 +34,8 @@ export default class Request {
         if (this.JWTtoken)
             request_headers['Authorization'] = `Bearer ${this.JWTtoken.access}`
 
-
         try {
-            const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
+            const response = await fetch( this.url_backend + RQ_url, {
                 method: 'POST',
                 headers: request_headers,
                 body: JSON.stringify(RQ_body),
@@ -55,7 +55,7 @@ export default class Request {
             else
                 return response;
         } catch (error) {
-            console.error('POST ERROR :', error);
+            console.error('request.js post error :', error);
             throw error;
         }
     }
@@ -68,7 +68,7 @@ export default class Request {
         let request_headers = 
         {
             'Accept': 'application/json, text/plain, */*',
-            'Origin': 'https://127.0.0.1:8483/',
+            'Origin': this.url_origin,
             'Content-Type': 'application/json',
             credentials: 'include'
 
@@ -84,7 +84,7 @@ export default class Request {
 
 
         try {
-            const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
+            const response = await fetch(this.url_backend + RQ_url, {
                 method: 'PUT',
                 headers: request_headers,
                 body: JSON.stringify(RQ_body)
@@ -100,22 +100,28 @@ export default class Request {
             else
                 return response;
         } catch (error) {
-            console.error('REQUEST PUT / ERROR (72) :', error);
+            console.error('request.js put error :', error);
             throw error;
         }
     }
 
+    // Pas besoin d'inclure le csrftoken
     async get(RQ_url) {
 
+        let request_headers = 
+        {
+            'Accept': 'application/json, text/plain, */*',
+            'Origin': this.url_origin,
+            'Content-Type': 'application/json'
+
+        }
+        if (this.JWTtoken)
+            request_headers['Authorization'] = `Bearer ${this.JWTtoken.access}`
+
         try {
-            const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
+            const response = await fetch(this.url_backend + RQ_url, {
                 method: 'GET',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Origin': 'https://127.0.0.1:8483',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.JWTtoken ? this.JWTtoken.access : null}`,
-                }
+                headers: request_headers
             });
             if (response.status == 401)
             {
@@ -128,7 +134,7 @@ export default class Request {
             else
                 return response;
         } catch (error) {
-            console.error('REQUEST GET / ERROR (49) :', error);
+            console.error('request.js get error :', error);
             throw error;
         }
     }
@@ -155,9 +161,9 @@ export default class Request {
     getJWTtoken()
     {
         let tmp = window.localStorage.getItem("JWTtoken");
-        this.token = JSON.parse(tmp);
+        this.JWTtoken = JSON.parse(tmp);
         // TODO recuperer un cookie pour plus de securite
-        return this.token;
+        return this.JWTtoken;
     }
 
     setJWTtoken(tk_access, tk_refresh)
@@ -167,7 +173,7 @@ export default class Request {
             access: tk_access,
             refresh: tk_refresh,
         }
-        window.localStorage.setItem("JWTtoken", JSON.stringify(this.token));
+        window.localStorage.setItem("JWTtoken", JSON.stringify(this.JWTtoken));
     }
 
     async checkJWTtoken()
@@ -203,7 +209,7 @@ export default class Request {
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             expires = "; expires=" + date.toUTCString();
         }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        document.cookie = name + "=" + (value || "") + expires + "; SameSite=None; Secure ; path=/";
     }
 
     async getCsrfToken() {

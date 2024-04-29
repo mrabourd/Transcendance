@@ -2,7 +2,6 @@ import Request from "./request.js";
 
 export default class User {
     constructor() {
-        console.log("User constructor called")
         this._isConnected = false;
         this._datas = {username:"john"};
         this.request = new Request;
@@ -34,9 +33,6 @@ export default class User {
 
 
     async login(userName, passWord) {
-        console.log("user login()")
-
-
         let RQ_Body = {username: userName, password: passWord}
         let response = await this.request.post('/api/users/login/', RQ_Body)
         if (response.ok)
@@ -63,7 +59,6 @@ export default class User {
     }
 
     checkLocalStorage = async() => {
-        console.log("checkLocalStorage");
         this.datas = this.getLocalDatas();
         if (this.datas !== null)
         {
@@ -109,9 +104,7 @@ export default class User {
 
 
     logout = async() =>{
-        console.log("user logout()")
-        let RQ_Body = this.request._token;
-		console.log("RQ_Body:", RQ_Body)
+        let RQ_Body = this.request._JWTtoken;
         let response = await this.request.post('/api/users/logout/', RQ_Body)
         if (response.ok) {
             this.rmLocalDatas();

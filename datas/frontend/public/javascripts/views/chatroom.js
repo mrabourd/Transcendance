@@ -28,7 +28,7 @@ export default class extends AbstractView {
         webSocket.addEventListener("open", () => {
             console.log("We are connected");
         });
-        document.getElementById('input-form').addEventListener('submit', this.sendMessageCallback(webSocket));
+        //document.getElementById('input-form').addEventListener('submit', this.sendMessageCallback(webSocket));
   
     }
 
