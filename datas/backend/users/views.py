@@ -123,11 +123,10 @@ class UserRegistrationAPIView(APIView):
 
 class FollowUser(APIView):
 	permission_classes = [IsAuthenticated]
+	# serializer_class = FollowerSerializer
 	
 	def current_profile(self):
 		try:
-			# problem here
-			print("self: ", self.request.data.get('me') ) 
 			return self.request.data.get('me')
 		except User.DoesNotExist:
 			raise Http404
@@ -140,23 +139,26 @@ class FollowUser(APIView):
 
 	def post(self, request, req_type, id, format=None):    
 		pk = id         # Here pk is opposite user's profile ID
-		print("followed user_id: ", pk)
-		print("type: ", req_type)
+		# followType = request.data.get('usertype')
 		
 		current_profile = request.user
 		other_profile = self.other_profile(pk)
 		
 		if req_type == 'follow':
-			# if other_profile.private_account:
-				# other_profile.add(current_profile)
-				# return Response({"Requested" : "Follow request has been send!!"},status=status.HTTP_200_OK)
-			# else:
 			# if other_profile.blocked_user.filter(pk = current_profile.id).exists():
 			# 	return Response({"Following Fail" : "You can not follow this profile becuase your ID blocked by this user!!"},status=status.HTTP_400_BAD_REQUEST)
 			current_profile.follows.add(other_profile)
 			# other_profile.followers.add(current_profile)
-			return Response({"Following" : "Following success!!"},status=status.HTTP_200_OK) 
+			# serializer = self.serializer_class(other_profile, many=True)
+			# print("serializer: ", serializer.data)
+			# return Response({"Following" : "Following success!!"}, serializer.data, status=status.HTTP_200_OK) 
+			return Response({"Following" : "Following success!!"}, status=status.HTTP_200_OK) 
 		
+		elif req_type == 'unfollow':
+			current_profile.follows.remove(other_profile)
+			# other_profile.followers.remove(current_profile)
+			return Response({"Unfollow" : "Unfollow success!!"},status=status.HTTP_200_OK)
+			
 		# elif req_type == 'accept':
 		# 	current_profile.followers.add(other_profile)
 		# 	other_profile.following.add(current_profile)
@@ -167,11 +169,6 @@ class FollowUser(APIView):
 		# 	current_profile.panding_request.remove(other_profile)
 		# 	return Response({"Decline" : "Follow request successfully declined!!"},status=status.HTTP_200_OK)
 		
-		elif req_type == 'unfollow':
-			current_profile.follows.remove(other_profile)
-			# other_profile.followers.remove(current_profile)
-			return Response({"Unfollow" : "Unfollow success!!"},status=status.HTTP_200_OK)
-			
 		# elif req_type == 'remove':     # You can remove your follower
 		# 	current_profile.followers.remove(other_profile)
 		# 	other_profile.following.remove(current_profile)

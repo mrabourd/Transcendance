@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 #from users.models import Profile
+# from .models import Followed
 
 User = get_user_model() # Get reference to the model
 
@@ -77,21 +78,15 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 		return instance
 
-class EachUserSerializer(serializers.ModelSerializer):
-    # username = serializers.CharField(source='user.username')
-    class Meta:
-        model = User
-        fields = ('id')
-        read_only_fields = ('id')
 
-class FollowerSerializer(serializers.ModelSerializer):
-    follows = EachUserSerializer(many=True, read_only= True)
-    # following = EachUserSerializer(many=True, read_only=True)
+# class FollowerSerializer(serializers.ModelSerializer):
+#     # follows = EachUserSerializer(many=True, read_only= True)
+#     # following = EachUserSerializer(many=True, read_only=True)
     
-    class Meta:
-        model = User
-        fields = ('follows', 'followed_by')
-        read_only_fields = ('follows','followed_by')
+#     class Meta:
+#         model = Followed
+#         fields = ('follows', 'followed_by')
+#         read_only_fields = ('follows','followed_by')
 
 """ 
 def validate_password(self, value):

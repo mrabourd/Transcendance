@@ -12,3 +12,12 @@ class User(AbstractUser):
         symmetrical=False,
         blank=True
     )
+
+
+# class Followed(models.Model):
+#     follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     print("id du followed: ",)
+#     follower = models.ForeignKey(User, related_name='followed_users', on_delete=models.CASCADE)
+#     # followed_user = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+#     created_at = models.DateTimeField(auto_now_add=True)
