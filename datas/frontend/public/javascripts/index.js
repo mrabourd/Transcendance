@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", async() => {
             
         }
     });
-    console.log("index.js", "user", user)
     user.router = router
     router.router(user);
 });

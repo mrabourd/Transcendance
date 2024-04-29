@@ -4,7 +4,6 @@ import * as aside from "../aside.js";
 export default class {
     constructor(params) {
         this.params = params;
-        console.log(params);
     }
 
     setTitle(title) {

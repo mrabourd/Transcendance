@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from users.views import CustomObtainTokenPairView, CustomTokenRefreshView, UserRegistrationAPIView, UsersAPIView, FollowUser
-from users.views import GetCSRFTokenView, CustomObtainTokenPairView, UserRegistrationAPIView, UsersAPIView, UserDetail, FollowUser
+from users.views import MaVueProtegee, GetCSRFTokenView, CustomObtainTokenPairView, UserRegistrationAPIView, UsersAPIView, UserDetail, FollowUser
 from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.views import LogoutView
@@ -21,6 +21,8 @@ urlpatterns = [
 	path('logout/', TokenBlacklistView.as_view(), name='logout'),
 
 	path('all/', UsersAPIView.as_view(), name='users-list'),
+
+    path('ma_vue_protegee/', MaVueProtegee.as_view(), name='ma_vue_protegee'),
 
     path('profile/<uuid:id>/', UserDetail.as_view(), name='profile-id'),
 

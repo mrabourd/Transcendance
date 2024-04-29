@@ -20,10 +20,10 @@ export default class extends AbstractView {
         });
     }
     async fillHtml(DOM) {
-        console.log("fillHtml")
+        //console.log("fillHtml")
     }
     addEvents () {
-        console.log("Add Events")
+        //console.log("Add Events")
     }
     // fonction specifiques a la vue
 }
