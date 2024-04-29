@@ -26,8 +26,8 @@ urlpatterns = [
 
     path('profile/<uuid:id>/', UserDetail.as_view(), name='profile-id'),
 
-    path('follow/<uuid:id>/', FollowUser.as_view(), name='follow_user'),
-    # path('unfollow/<uuid:id>/', UnfollowUser.as_view(), name='unfollow_user'),
+    path('<str:req_type>/<uuid:id>/', FollowUser.as_view(), name='follow_user'),
+    # path('<text:req_type>/<uuid:id>/', FollowUser.as_view(), name='unfollow_user'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])

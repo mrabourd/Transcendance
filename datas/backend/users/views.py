@@ -123,7 +123,7 @@ class UserRegistrationAPIView(APIView):
 
 class FollowUser(APIView):
 	permission_classes = [IsAuthenticated]
-
+	
 	def current_profile(self):
 		try:
 			# problem here
@@ -137,14 +137,13 @@ class FollowUser(APIView):
 			return User.objects.get(id = pk)
 		except User.DoesNotExist:
 			raise Http404
-	
-	def post(self, request, id, format=None):    
+
+	def post(self, request, req_type, id, format=None):    
 		pk = id         # Here pk is opposite user's profile ID
-		print("id: ", id)
-		print("usertype: ", request.data.get('usertype'))
-		req_type = request.data.get('usertype')       
+		print("followed user_id: ", pk)
+		print("type: ", req_type)
 		
-		current_profile = self.current_profile()
+		current_profile = request.user
 		other_profile = self.other_profile(pk)
 		
 		if req_type == 'follow':
@@ -169,8 +168,8 @@ class FollowUser(APIView):
 		# 	return Response({"Decline" : "Follow request successfully declined!!"},status=status.HTTP_200_OK)
 		
 		elif req_type == 'unfollow':
-			current_profile.following.remove(other_profile)
-			other_profile.followers.remove(current_profile)
+			current_profile.follows.remove(other_profile)
+			# other_profile.followers.remove(current_profile)
 			return Response({"Unfollow" : "Unfollow success!!"},status=status.HTTP_200_OK)
 			
 		# elif req_type == 'remove':     # You can remove your follower

@@ -52,7 +52,7 @@ export async function print(user)
 					let value =  document.getElementById("followButton").innerText;
 					if (value === "Follow!"){
 						console.log("I want to follow: ", list_user.username)
-						let RQ_Body = {'id': list_user.id, 'usertype': 'follow', 'me': user.datas.id}
+						let RQ_Body = {'usertype': 'follow'}
 						document.getElementById("followButton").innerText = "Unfollow"
 						
 						// add follow
