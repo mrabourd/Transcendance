@@ -84,6 +84,7 @@ INSTALLED_APPS = [
 	"rest_framework.authtoken",
 	'singlepage',
 	'users',
+	'match',
 	'rest_framework_simplejwt',
 	'rest_framework_simplejwt.token_blacklist',
     'oauth2_provider',

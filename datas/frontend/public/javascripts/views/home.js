@@ -23,6 +23,14 @@ export default class extends AbstractView {
         //console.log("fillHtml")
     }
     addEvents () {
+        document.querySelector('#subscribe a').addEventListener('click',  async e => 
+        {
+            e.preventDefault();
+            console.log(this.user.datas.id)
+            console.log("subscribe")
+            response = await this.user.request.post('api/match/subscribe/', {})
+            console.log('response : ', response)
+        })
         //console.log("Add Events")
     }
     // fonction specifiques a la vue
