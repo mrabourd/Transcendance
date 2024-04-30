@@ -1,24 +1,10 @@
 export default class Request {
     constructor() {
-        this._JWTtoken = null;
         this.url_origin = 'https://127.0.0.1:8483/'
         this.url_backend = 'https://127.0.0.1:8443'
     }
 
-    set JWTtoken(n)
-    {
-        this._JWTtoken = n;
-    }
-
-    get JWTtoken()
-    {
-        return this._JWTtoken;
-    }
-
-    async post(RQ_url, RQ_body) {
-        /// REQUEST HEADERS
-        if (!RQ_body)
-            RQ_body = {}
+    async get_request_header(){
         let request_headers = 
         {
             'Accept': 'application/json, text/plain, */*',
@@ -27,17 +13,18 @@ export default class Request {
         }
         let csrftoken = await this.getCsrfToken()
         if (csrftoken)
-        {
             request_headers['X-CSRFToken'] = csrftoken
-            RQ_body.csrfmiddlewaretoken = csrftoken
-        }
-        if (this.JWTtoken)
-            request_headers['Authorization'] = `Bearer ${this.JWTtoken.access}`
+        const JWTtoken = this.getJWTtoken()
+        if (JWTtoken)
+            request_headers['Authorization'] = `Bearer ${JWTtoken.access}`
+        return request_headers
+    }
 
+    async post(RQ_url, RQ_body) {
         try {
             const response = await fetch( this.url_backend + RQ_url, {
                 method: 'POST',
-                headers: request_headers,
+                headers: await this.get_request_header(),
                 body: JSON.stringify(RQ_body),
                 credentials: 'include'
             });
@@ -62,34 +49,14 @@ export default class Request {
 
     async put(RQ_url, RQ_body) {
 
-        /// REQUEST HEADERS
-        if (!RQ_body)
-            RQ_body = {}
-        let request_headers = 
-        {
-            'Accept': 'application/json, text/plain, */*',
-            'Origin': this.url_origin,
-            'Content-Type': 'application/json',
-            credentials: 'include'
-
-        }
-        let csrftoken = await this.getCsrfToken()
-        if (csrftoken)
-        {
-            request_headers['X-CSRFToken'] = csrftoken
-            RQ_body.csrfmiddlewaretoken = csrftoken
-        }
-        if (this.JWTtoken)
-            request_headers['Authorization'] = `Bearer ${this.JWTtoken.access}`
-
-
-        try {
+       try {
             const response = await fetch(this.url_backend + RQ_url, {
                 method: 'PUT',
-                headers: request_headers,
-                body: JSON.stringify(RQ_body)
+                headers: await this.get_request_header(),
+                body: JSON.stringify(RQ_body),
+                credentials: 'include'
             });
-            if (response.status == 401)
+            if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
             {
                 let RefreshResponse = await this.refreshJWTtoken();
                 if (RefreshResponse.ok)
@@ -107,23 +74,12 @@ export default class Request {
 
     // Pas besoin d'inclure le csrftoken
     async get(RQ_url) {
-
-        let request_headers = 
-        {
-            'Accept': 'application/json, text/plain, */*',
-            'Origin': this.url_origin,
-            'Content-Type': 'application/json'
-
-        }
-        if (this.JWTtoken)
-            request_headers['Authorization'] = `Bearer ${this.JWTtoken.access}`
-
         try {
             const response = await fetch(this.url_backend + RQ_url, {
                 method: 'GET',
-                headers: request_headers
+                headers: await this.get_request_header(),
             });
-            if (response.status == 401)
+            if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
             {
                 let RefreshResponse = await this.refreshJWTtoken();
                 if (RefreshResponse.ok)
@@ -155,15 +111,12 @@ export default class Request {
 
     rmJWTtoken()
     {
-        window.localStorage.removeItem("JWTtoken");
-        this.token = null;
+        this.rmCookie("JWTtoken")
     }
     getJWTtoken()
     {
-        let tmp = window.localStorage.getItem("JWTtoken");
-        this.JWTtoken = JSON.parse(tmp);
-        // TODO recuperer un cookie pour plus de securite
-        return this.JWTtoken;
+        let tmp = this.getCookie("JWTtoken")
+        return JSON.parse(tmp);
     }
 
     setJWTtoken(tk_access, tk_refresh)
@@ -173,12 +126,11 @@ export default class Request {
             access: tk_access,
             refresh: tk_refresh,
         }
-        window.localStorage.setItem("JWTtoken", JSON.stringify(this.JWTtoken));
+        this.setCookie("JWTtoken", JSON.stringify(this.JWTtoken), 1);
     }
 
     async checkJWTtoken()
     {
-        this.getJWTtoken();
         let response = await this.get("/api/users/all/")
         if (response.ok)
             return true;
@@ -202,28 +154,36 @@ export default class Request {
         return cookieValue;
     }
 
-    setCookie(name, value, days) {
+    rmCookie = (name) =>
+    {
+        document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC ; SameSite=None; Secure ; path=/";
+    }
+
+    setCookie(name, value, days = 1) {
         var expires = "";
         if (days) {
             var date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             expires = "; expires=" + date.toUTCString();
         }
-        document.cookie = name + "=" + (value || "") + expires + "; SameSite=None; Secure ; path=/";
+        document.cookie = name + "=" + (value || "") + expires + "; SameSite=Strict; Secure ; path=/";
     }
 
     async getCsrfToken() {
         const csrfCookie = this.getCookie('csrftoken')
         if (csrfCookie)
-        {
             return csrfCookie
-        }
         return null;
     }
 
     async setCsrfToken(csrftoken)
     {
         this.setCookie('csrftoken', csrftoken, 1)
+    }
+
+    async rmCsrfToken(csrftoken)
+    {
+        this.rmCookie('csrftoken')
     }
 
 

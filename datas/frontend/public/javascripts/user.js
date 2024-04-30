@@ -104,13 +104,14 @@ export default class User {
 
 
     logout = async() =>{
-        let RQ_Body = this.request._JWTtoken;
+        let RQ_Body = await this.request.getJWTtoken();
         let response = await this.request.post('/api/users/logout/', RQ_Body)
         if (response.ok) {
             this.rmLocalDatas();
             this.request.rmJWTtoken();
+            this.request.rmCsrfToken();
             this._isConnected = false;
-            this.view.printHeader();
+            this.router.navigateTo('/', this);
         }
     }
 }
