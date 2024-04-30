@@ -24,7 +24,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 		data["refresh"] = str(refresh)
 		data["access"] = str(refresh.access_token)
-		data["test"] = "value"
+		# data["test"] = "value"
 		# Add your extra responses here
 		data['user'] = ({"username" : self.user.username,
 				   		"email" : self.user.email, 
@@ -45,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('id', 'email', 'username', 'password', 'first_name', 'last_name', 'biography')
+		fields = ('id', 'email', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by")
 		extra_kwargs = {
 			'avatar': {'required': False}, # 'avatar' is not required
 			'password': {'write_only': True},

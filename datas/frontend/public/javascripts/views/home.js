@@ -19,8 +19,9 @@ export default class extends AbstractView {
             console.warn('Something went wrong.', err);
         });
     }
+
     async fillHtml(DOM) {
-        //console.log("fillHtml")
+        this.user.RefreshLocalDatas()
     }
     addEvents () {
         document.querySelector('#subscribe a').addEventListener('click',  async e => 

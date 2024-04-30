@@ -101,6 +101,19 @@ export default class User {
         // TODO enregistrer un cookie pour plus de securite
     }
 
+    RefreshLocalDatas = async () =>
+    {
+
+        let response = await this.request.get('/api/users/profile/'+this.datas.id+'/')
+        if (response.ok)
+        {
+            let jsonData = await response.json();
+            window.localStorage.setItem("LocalDatas", JSON.stringify(jsonData));
+        }      
+        //this.token = jsonData;
+        // TODO enregistrer un cookie pour plus de securite
+    }
+
 
 
     logout = async() =>{
