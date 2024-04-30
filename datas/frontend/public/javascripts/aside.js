@@ -15,6 +15,7 @@ export async function print(user)
 			const users = await response.json();
 			
 			let displayFriends = document.querySelector("#friends");
+			let follow_text;
 			//display people:
 			users.forEach(list_user => {
 				if (list_user.username === "root" || list_user.username === user.datas.username)
@@ -26,9 +27,9 @@ export async function print(user)
 				let follow		= utils.FormcreateElement("div", ["col-2"]);
 
 				// if the user is already followed : display `unfollow`. Otherwise, display `Follow!`
-				let follow_text = "Follow!";
+				if (user.datas.follows.id == undefined)
+						follow_text = "Follow!";
 				user.datas.follows.forEach(id => {
-					console.log("user.datas.id: ", id)
 					if (id == list_user.id)
 						follow_text = "Unfollow!";
 					else
@@ -40,7 +41,7 @@ export async function print(user)
 					"type": "button"
 				});
 
-				let f_avatar  =  utils.FormcreateElement("img", ["col-3"], {"src": avatar, "style":"border-radius: 50%;"});
+				let f_avatar  =  utils.FormcreateElement("img", ["rounded-circle", "col-3"], {"src": avatar, "style":"border-radius: 50%;"});
 				let f_name = utils.FormcreateElement("div", ["h5"]);
 				let f_link = utils.FormcreateElement("a", ["profile-link", "#href"], {"innerText": list_user.username});
 				let f_status = utils.FormcreateElement("p", ["status"], {"innerText": "status:"}); //add status here

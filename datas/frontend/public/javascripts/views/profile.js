@@ -87,12 +87,14 @@ export default class extends AbstractView {
 
 	async fillFollowed()
 	{
+		// La, les users s'ecrivent les uns sur les autres. Faire en sorte qu'ils s'ecrivent les uns a la suite des autres plutot
 		Promise.all(
-			(this.user.datas.follows).map(async(followed) => {
+			(this.user.datas.follows).map(async (followed) => {
 				let url = '/api/users/profile/'+followed+'/';
 				let response = await this.user.request.get(url);
 				if (response.ok) {
 					const users_followed = await response.json();
+					console.log("followed user: ", users_followed.username)
 					document.getElementById("avatar").innerHTML = users_followed.avatar;
 					document.getElementById("friend_username").innerHTML = users_followed.username;
 					document.getElementById("friend_status").innerHTML = users_followed.status;
@@ -102,6 +104,7 @@ export default class extends AbstractView {
 
 			// document.getElementById("friend_username").innerHTML = user_followed;
 			}),
+			
 		);
 		// document.getElementById("friend_username").innerHTML = followed;
 		/*
