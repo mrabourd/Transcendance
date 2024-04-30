@@ -24,7 +24,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 		data["refresh"] = str(refresh)
 		data["access"] = str(refresh.access_token)
-		data["test"] = "value"
+		# data["test"] = "value"
 		# Add your extra responses here
 		data['user'] = ({"username" : self.user.username,
 				   		"email" : self.user.email, 
@@ -33,6 +33,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 						"id" :self.user.id,
 						"avatar" : self.user.avatar if self.user.avatar else None,
 						"biography" : self.user.biography,
+						"status" : self.user.status,
 						"follows" : self.user.follows.all().values_list('id', flat=True),
 						"followed_by" : self.user.followed_by.all().values_list('id', flat=True)}
 						)
@@ -44,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('id', 'email', 'username', 'password', 'first_name', 'last_name', 'biography')
+		fields = ('id', 'email', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by")
 		extra_kwargs = {
 			'avatar': {'required': False}, # 'avatar' is not required
 			'password': {'write_only': True},

@@ -101,16 +101,30 @@ export default class User {
         // TODO enregistrer un cookie pour plus de securite
     }
 
+    RefreshLocalDatas = async () =>
+    {
+
+        let response = await this.request.get('/api/users/profile/'+this.datas.id+'/')
+        if (response.ok)
+        {
+            let jsonData = await response.json();
+            window.localStorage.setItem("LocalDatas", JSON.stringify(jsonData));
+        }      
+        //this.token = jsonData;
+        // TODO enregistrer un cookie pour plus de securite
+    }
+
 
 
     logout = async() =>{
-        let RQ_Body = this.request._JWTtoken;
+        let RQ_Body = await this.request.getJWTtoken();
         let response = await this.request.post('/api/users/logout/', RQ_Body)
         if (response.ok) {
             this.rmLocalDatas();
             this.request.rmJWTtoken();
+            this.request.rmCsrfToken();
             this._isConnected = false;
-            this.view.printHeader();
+            this.router.navigateTo('/', this);
         }
     }
 }

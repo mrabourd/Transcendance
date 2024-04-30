@@ -65,7 +65,9 @@ CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_AGE = 3600
 CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = True 
+
 AUTH_USER_MODEL = 'users.User'
 # Application definition
 
@@ -82,6 +84,7 @@ INSTALLED_APPS = [
 	"rest_framework.authtoken",
 	'singlepage',
 	'users',
+	'match',
 	'rest_framework_simplejwt',
 	'rest_framework_simplejwt.token_blacklist',
     'oauth2_provider',
