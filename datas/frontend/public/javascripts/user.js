@@ -2,7 +2,6 @@ import Request from "./request.js";
 
 export default class User {
     constructor() {
-        console.log("User constructor called")
         this._isConnected = false;
         this._datas = {username:"john"};
         this.request = new Request;
@@ -34,21 +33,24 @@ export default class User {
 
 
     async login(userName, passWord) {
-        console.log("user login()")
         let RQ_Body = {username: userName, password: passWord}
         let response = await this.request.post('/api/users/login/', RQ_Body)
         if (response.ok)
         {
             const jsonData = await response.json();
 
-            console.log("jsonData.access:", jsonData.access);
-            console.log("jsonData.refresh:", jsonData.refresh);
-            console.log("jsonData.user:", jsonData.user);
-
             this.setLocalDatas(jsonData.user)
-            this.request.setLocalToken(jsonData.access, jsonData.refresh)
+            this.request.setJWTtoken(jsonData.access, jsonData.refresh)
 
             this.isConnected = true;
+
+            const resp_csrf = await this.request.post('/api/users/ma_vue_protegee/');
+            if(resp_csrf.status == 403)
+            {
+                console.warn("CSRF attack")
+                return true;
+            }
+            
             return true;
         } else if (response.status === 401) {
             const jsonData = await response.json();
@@ -57,11 +59,10 @@ export default class User {
     }
 
     checkLocalStorage = async() => {
-        console.log("checkLocalStorage");
         this.datas = this.getLocalDatas();
         if (this.datas !== null)
         {
-            let TockenCheck = await this.request.checkLocalToken();
+            let TockenCheck = await this.request.checkJWTtoken();
             if (TockenCheck == true)
             {
                 this._isConnected = true;
@@ -69,7 +70,7 @@ export default class User {
             else
             {
                 this.rmLocalDatas();
-                this.request.rmLocalToken();
+                this.request.rmJWTtoken();
                 this._isConnected = false;
             }
         }
@@ -100,18 +101,30 @@ export default class User {
         // TODO enregistrer un cookie pour plus de securite
     }
 
+    RefreshLocalDatas = async () =>
+    {
+
+        let response = await this.request.get('/api/users/profile/'+this.datas.id+'/')
+        if (response.ok)
+        {
+            let jsonData = await response.json();
+            window.localStorage.setItem("LocalDatas", JSON.stringify(jsonData));
+        }      
+        //this.token = jsonData;
+        // TODO enregistrer un cookie pour plus de securite
+    }
+
 
 
     logout = async() =>{
-        console.log("user logout()")
-        let RQ_Body = this.request._token;
-		console.log("RQ_Body:", RQ_Body)
+        let RQ_Body = await this.request.getJWTtoken();
         let response = await this.request.post('/api/users/logout/', RQ_Body)
         if (response.ok) {
             this.rmLocalDatas();
-            this.request.rmLocalToken();
+            this.request.rmJWTtoken();
+            this.request.rmCsrfToken();
             this._isConnected = false;
-            this.view.printHeader();
+            this.router.navigateTo('/', this);
         }
     }
 }

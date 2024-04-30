@@ -6,9 +6,14 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     avatar = models.TextField(max_length=500, blank=True, default="https://www.gravatar.com/avatar/")
     biography = models.TextField(max_length=500, blank=True)
+    status = models.IntegerField(default=0)
     follows = models.ManyToManyField(
         "self",
         related_name="followed_by",
         symmetrical=False,
         blank=True
     )
+
+    def SetStatus(self, status):
+        print(f'{self} status = {status} ')
+        self.status = status

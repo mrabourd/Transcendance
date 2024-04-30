@@ -65,7 +65,6 @@ export default class extends AbstractView {
     register = () => {
         if (!this.checkAllFields())
             return false;
-
         fetch('https://127.0.0.1:8443/api/users/register/', {
             method: 'POST',
             headers: {
@@ -115,7 +114,6 @@ export default class extends AbstractView {
                 errDiv.classList.remove("d-none")
                 errDiv.innerHTML = result;
             }
-
         })
         .catch((error) => {
             // Gérer les erreurs de requête ou de conversion JSON

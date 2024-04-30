@@ -1,110 +1,85 @@
 export default class Request {
     constructor() {
-        console.log("Request constructor called")
-        this._token = null;
+        this.url_origin = 'https://localhost:8483/'
+        this.url_backend = 'https://localhost:8443'
     }
 
-    set token(n)
-    {
-        this._token = n;
+    async get_request_header(){
+        let request_headers = 
+        {
+            'Accept': 'application/json, text/plain, */*',
+            'Origin': this.url_origin,
+            'Content-Type': 'application/json',
+        }
+        request_headers['X-CSRFToken'] = await this.getCsrfToken()
+        const JWTtoken = this.getJWTtoken()
+        if (JWTtoken)
+            request_headers['Authorization'] = `Bearer ${JWTtoken.access}`
+        return request_headers
     }
-
-    get token()
-    {
-        return this._token;
-    }
-
-
 
     async post(RQ_url, RQ_body) {
-
-        let CSRF = await this.getCsrfToken();
-        console.log("CSRF : ", CSRF)
-        if (CSRF)
-        {
-            RQ_body.csrfmiddlewaretoken = CSRF;
-            RQ_body.csrf_token = CSRF;
-        }
-
         try {
-            const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
+            const response = await fetch( this.url_backend + RQ_url, {
                 method: 'POST',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Origin': 'https://127.0.0.1:8483/',
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': CSRF,
-                    'Authorization': `Bearer ${this.token ? this.token.access : null}`,
-                },
-                body: JSON.stringify(RQ_body)
+                headers: await this.get_request_header(),
+                body: JSON.stringify(RQ_body),
+                credentials: 'include'
             });
-            if (response.status == 401)
+            if (response.headers.has('X-CSRFToken'))
+                this.setCsrfToken(response.headers.get('X-CSRFToken'))
+ 
+            if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
             {
-                let RefreshResponse = await this.refreshToken();
+                let RefreshResponse = await this.refreshJWTtoken();
                 if (RefreshResponse.ok)
-                    return await this.get(RQ_url);
+                    return await this.post(RQ_url);
                 else
                     return response;
             }
             else
-                return response;        } catch (error) {
-            console.error('REQUEST POST / ERROR (49) :', error);
+                return response;
+        } catch (error) {
+            console.error('request.js post error :', error);
             throw error;
         }
     }
 
     async put(RQ_url, RQ_body) {
 
-        let CSRF = await this.getCsrfToken();
-        console.log("CSRF : ", CSRF)
-        if (CSRF)
-        {
-            RQ_body.csrfmiddlewaretoken = CSRF;
-            RQ_body.csrf_token = CSRF;
-        }
-
-        try {
-            const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
+       try {
+            const response = await fetch(this.url_backend + RQ_url, {
                 method: 'PUT',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Origin': 'https://127.0.0.1:8483/',
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': CSRF,
-                    'Authorization': `Bearer ${this.token ? this.token.access : null}`,
-                },
-                body: JSON.stringify(RQ_body)
+                headers: await this.get_request_header(),
+                body: JSON.stringify(RQ_body),
+                credentials: 'include'
             });
-            if (response.status == 401)
+            if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
             {
-                let RefreshResponse = await this.refreshToken();
+                let RefreshResponse = await this.refreshJWTtoken();
                 if (RefreshResponse.ok)
-                    return await this.get(RQ_url);
+                    return await this.put(RQ_url);
                 else
                     return response;
             }
             else
-                return response;        } catch (error) {
-            console.error('REQUEST PUT / ERROR (72) :', error);
+                return response;
+        } catch (error) {
+            console.error('request.js put error :', error);
             throw error;
         }
     }
 
+    // Pas besoin d'inclure le csrftoken
     async get(RQ_url) {
-
         try {
-            const response = await fetch('https://127.0.0.1:8443' + RQ_url, {
+            const response = await fetch(this.url_backend + RQ_url, {
                 method: 'GET',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Origin': 'https://127.0.0.1:8483',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.token ? this.token.access : null}`,
-                }
+                headers: await this.get_request_header(),
             });
-            if (response.status == 401)
+            if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
             {
-                let RefreshResponse = await this.refreshToken();
+                let RefreshResponse = await this.refreshJWTtoken();
                 if (RefreshResponse.ok)
                     return await this.get(RQ_url);
                 else
@@ -113,56 +88,55 @@ export default class Request {
             else
                 return response;
         } catch (error) {
-            console.error('REQUEST GET / ERROR (49) :', error);
+            console.error('request.js get error :', error);
             throw error;
         }
     }
 
-    async refreshToken()
+    async refreshJWTtoken()
     {
-        let response = await this.post('/api/users/login/refresh/', this.token);
+        let response = await this.post('/api/users/login/refresh/', this.JWTtoken);
 		if (response.ok)
 		{
 			let jsonData = await response.json();
-			this.token = jsonData;
-			this.setLocalToken(jsonData.access, jsonData.refresh);
+			this.JWTtoken = jsonData;
+			this.setJWTtoken(jsonData.access, jsonData.refresh);
 		}
+        else
+            this.rmJWTtoken()
         return response;
     }
 
-    rmLocalToken()
+    rmJWTtoken()
     {
-        window.localStorage.removeItem("LocalToken");
-        this.token = null;
+        this.rmCookie("JWTtoken")
     }
-    getLocalToken()
+    getJWTtoken()
     {
-        let tmp = window.localStorage.getItem("LocalToken");
-        this.token = JSON.parse(tmp);
-        // TODO recuperer un cookie pour plus de securite
-        return this.token;
+        let tmp = this.getCookie("JWTtoken")
+        //let tmp = window.localStorage.getItem("JWTtoken");
+        return JSON.parse(tmp);
     }
 
-    setLocalToken(tk_access, tk_refresh)
+    setJWTtoken(tk_access, tk_refresh)
     {
-        this.token =
+        this.JWTtoken =
         {
             access: tk_access,
             refresh: tk_refresh,
         }
-        window.localStorage.setItem("LocalToken", JSON.stringify(this.token));
+        this.setCookie("JWTtoken", "Strict", JSON.stringify(this.JWTtoken), 1);
+        //window.localStorage.setItem("JWTtoken", JSON.stringify(this.JWTtoken));
+
     }
 
-    async checkLocalToken()
+    async checkJWTtoken()
     {
-        this.getLocalToken();
         let response = await this.get("/api/users/all/")
         if (response.ok)
             return true;
         else
-        {
             return false;
-        }
     }
 
     getCookie = (name) =>
@@ -172,7 +146,6 @@ export default class Request {
             const cookies = document.cookie.split(';');
             for (let i = 0; i < cookies.length; i++) {
                 const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;
@@ -182,33 +155,36 @@ export default class Request {
         return cookieValue;
     }
 
-    setCookie(name, value, days) {
+    rmCookie = (name) =>
+    {
+        document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC ; SameSite=None; Secure ; path=/";
+    }
+
+    setCookie(name, SameSite, value, days = 1) {
         var expires = "";
         if (days) {
             var date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             expires = "; expires=" + date.toUTCString();
         }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        document.cookie = name + "=" + (value || "") + expires + "; SameSite="+ SameSite +"; Secure ; path=/";
     }
 
     async getCsrfToken() {
-        const csrfCookie = document.cookie.split('; ')
-            .find(cookie => cookie.startsWith('csrftoken='));
+        const csrfCookie = this.getCookie('X-CSRFToken')
         if (csrfCookie)
-        {
-            return csrfCookie.split('=')[1]
-        }
-        else
-        {
-            let response = await this.get("/api/users/get_csrf_token/")
-            const jsonData = await response.json();
-            console.log('get_csrf_token', jsonData.csrf_token)
-            this.setCookie('csrftoken', jsonData.csrf_token, 1)
-            return jsonData.csrf_token;
-
-        }
+            return csrfCookie
         return null;
+    }
+
+    async setCsrfToken(csrftoken)
+    {
+        this.setCookie('X-CSRFToken', 'Strict', csrftoken, 1)
+    }
+
+    async rmCsrfToken(csrftoken)
+    {
+        this.rmCookie('X-CSRFToken')
     }
 
 

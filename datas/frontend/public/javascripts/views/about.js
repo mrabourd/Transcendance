@@ -25,6 +25,6 @@ export default class extends AbstractView {
     }
 
     addEvents () {
-        console.log("Add Events")
+        //console.log("Add Events")
     }
 }

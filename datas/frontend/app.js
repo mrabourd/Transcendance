@@ -10,7 +10,6 @@ const app = express()
 const router = express.Router();
 router.use(cors());
 
-
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, __dirname + '/public/avatars/')
@@ -28,7 +27,6 @@ router.post('/upload', MulterUpload.single('avatar'), function (req, res, next) 
 })
 
 
-
 router.post('/upload', function (req, res) {
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
@@ -44,12 +42,10 @@ router.post('/upload', function (req, res) {
 })
 
 router.use(function (req,res,next) {
-	console.log('/' + req.method);
 	next();
 });
 
 router.get('/template/:name', function (req, res) {
-	console.log(req.params.name);
 	var fileName = req.params.name
 	res.sendFile(path + '/javascripts/views/templates/' + fileName + '.html');
 })

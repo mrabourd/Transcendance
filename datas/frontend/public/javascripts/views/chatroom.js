@@ -7,7 +7,7 @@ export default class extends AbstractView {
     }
 
     async getHtml(DOM) {
-        await fetch('/template/websocket').then(function (response) {
+        await fetch('/template/chatroom').then(function (response) {
             return response.text();
         }).then(function (html) {
             let parser = new DOMParser();
@@ -60,6 +60,8 @@ export default class extends AbstractView {
         });
         document.getElementById('input-form').addEventListener('submit', this.sendMessageCallback(webSocket));
 
+        //document.getElementById('input-form').addEventListener('submit', this.sendMessageCallback(webSocket));
+  
     }
 
     sendMessageCallback = (webSocket) => {

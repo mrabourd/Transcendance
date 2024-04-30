@@ -19,11 +19,20 @@ export default class extends AbstractView {
             console.warn('Something went wrong.', err);
         });
     }
+
     async fillHtml(DOM) {
-        console.log("fillHtml")
+        this.user.RefreshLocalDatas()
     }
     addEvents () {
-        console.log("Add Events")
+        document.querySelector('#subscribe a').addEventListener('click',  async e => 
+        {
+            e.preventDefault();
+            console.log(this.user.datas.id)
+            console.log("subscribe")
+            let response = await this.user.request.post('/api/match/subscribe/', {})
+            console.log('response : ', response)
+        })
+        //console.log("Add Events")
     }
     // fonction specifiques a la vue
 }
