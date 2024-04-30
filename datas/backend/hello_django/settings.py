@@ -70,9 +70,11 @@ SESSION_COOKIE_SECURE = True
 
 AUTH_USER_MODEL = 'users.User'
 # Application definition
-
+ASGI_APPLICATION = 'hello_django.asgi.application'
 
 INSTALLED_APPS = [
+	'daphne',
+	'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -88,6 +90,9 @@ INSTALLED_APPS = [
 	'rest_framework_simplejwt',
 	'rest_framework_simplejwt.token_blacklist',
     'oauth2_provider',
+	
+
+	'websockets',
 ]
 
 MIDDLEWARE = [
@@ -198,4 +203,10 @@ REST_FRAMEWORK = {
         # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
 	]
 
+}
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': "channels.layers.InMemoryChannelLayer"
+    }
 }
