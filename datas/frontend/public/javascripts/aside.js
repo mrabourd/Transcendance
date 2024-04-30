@@ -59,7 +59,7 @@ export async function print(user)
 						if (response.ok)
 						{
 							let jsonData = await response.json();
-							// append dans local storage
+							this.user.RefreshLocalDatas();
 						}
 						else{
 							console.log("response not okay")

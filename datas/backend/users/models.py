@@ -14,3 +14,6 @@ class User(AbstractUser):
         blank=True
     )
 
+    def SetStatus(self, status):
+        print(f'{self} status = {status} ')
+        self.status = status
