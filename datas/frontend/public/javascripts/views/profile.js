@@ -87,7 +87,10 @@ export default class extends AbstractView {
 
 	async fillFollowed()
 	{
-		document.getElementById("friend_username").innerHTML = this.user.datas;
+		console.log("enter fill followed");
+		let followed = this.user.datas.followed[0].username;
+		console.log("followed: ", followed);
+		document.getElementById("friend_username").innerHTML = followed;
 		/*
 		uid = (this.params.user_id) ? this.params.user_id : this.user.datas.id
 		let response = await this.user.request.get('/api/users/history/'+uid+'/')

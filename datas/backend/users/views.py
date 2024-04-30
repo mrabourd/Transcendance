@@ -123,7 +123,6 @@ class UserRegistrationAPIView(APIView):
 
 class FollowUser(APIView):
 	permission_classes = [IsAuthenticated]
-	# serializer_class = FollowerSerializer
 	
 	def current_profile(self):
 		try:
@@ -148,10 +147,6 @@ class FollowUser(APIView):
 			# if other_profile.blocked_user.filter(pk = current_profile.id).exists():
 			# 	return Response({"Following Fail" : "You can not follow this profile becuase your ID blocked by this user!!"},status=status.HTTP_400_BAD_REQUEST)
 			current_profile.follows.add(other_profile)
-			# other_profile.followers.add(current_profile)
-			# serializer = self.serializer_class(other_profile, many=True)
-			# print("serializer: ", serializer.data)
-			# return Response({"Following" : "Following success!!"}, serializer.data, status=status.HTTP_200_OK) 
 			return Response({"Following" : "Following success!!"}, status=status.HTTP_200_OK) 
 		
 		elif req_type == 'unfollow':

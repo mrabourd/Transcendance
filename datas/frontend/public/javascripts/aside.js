@@ -22,6 +22,7 @@ export async function print(user)
 				let row			= utils.FormcreateElement("row", ["row"], {"style":"padding: 20px; border-top: 1px solid #f1f2f2;"});
 				let data		= utils.FormcreateElement("data", ["col-5"]);
 				let follow		= utils.FormcreateElement("div", ["col-2"]);
+				// if ce user est deja followed : write unfollow, sinon, follow
 				let msg			= utils.FormcreateElement("button", ["btn", "btn-primary"], {"innerText": "Follow!",
 					"id": `followButton`,
 					"type": "button"
@@ -58,6 +59,7 @@ export async function print(user)
 						if (response.ok)
 						{
 							let jsonData = await response.json();
+							// append dans local storage
 						}
 						else{
 							console.log("response not okay")

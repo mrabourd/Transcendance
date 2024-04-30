@@ -79,15 +79,6 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 		return instance
 
 
-# class FollowerSerializer(serializers.ModelSerializer):
-#     # follows = EachUserSerializer(many=True, read_only= True)
-#     # following = EachUserSerializer(many=True, read_only=True)
-    
-#     class Meta:
-#         model = Followed
-#         fields = ('follows', 'followed_by')
-#         read_only_fields = ('follows','followed_by')
-
 """ 
 def validate_password(self, value):
 		if len(value) < 8:
