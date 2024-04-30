@@ -87,10 +87,23 @@ export default class extends AbstractView {
 
 	async fillFollowed()
 	{
-		console.log("enter fill followed");
-		let followed = this.user.datas.followed[0].username;
-		console.log("followed: ", followed);
-		document.getElementById("friend_username").innerHTML = followed;
+		Promise.all(
+			(this.user.datas.follows).map(async(followed) => {
+				let url = '/api/users/profile/'+followed+'/';
+				let response = await this.user.request.get(url);
+				if (response.ok) {
+					const users_followed = await response.json();
+					document.getElementById("avatar").innerHTML = users_followed.avatar;
+					document.getElementById("friend_username").innerHTML = users_followed.username;
+					document.getElementById("friend_status").innerHTML = users_followed.status;
+				}
+				else
+					console.log("Not ok");
+
+			// document.getElementById("friend_username").innerHTML = user_followed;
+			}),
+		);
+		// document.getElementById("friend_username").innerHTML = followed;
 		/*
 		uid = (this.params.user_id) ? this.params.user_id : this.user.datas.id
 		let response = await this.user.request.get('/api/users/history/'+uid+'/')

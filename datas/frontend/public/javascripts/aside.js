@@ -7,13 +7,15 @@ export async function print(user)
 	if (user.isConnected)
 	{
 		let response = await user.request.get('/api/users/all/')
+		// user.datas.follows.forEach(id => {
+		// 	console.log("user.datas.id: ", id)})
 		document.getElementById("friends").innerHTML = "Here are my friends: (connected)"
 		if (response.ok)
 		{   
 			const users = await response.json();
 			
-			
 			let displayFriends = document.querySelector("#friends");
+			//display people:
 			users.forEach(list_user => {
 				if (list_user.username === "root" || list_user.username === user.datas.username)
 					return;
@@ -22,11 +24,22 @@ export async function print(user)
 				let row			= utils.FormcreateElement("row", ["row"], {"style":"padding: 20px; border-top: 1px solid #f1f2f2;"});
 				let data		= utils.FormcreateElement("data", ["col-5"]);
 				let follow		= utils.FormcreateElement("div", ["col-2"]);
-				// if ce user est deja followed : write unfollow, sinon, follow
-				let msg			= utils.FormcreateElement("button", ["btn", "btn-primary"], {"innerText": "Follow!",
-					"id": `followButton`,
+
+				// if the user is already followed : display `unfollow`. Otherwise, display `Follow!`
+				let follow_text = "Follow!";
+				user.datas.follows.forEach(id => {
+					console.log("user.datas.id: ", id)
+					if (id == list_user.id)
+						follow_text = "Unfollow!";
+					else
+						follow_text = "Follow!";
+				})
+				console.log("follow text: ", follow_text);
+				let msg	= utils.FormcreateElement("button", ["btn", "btn-primary"], {"innerText": follow_text,
+					"id": 'followButton'+list_user.id,
 					"type": "button"
 				});
+
 				let f_avatar  =  utils.FormcreateElement("img", ["col-3"], {"src": avatar, "style":"border-radius: 50%;"});
 				let f_name = utils.FormcreateElement("div", ["h5"]);
 				let f_link = utils.FormcreateElement("a", ["profile-link", "#href"], {"innerText": list_user.username});
@@ -47,39 +60,42 @@ export async function print(user)
 
 				displayFriends.appendChild(main_div);
 				
-				document.getElementById("followButton").addEventListener("click", async() => {
+				// When click on button, `follow` or `unfollow`
+				document.getElementById('followButton'+list_user.id).addEventListener("click", async() => {
 					let RQ_Body = {}
-					let value =  document.getElementById("followButton").innerText;
+					let value =  document.getElementById('followButton'+list_user.id).innerText;
 					if (value === "Follow!"){
 						console.log("I want to follow: ", list_user.username)
-						document.getElementById("followButton").innerText = "Unfollow"
-						
-						// add follow
 						let response = await user.request.post('/api/users/follow/'+list_user.id+'/', RQ_Body)
 						if (response.ok)
 						{
 							let jsonData = await response.json();
 							user.RefreshLocalDatas();
-							console.log("following is done!")
+							console.log("following is done!");
 						}
 						else{
-							console.log("response not okay")
+							console.log("response not okay");
 						}
+						
+						document.getElementById('followButton'+list_user.id).innerText = "Unfollow!"
+						// call follow
 					}
-					if (value === "Unfollow"){
+					else if (value === "Unfollow!"){
 						console.log("I want to UNfollow: ", list_user.username)
-						document.getElementById("followButton").innerText = "Follow!"
-						// add unfollow
 
 						let response = await user.request.post('/api/users/unfollow/'+list_user.id+'/', RQ_Body)
 						if (response.ok)
 						{
 							let jsonData = await response.json();
-							this.user.RefreshLocalDatas()
+							user.RefreshLocalDatas();
+							console.log("unfollowing is done!");
+
 						}
 						else{
 							console.log("response for unfollow not okay")
 						}
+						document.getElementById('followButton'+list_user.id).innerText = "Follow!"
+						// call unfollow
 					}
 				});
 
