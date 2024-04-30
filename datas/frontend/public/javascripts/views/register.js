@@ -187,5 +187,4 @@ export default class extends AbstractView {
             return true;
         return false
     }
-
 }
