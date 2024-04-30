@@ -14,5 +14,6 @@ class Subscribe(APIView):
     # Cette méthode gère les requêtes POST
     def post(self, request):
         # Traitement de la requête POST ici
-        print(f'user id = {request.user}')
+        print(f'user id = {request.user.id}')
+        request.user.SetStatus(2)
         return HttpResponse("Requête POST protégée reçue avec succès.")

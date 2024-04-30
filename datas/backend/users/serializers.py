@@ -33,6 +33,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 						"id" :self.user.id,
 						"avatar" : self.user.avatar if self.user.avatar else None,
 						"biography" : self.user.biography,
+						"status" : self.user.status,
 						"follows" : self.user.follows.all().values_list('id', flat=True),
 						"followed_by" : self.user.followed_by.all().values_list('id', flat=True)}
 						)

@@ -6,6 +6,7 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     avatar = models.TextField(max_length=500, blank=True)
     biography = models.TextField(max_length=500, blank=True)
+    status = models.IntegerField(default=0)
     follows = models.ManyToManyField(
         "self",
         related_name="followed_by",
@@ -13,6 +14,9 @@ class User(AbstractUser):
         blank=True
     )
 
+    def SetStatus(self, status):
+        print(f'{self} status = {status} ')
+        self.status = status
 
 # class Followed(models.Model):
 #     follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)

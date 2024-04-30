@@ -28,7 +28,7 @@ export default class extends AbstractView {
             e.preventDefault();
             console.log(this.user.datas.id)
             console.log("subscribe")
-            response = await this.user.request.post('api/match/subscribe/', {})
+            let response = await this.user.request.post('/api/match/subscribe/', {})
             console.log('response : ', response)
         })
         //console.log("Add Events")

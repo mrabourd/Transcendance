@@ -1,7 +1,7 @@
 export default class Request {
     constructor() {
-        this.url_origin = 'https://127.0.0.1:8483/'
-        this.url_backend = 'https://127.0.0.1:8443'
+        this.url_origin = 'https://localhost:8483/'
+        this.url_backend = 'https://localhost:8443'
     }
 
     async get_request_header(){
@@ -11,9 +11,7 @@ export default class Request {
             'Origin': this.url_origin,
             'Content-Type': 'application/json',
         }
-        let csrftoken = await this.getCsrfToken()
-        if (csrftoken)
-            request_headers['X-CSRFToken'] = csrftoken
+        request_headers['X-CSRFToken'] = await this.getCsrfToken()
         const JWTtoken = this.getJWTtoken()
         if (JWTtoken)
             request_headers['Authorization'] = `Bearer ${JWTtoken.access}`
@@ -116,6 +114,7 @@ export default class Request {
     getJWTtoken()
     {
         let tmp = this.getCookie("JWTtoken")
+        //let tmp = window.localStorage.getItem("JWTtoken");
         return JSON.parse(tmp);
     }
 
@@ -126,7 +125,9 @@ export default class Request {
             access: tk_access,
             refresh: tk_refresh,
         }
-        this.setCookie("JWTtoken", JSON.stringify(this.JWTtoken), 1);
+        this.setCookie("JWTtoken", "Strict", JSON.stringify(this.JWTtoken), 1);
+        //window.localStorage.setItem("JWTtoken", JSON.stringify(this.JWTtoken));
+
     }
 
     async checkJWTtoken()
@@ -159,18 +160,18 @@ export default class Request {
         document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC ; SameSite=None; Secure ; path=/";
     }
 
-    setCookie(name, value, days = 1) {
+    setCookie(name, SameSite, value, days = 1) {
         var expires = "";
         if (days) {
             var date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             expires = "; expires=" + date.toUTCString();
         }
-        document.cookie = name + "=" + (value || "") + expires + "; SameSite=Strict; Secure ; path=/";
+        document.cookie = name + "=" + (value || "") + expires + "; SameSite="+ SameSite +"; Secure ; path=/";
     }
 
     async getCsrfToken() {
-        const csrfCookie = this.getCookie('csrftoken')
+        const csrfCookie = this.getCookie('X-CSRFToken')
         if (csrfCookie)
             return csrfCookie
         return null;
@@ -178,12 +179,12 @@ export default class Request {
 
     async setCsrfToken(csrftoken)
     {
-        this.setCookie('csrftoken', csrftoken, 1)
+        this.setCookie('X-CSRFToken', 'Strict', csrftoken, 1)
     }
 
     async rmCsrfToken(csrftoken)
     {
-        this.rmCookie('csrftoken')
+        this.rmCookie('X-CSRFToken')
     }
 
 
