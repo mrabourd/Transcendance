@@ -65,15 +65,6 @@ export default class extends AbstractView {
     register = () => {
         if (!this.checkAllFields())
             return false;
-        let RQ_Body = {
-            "avatar": "/avatar/default.png",
-            "username": document.getElementById("username").value,
-            "first_name": document.getElementById("first_name").value,
-            "last_name": document.getElementById("last_name").value,
-            "email": document.getElementById("email").value,
-            "password": document.getElementById("password").value
-        }
-        this.user.request
         fetch('https://127.0.0.1:8443/api/users/register/', {
             method: 'POST',
             headers: {
@@ -81,7 +72,14 @@ export default class extends AbstractView {
                 'Origin': 'https://127.0.0.1:8483',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify()
+            body: JSON.stringify({
+                "avatar": "/avatar/default.png",
+                "username": document.getElementById("username").value,
+                "first_name": document.getElementById("first_name").value,
+                "last_name": document.getElementById("last_name").value,
+                "email": document.getElementById("email").value,
+                "password": document.getElementById("password").value
+            })
         })	
         .then((response) =>
         {

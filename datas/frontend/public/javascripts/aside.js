@@ -59,7 +59,8 @@ export async function print(user)
 						if (response.ok)
 						{
 							let jsonData = await response.json();
-							this.user.RefreshLocalDatas();
+							user.RefreshLocalDatas();
+							console.log("following is done!")
 						}
 						else{
 							console.log("response not okay")
@@ -74,6 +75,7 @@ export async function print(user)
 						if (response.ok)
 						{
 							let jsonData = await response.json();
+							this.user.RefreshLocalDatas()
 						}
 						else{
 							console.log("response for unfollow not okay")

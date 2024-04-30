@@ -49,6 +49,9 @@ class UserSerializer(serializers.ModelSerializer):
 		extra_kwargs = {
 			'avatar': {'required': False}, # 'avatar' is not required
 			'password': {'write_only': True},
+			'follows': {'required': False},
+			'followed_by': {'required': False},
+			'status': {'required': False},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]
 			}
