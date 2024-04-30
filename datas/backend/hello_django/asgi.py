@@ -14,11 +14,13 @@ from channels.auth import AuthMiddlewareStack
 
 from channels.routing import ProtocolTypeRouter, URLRouter
 
-from websockets.urls import ws_urlpatterns
+from websockets.urls import urlpatterns as ws_urlpatterns
 import django
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hello_django.settings')
+
+
 
 application = ProtocolTypeRouter({
 	'http':  get_asgi_application(),
