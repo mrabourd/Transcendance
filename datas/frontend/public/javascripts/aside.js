@@ -22,7 +22,7 @@ export async function print(user)
 					return;
 				let avatar = (list_user.avatar == undefined) ? '/avatars/default.png' : list_user.avatar;
 				let main_div	= utils.FormcreateElement("div", ["aside"]);
-				let row			= utils.FormcreateElement("row", ["row"], {"style":"padding: 20px; border-top: 1px solid #f1f2f2;"});
+				let row			= utils.FormcreateElement("row", ["row", "mx-auto"]);
 				let data		= utils.FormcreateElement("data", ["col-5"]);
 				let follow		= utils.FormcreateElement("div", ["col-2"]);
 
@@ -41,10 +41,19 @@ export async function print(user)
 					"type": "button"
 				});
 
-				let f_avatar  =  utils.FormcreateElement("img", ["rounded-circle", "col-3"], {"src": avatar, "style":"border-radius: 50%;"});
+				let f_avatar  =  utils.FormcreateElement("img", ["img-fluid", "avatar-md", "rounded-circle", "col-lg-2"], {"src": avatar});
 				let f_name = utils.FormcreateElement("div", ["h5"]);
 				let f_link = utils.FormcreateElement("a", ["profile-link", "#href"], {"innerText": list_user.username});
-				let f_status = utils.FormcreateElement("p", ["status"], {"innerText": "status:"}); //add status here
+				
+				let status = 0;
+				if (list_user.status == 0)
+					status = "Not connected"
+				else if (list_user.status == 1)
+					status = "Ready to play!"
+				else if (list_user.status == 2)
+					status = "Already playing!"
+				let f_status = utils.FormcreateElement("p", ["status"], {"innerText": status});
+
 				utils.FormAppendElements(follow, msg);
 				utils.FormAppendElements(data, f_name);
 				utils.FormAppendElements(data, f_status);
