@@ -9,11 +9,9 @@ export async function print(user)
 		let response = await user.request.get('/api/users/all/')
 		// user.datas.follows.forEach(id => {
 		// 	console.log("user.datas.id: ", id)})
-		document.getElementById("friends").innerHTML = "Here are my friends: (connected)"
 		if (response.ok)
 		{   
 			const users = await response.json();
-			
 			let displayFriends = document.querySelector("#friends");
 			let follow_text;
 			//display people:
@@ -23,26 +21,31 @@ export async function print(user)
 				let avatar = (list_user.avatar == undefined) ? '/avatars/default.png' : list_user.avatar;
 				let main_div	= utils.FormcreateElement("div", ["aside"]);
 				let row			= utils.FormcreateElement("row", ["row", "mx-auto"]);
-				let data		= utils.FormcreateElement("data", ["col-5"]);
-				let follow		= utils.FormcreateElement("div", ["col-2"]);
+				let data		= utils.FormcreateElement("data", ["col", "justify-content-center"]);
+				let follow		= utils.FormcreateElement("div", ["col-3", "justify-content-end"]);
 
 				// if the user is already followed : display `unfollow`. Otherwise, display `Follow!`
-				if (user.datas.follows.id == undefined)
-						follow_text = "Follow!";
-				user.datas.follows.forEach(id => {
-					if (id == list_user.id)
+				if (list_user.id == undefined){
+					console.log("this id is undefined.", list_user.id)
+					follow_text = "Follow!";
+				}
+				// else (user.datas.follows.forEach(id => {
+				for (const id of user.datas.follows){
+					if (id && list_user.id && id == list_user.id){
 						follow_text = "Unfollow!";
-					else
+						break ;
+					}
+					else if (id != list_user.id) {
 						follow_text = "Follow!";
-				})
-				console.log("follow text: ", follow_text);
+					}
+				}
 				let msg	= utils.FormcreateElement("button", ["btn", "btn-primary"], {"innerText": follow_text,
 					"id": 'followButton'+list_user.id,
 					"type": "button"
 				});
 
-				let f_avatar  =  utils.FormcreateElement("img", ["img-fluid", "avatar-md", "rounded-circle", "col-lg-2"], {"src": avatar});
-				let f_name = utils.FormcreateElement("div", ["h5"]);
+				let f_avatar = utils.FormcreateElement("img", ["col-4", "img-fluid", "avatar-md", "rounded-circle", "justify-content-start", "picture-src"], {"src": avatar, "style":"height: 80px; width: 100px;"});
+				let f_name = utils.FormcreateElement("div", ["col", "h5"]);
 				let f_link = utils.FormcreateElement("a", ["profile-link", "#href"], {"innerText": list_user.username});
 				
 				let status = 0;
@@ -62,9 +65,7 @@ export async function print(user)
 				utils.FormAppendElements(row, data);
 				utils.FormAppendElements(row, follow);
 				utils.FormAppendElements(main_div, row);
-				console.log("list_user avatar", list_user.username, avatar, list_user.isConnected);
 				f_link.addEventListener('click', async () =>  {
-			
 					user.router.navigateTo("/profile/" + list_user.id, user);
 				});
 
@@ -75,13 +76,11 @@ export async function print(user)
 					let RQ_Body = {}
 					let value =  document.getElementById('followButton'+list_user.id).innerText;
 					if (value === "Follow!"){
-						console.log("I want to follow: ", list_user.username)
 						let response = await user.request.post('/api/users/follow/'+list_user.id+'/', RQ_Body)
 						if (response.ok)
 						{
 							let jsonData = await response.json();
 							user.RefreshLocalDatas();
-							console.log("following is done!");
 						}
 						else{
 							console.log("response not okay");
@@ -91,14 +90,12 @@ export async function print(user)
 						// call follow
 					}
 					else if (value === "Unfollow!"){
-						console.log("I want to UNfollow: ", list_user.username)
 
 						let response = await user.request.post('/api/users/unfollow/'+list_user.id+'/', RQ_Body)
 						if (response.ok)
 						{
 							let jsonData = await response.json();
 							user.RefreshLocalDatas();
-							console.log("unfollowing is done!");
 
 						}
 						else{
@@ -120,7 +117,6 @@ export async function print(user)
 		
 	}else{
 		console.log("print aside not connected")
-		document.getElementById("friends").innerHTML = "(not connected)"
 		
 	}
 }

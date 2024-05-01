@@ -87,34 +87,35 @@ export default class extends AbstractView {
 
 	async fillFollowed()
 	{
-		// La, les users s'ecrivent les uns sur les autres. Faire en sorte qu'ils s'ecrivent les uns a la suite des autres plutot
 		Promise.all(
 			(this.user.datas.follows).map(async (followed) => {
+				console.log("followed: ", followed);	
 				let url = '/api/users/profile/'+followed+'/';
 				let response = await this.user.request.get(url);
+				const userListContainer = document.getElementById("userList");
+				const userDiv = document.createElement("div");
+
 				if (response.ok) {
 					const users_followed = await response.json();
-					console.log("followed user: ", users_followed.username)
-					document.getElementById("avatar").innerHTML = users_followed.avatar;
-					document.getElementById("friend_username").innerHTML = users_followed.username;
-					document.getElementById("friend_status").innerHTML = users_followed.status;
+					if (users_followed.id == undefined || users_followed.username == "root")
+						return;
+
+					userDiv.innerHTML = userListContainer.innerHTML; // Copie le HTML depuis le fichier HTML
+					userDiv.querySelector("#friend_avatar").src = users_followed.avatar;
+					userDiv.querySelector("#friend_username").textContent = users_followed.username;
+					userDiv.querySelector("#friend_status").textContent = users_followed.status;
+			  
 				}
+				
 				else
 					console.log("Not ok");
-
-			// document.getElementById("friend_username").innerHTML = user_followed;
-			}),
+				userListContainer.appendChild(userDiv);
 			
-		);
-		// document.getElementById("friend_username").innerHTML = followed;
-		/*
-		uid = (this.params.user_id) ? this.params.user_id : this.user.datas.id
-		let response = await this.user.request.get('/api/users/history/'+uid+'/')
-		if (response.ok)
-		{
-			let jsonData = await response.json();
-		}
-		*/
+		}),
+		)
+		.catch((error) => {
+			console.error("Une erreur s'est produite lors du traitement des requêtes :", error);
+		});
 	}
 
 
