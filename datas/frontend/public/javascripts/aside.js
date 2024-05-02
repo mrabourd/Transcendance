@@ -4,6 +4,13 @@ export async function print(user)
 {
 	let routes = null;
 
+	let aside = document.getElementById("friends");
+	if (aside.hasChildNodes()) {
+		console.log("has child node")
+		return;
+	}
+
+
 	if (user.isConnected)
 	{
 		let response = await user.request.get('/api/users/all/')
@@ -24,20 +31,26 @@ export async function print(user)
 				let data		= utils.FormcreateElement("data", ["col", "justify-content-center"]);
 				let follow		= utils.FormcreateElement("div", ["col-3", "justify-content-end"]);
 
+				console.log ("my id: ", user.datas.id)
 				// if the user is already followed : display `unfollow`. Otherwise, display `Follow!`
 				if (list_user.id == undefined){
-					console.log("this id is undefined.", list_user.id)
 					follow_text = "Follow!";
 				}
-				// else (user.datas.follows.forEach(id => {
-				for (const id of user.datas.follows){
-					if (id && list_user.id && id == list_user.id){
-						follow_text = "Unfollow!";
-						break ;
+				if (user.datas.follows.length) {
+
+					for (const id of user.datas.follows){
+						// console.log("id de qui je follow: ", id)
+						if (id && list_user.id && id == list_user.id){
+							follow_text = "Unfollow!";
+							break ;
+						}
+						else if (id != list_user.id) {
+							follow_text = "Follow!";
+						}
 					}
-					else if (id != list_user.id) {
-						follow_text = "Follow!";
-					}
+				}
+				else{
+					follow_text = "Follow!";
 				}
 				let msg	= utils.FormcreateElement("button", ["btn", "btn-primary"], {"innerText": follow_text,
 					"id": 'followButton'+list_user.id,
