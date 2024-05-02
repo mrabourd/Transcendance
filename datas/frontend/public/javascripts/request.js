@@ -95,7 +95,7 @@ export default class Request {
 
     async refreshJWTtoken()
     {
-        let response = await this.post('/api/users/login/refresh/', this.JWTtoken);
+        let response = await this.post('/api/users/login/refresh/', this.getJWTtoken());
 		if (response.ok)
 		{
 			let jsonData = await response.json();

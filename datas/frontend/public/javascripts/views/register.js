@@ -6,7 +6,7 @@ import * as router from "../router.js";
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("Sign Up Transcendance");
+        this.setTitle("Sign mainUp Transcendance");
     }
 
     async getHtml(DOM) {
@@ -63,62 +63,62 @@ export default class extends AbstractView {
     }
 
     register = () => {
+
         if (!this.checkAllFields())
             return false;
-        fetch('https://127.0.0.1:8443/api/users/register/', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Origin': 'https://127.0.0.1:8483',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
+
+            let RQ_BODY =
+            {
                 "avatar": "/avatar/default.png",
                 "username": document.getElementById("username").value,
                 "first_name": document.getElementById("first_name").value,
                 "last_name": document.getElementById("last_name").value,
                 "email": document.getElementById("email").value,
                 "password": document.getElementById("password").value
+            }
+            this.user.request.post('/api/users/register/', RQ_BODY)
+            .then((response) =>
+            {
+                if (response.ok || response.status === 400)
+                    return Promise.all([response.json(), response.ok, response.status]);
+                else
+                    throw new Error('Network response was not ok.');
             })
-        })	
-        .then((response) =>
-        {
-            if (response.ok || response.status === 400)
-                return Promise.all([response.json(), response.ok, response.status]);
-            else
-                throw new Error('Network response was not ok.');
-        })
-        .then(([jsonData, ok, status]) => {
-            if (!ok)
-            {
-                for (const key in jsonData) {
-                    if (Object.hasOwnProperty.call(jsonData, key))
-                        utils.printError(key, 1, jsonData[key])
+            .then(([jsonData, ok, status]) => {
+                if (!ok)
+                {
+                    for (const key in jsonData) {
+                        if (Object.hasOwnProperty.call(jsonData, key))
+                            utils.printError(key, 1, jsonData[key])
+                    }
+                    return "An error occured ! Please check fields below ..."
                 }
-                return "An error occured ! Please check fields below ..."
-            }
-            else
-            {
-                let username = document.getElementById("username").value
-                let password = document.getElementById("password").value
-                let response = this.user.login(username, password);
-                return response;
-            }
-        })
-        .then(result => {
-            if (result === true)
-                router.navigateTo("/home", this.user)
-            else
-            {
-                let errDiv = document.querySelector("#registerForm #errors");
-                errDiv.classList.remove("d-none")
-                errDiv.innerHTML = result;
-            }
-        })
-        .catch((error) => {
-            // Gérer les erreurs de requête ou de conversion JSON
-            console.error('There was a problem with the fetch operation:', error);
-        });
+                else
+                {
+                    let username = document.getElementById("username").value
+                    let password = document.getElementById("password").value
+                    let response = this.user.login(username, password);
+                    return response;
+                }
+            })
+            .then(result => {
+                if (result === true)
+                    router.navigateTo("/home", this.user)
+                else
+                {
+                    let errDiv = document.querySelector("#registerForm #errors");
+                    errDiv.classList.remove("d-none")
+                    errDiv.innerHTML = result;
+                }
+            })
+            .catch((error) => {
+                // Gérer les erreurs de requête ou de conversion JSON
+                console.error('There was a problem with the fetch operation:', error);
+            });
+
+        
+
+
     }
 
     checkPassword = () => {

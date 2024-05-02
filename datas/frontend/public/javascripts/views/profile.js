@@ -1,4 +1,5 @@
 import AbstractView from "./AbstractView.js";
+import * as utils from "../utils_form.js"
 
 export default class extends AbstractView {
 	constructor(params) {
@@ -32,10 +33,14 @@ export default class extends AbstractView {
 
 			// Get profile page HTML
 			let profile_url;
+			
+			/*
 			if (this.is_user_page())
 				profile_url = '/template/profile_profile_edit'
 			else
 				profile_url = '/template/profile_profile'
+			*/
+			profile_url = '/template/profile_profile_edit'
 			await fetch(profile_url).then(function (response) {
 				return response.text();
 			}).then(function (html) {
@@ -87,10 +92,10 @@ export default class extends AbstractView {
 
 	async fillFollowed()
 	{
-		console.log("enter fill followed");
-		let followed = this.user.datas.followed[0].username;
-		console.log("followed: ", followed);
-		document.getElementById("friend_username").innerHTML = followed;
+		//console.log("enter fill followed");
+		//let followed = this.user.datas.followed[0].username;
+		//console.log("followed: ", followed);
+		//document.getElementById("friend_username").innerHTML = followed;
 		/*
 		uid = (this.params.user_id) ? this.params.user_id : this.user.datas.id
 		let response = await this.user.request.get('/api/users/history/'+uid+'/')
@@ -129,35 +134,34 @@ export default class extends AbstractView {
 
 	async fillProfile()
 	{
+		let UserDatas;
+
+
 		if (this.is_user_page())
-		{
-			document.querySelector("#username").innerHTML = this.user.datas.username;
-			if(this.user.datas.avatar)
-				document.querySelector("#avatar").src = this.user.datas.avatar;
-			else
-				document.querySelector("#avatar").src = "/avatars/default.png";
-			document.querySelector(".tab-pane.profile #first_name").value = this.user.datas.first_name;
-			document.querySelector(".tab-pane.profile #last_name").value = this.user.datas.last_name;
-			document.querySelector(".tab-pane.profile #email").value = this.user.datas.email;
-			document.querySelector(".tab-pane.profile #biography").value = this.user.datas.biography;
-		}
+			UserDatas = this.user.datas
 		else
 		{
+			var elements = document.querySelectorAll('input, textarea');
+			elements.forEach(function(element) {
+				element.setAttribute('readonly', 'readonly');
+				element.classList.add('form-control-plaintext');
+			});
+
 			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
 			if (response.ok)
-			{
-				let jsonData = await response.json();
-				document.querySelector("#username").innerHTML = jsonData.username;
-				if(jsonData.avatar)
-					document.querySelector("#avatar").src = jsonData.avatar;
-				else
-					document.querySelector("#avatar").src = "/avatars/default.png";
-				document.querySelector(".tab-pane.profile #first_name").innerText = jsonData.first_name;
-				document.querySelector(".tab-pane.profile #last_name").innerText = jsonData.last_name;
-				document.querySelector(".tab-pane.profile #email").innerText = jsonData.email;
-				document.querySelector(".tab-pane.profile #biography").innerText = jsonData.biography;
-			}
+				UserDatas = await response.json();
 		}
+
+		document.querySelector("#username").innerHTML = UserDatas.username;
+		if(UserDatas.avatar)
+			document.querySelector("#avatar").src = UserDatas.avatar;
+		else
+			document.querySelector("#avatar").src = "/avatars/default.png";
+		document.querySelector(".tab-pane.profile #username").value = UserDatas.username;
+		document.querySelector(".tab-pane.profile #first_name").value = UserDatas.first_name;
+		document.querySelector(".tab-pane.profile #last_name").value = UserDatas.last_name;
+		document.querySelector(".tab-pane.profile #email").value = UserDatas.email;
+		document.querySelector(".tab-pane.profile #biography").value = UserDatas.biography;
 	}
 
 
@@ -190,7 +194,7 @@ export default class extends AbstractView {
 				document.querySelector("#status").innerText = "reading URL";
 				this.readURL(document.getElementById("fileInput"));
 			});
-			document.getElementById("saveChanges").addEventListener('click', async (event) =>  {
+			document.getElementById("submit_form").addEventListener('click', async (event) =>  {
 				event.preventDefault();
 				let RQ_Body = {
 					avatar: document.querySelector("#avatar").src,
@@ -200,7 +204,38 @@ export default class extends AbstractView {
 					email: document.querySelector("#email").value,
 					biography: document.querySelector("#biography").value
 				}
-				let response = await this.user.request.put('/api/users/profile/'+this.user.datas.id+'/', RQ_Body)
+				this.user.request.put('/api/users/profile/'+this.user.datas.id+'/', RQ_Body)
+				.then((response) =>
+				{
+					if (response.ok || response.status === 400)
+                    	return Promise.all([response.json(), response.ok, response.status]);
+                	else
+                    	throw new Error('Network response was not ok.');
+				})
+				.then(([jsonData, ok, status]) => {
+					if (!ok)
+					{
+						for (const key in jsonData) {
+							if (Object.hasOwnProperty.call(jsonData, key))
+							{
+								console.warn(`${key} is invalid : ${jsonData[key]}`)
+								//is-invalid
+							}
+						}
+						//let errDiv = document.querySelector("#ProfileForm #errors");
+						//errDiv.classList.remove("d-none")
+						//errDiv.innerHTML = "An error occured ! Please check fields below ...";
+					}
+					else
+					{
+
+						// add is-valid
+					}
+				})
+				.catch((error) => {
+					// Gérer les erreurs de requête ou de conversion JSON
+					console.error('There was a problem with the fetch operation:', error);
+				});
 			})
 		}
 

@@ -16,4 +16,4 @@ class Subscribe(APIView):
         # Traitement de la requête POST ici
         print(f'user id = {request.user.id}')
         request.user.SetStatus(2)
-        return HttpResponse("Requête POST protégée reçue avec succès.")
+        return HttpResponse("Subscribe !")

@@ -10,78 +10,52 @@
 </head>
 <body class="m-5">
   <div class="profile tab-pane active">
-    <form class="form" novalidate="">
-      <div class="row">
-        <div class="col">
-          <div class="row">
-            <div class="col">
-              <div class="form-group">
-                <label>First Name</label>
-                <input class="form-control" id="first_name" type="text"></input>
-                <div class="error alert alert-danger d-none" for="first_name"></div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="form-group">
-                <label>Last Name</label>
-                <input class="form-control" id="last_name" type="text"></input>
-                <div class="error alert alert-danger d-none" for="last_name"></div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <div class="form-group">
-                <label>Email</label>
-                <input class="form-control" id="email" type="text">
-                <div class="error alert alert-danger d-none" for="email"></div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col mb-3">
-              <div class="form-group">
-                <label>About</label>
-                <textarea class="form-control" id="biography" rows="3" placeholder="My Bio"></textarea>
-              </div>
-            </div>
-          </div>
+
+
+
+    <form id="ProfileForm" class="row g-3 form-floating">
+      <div class="col-md-6">
+        <label for="username" class="form-label">username</label>
+        <input type="text" class="form-control" id="username" value="Otto" aria-describedby="usernameFeedback" required>
+        <div id="usernameFeedback" class="invalid-feedback">
+          nogood
         </div>
       </div>
-      <div class="row">
-        <div class="col-12 col-sm-6 mb-3">
-          <div class="mb-2"><b>Change Password</b></div>
-          <div class="row">
-            <div class="col">
-              <div class="form-group">
-                <label>Current Password</label>
-                <input class="form-control" id="passwordToCheck" type="password" placeholder="••••••">
-              </div>
-            </div>
+        <div class="col-md-6">
+          <label for="email" class="form-label">Email</label>
+          <input type="text" class="form-control" id="email" value="Otto" aria-describedby="emailFeedback" required>
+          <div id="emailFeedback" class="invalid-feedback">
+            nogood
           </div>
-          <div class="row">
-            <div class="col">
-              <div class="form-group">
-                <label>New Password</label>
-                <input class="form-control" id="passwordToAdd1" type="password" placeholder="••••••">
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <div class="form-group">
-                <label>Confirm <span class="d-none d-xl-inline">Password</span></label>
-                <input class="form-control" type="password" placeholder="••••••"></div>
-            </div>
-          </div>
+    </div>
+
+      <div class="col-md-6">
+        <label for="first_name" class="form-label">First name</label>
+        <input type="text" class="form-control" id="first_name" value="Mark" aria-describedby="first_nameFeedback" required>
+        <div id="first_nameFeedback" class="invalid-feedback">
+          nogood
         </div>
       </div>
-      <div class="row">
-        <div class="col d-flex justify-content-end">
-          <button class="btn btn-primary" id="saveChanges">Save Changes</button>
+      <div class="col-md-6">
+        <label for="last_name" class="form-label">Last name</label>
+        <input type="text" class="form-control" id="last_name" value="Otto" aria-describedby="last_nameFeedback" required>
+        <div id="last_nameFeedback" class="invalid-feedback">
+          nogood
         </div>
+      </div>
+
+      <div class="col-md-12">
+        <label for="biography" class="form-label">About</label>
+        <textarea class="form-control" id="biography" rows="3"></textarea>
+      </div>
+
+
+
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit" id="submit_form">Submit form</button>
       </div>
     </form>
+
 
   </div>
   </body>
