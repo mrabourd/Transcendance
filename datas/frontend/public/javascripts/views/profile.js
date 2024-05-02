@@ -92,18 +92,35 @@ export default class extends AbstractView {
 
 	async fillFollowed()
 	{
-		//console.log("enter fill followed");
-		//let followed = this.user.datas.followed[0].username;
-		//console.log("followed: ", followed);
-		//document.getElementById("friend_username").innerHTML = followed;
-		/*
-		uid = (this.params.user_id) ? this.params.user_id : this.user.datas.id
-		let response = await this.user.request.get('/api/users/history/'+uid+'/')
-		if (response.ok)
-		{
-			let jsonData = await response.json();
-		}
-		*/
+		Promise.all(
+			(this.user.datas.follows).map(async (followed) => {
+				console.log("followed: ", followed);	
+				let url = '/api/users/profile/'+followed+'/';
+				let response = await this.user.request.get(url);
+				const userListContainer = document.getElementById("userList");
+				const userDiv = document.createElement("div");
+
+				if (response.ok) {
+					const users_followed = await response.json();
+					if (users_followed.id == undefined || users_followed.username == "root")
+						return;
+
+					userDiv.innerHTML = userListContainer.innerHTML; // Copie le HTML depuis le fichier HTML
+					userDiv.querySelector("#friend_avatar").src = users_followed.avatar;
+					userDiv.querySelector("#friend_username").textContent = users_followed.username;
+					userDiv.querySelector("#friend_status").textContent = users_followed.status;
+			  
+				}
+				
+				else
+					console.log("Not ok");
+				userListContainer.appendChild(userDiv);
+			
+		}),
+		)
+		.catch((error) => {
+			console.error("Une erreur s'est produite lors du traitement des requêtes :", error);
+		});
 	}
 
 

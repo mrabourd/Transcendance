@@ -34,10 +34,13 @@ class UsersAPIView(APIView):
 
 	def get(self, request):
 		users = User.objects.all()
+		print(users)
 		if not users:  # Vérifie si la base de données d'utilisateurs est vide
-			return Response({"error": "Aucun utilisateur trouvé."}, status=404)  # Renvoie une réponse avec le code d'erreur 404 (NotFound)
+			print('not user')
+			return Response({"error": "Aucun utilisateur trouvé."}, status=status.HTTP_404_NOT_FOUND)  # Renvoie une réponse avec le code d'erreur 404 (NotFound)
 
 		serializer = self.serializer_class(users, many=True)
+		print(serializer)
 		return Response(serializer.data, status=200)  # Renvoie une réponse avec le code d'état 200 (OK)
 
 
