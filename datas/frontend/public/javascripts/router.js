@@ -20,6 +20,7 @@ export const getParams = match => {
 };
 
 export const navigateTo = (url, user) => {
+    
     history.pushState(null, null, url);
     router(user);
 };

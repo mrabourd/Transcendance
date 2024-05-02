@@ -21,6 +21,17 @@ export async function print(user)
 			const users = await response.json();
 			let displayFriends = document.querySelector("#friends");
 			let follow_text;
+
+			// Get User Thumb page HTML
+			await fetch( '/template/profile_history').then(function (response) {
+				return response.text();
+			}).then(function (html) {
+				let parser = new DOMParser();
+				let doc = parser.parseFromString(html, 'text/html');
+				document.querySelector('.tab-content').append(doc.querySelector('body div'));
+			});
+
+
 			//display people:
 			users.forEach(list_user => {
 				if (list_user.username === "root" || list_user.username === user.datas.username)
@@ -52,6 +63,8 @@ export async function print(user)
 				else{
 					follow_text = "Follow!";
 				}
+				// au lieu create
+				// $(.follow.=)
 				let msg	= utils.FormcreateElement("button", ["btn", "btn-primary"], {"innerText": follow_text,
 					"id": 'followButton'+list_user.id,
 					"type": "button"
