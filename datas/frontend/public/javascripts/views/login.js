@@ -91,18 +91,30 @@ export default class extends AbstractView {
         });
         return isValid;
     }
-    login42()
-    {
-        const authorizeUrl = 'https://api.intra.42.fr/oauth/authorize';
+
+    async login42() {
+        console.log("inside login42 function: ");
+        let response =  await fetch('https://api.intra.42.fr/oauth/authorize', {
+                method: "GET",
+            } );
     
-        // Paramètres requis pour l'autorisation (client_id, redirect_uri, etc. a ajouter : scope, state, etc.)
-        const clientId = 'client_id'; // Remplacez cela par votre propre client_id
-        const redirectUri = 'https://localhost:3000/callback'; // Remplacez cela par votre propre URI de redirection
-        // Construire l'URL d'autorisation avec les paramètres requis
-        const formattedUrl = `${authorizeUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+        let client_id = response.client_id;
+        console.log("client id: ", client_id);
+
+    };
+        // sur le post : code 429 = trop de requetes a la fois --> timer pour que ralentisse // ou spammer jusqu'a ce qu'il accepte
+       
+        // return response.json();
+        // const authorizeUrl = 'https://api.intra.42.fr/oauth/authorize';
     
-        // Rediriger l'utilisateur vers l'URL d'autorisation
-        window.location.href = formattedUrl;
-    }
+        // // Paramètres requis pour l'autorisation (client_id, redirect_uri, etc. a ajouter : scope, state, etc.)
+        // const clientId = 'client_id'; // The client ID you received from 42 when you registered.
+        // const redirectUri = 'https://localhost:3000/callback'; // Remplacez cela par votre propre URI de redirection
+        // // Construire l'URL d'autorisation avec les paramètres requis
+        // const formattedUrl = `${authorizeUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
+    
+        // // Rediriger l'utilisateur vers l'URL d'autorisation
+        // window.location.href = formattedUrl;
+    // }
 
 }

@@ -170,43 +170,19 @@ class FollowUser(APIView):
 		# 	other_profile.following.remove(current_profile)
 		# 	return Response({"Remove Success" : "Successfuly removed your follower!!"},status=status.HTTP_200_OK)
 
-	# def get_user(self, id):
-	# 	print("id: ", id)
-	# 	try:
-	# 		return User.objects.get(id=id)
-	# 	except User.DoesNotExist:
-	# 		raise Http404
+# mettre dans autre dossier pour login via 42 api
+# def intraCallback(request):
+# 	get_token_path = "https://api.intra.42.fr/oauth/token"
+# 	data = {
+# 		'grant_type': 'authorization_code',
+# 		'client_id': 'u-s4t2ud-32b19fff9e0bdc8b9a6274453ce546cef0f304df7e01d5b7d3be2cac715fa306',
+# 		'client_secret': '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',
+# 		'code': request.GET["code"],
+# 		'redirect_uri': 'http://localhost:88483/auth/intra_callback', 
+# 	}
+# 	r = requests.post(get_token_path, data=data)
+# 	return HttpResponse(r)
 
-	# def get(self, request, id, format=None):
-	# 	user = self.get_user(id)
-	# 	serializer = UserSerializer(user)
-	# 	print("follow user")
-	# 	return Response(serializer.data)
-
-
-	
-
-# class UnfollowUser(APIView):
-# 	def get_user(self, id):
-# 		try:
-# 			return User.objects.get(id=id)
-# 		except User.DoesNotExist:
-# 			raise Http404
-
-# 	def get(self, request, id, format=None):
-# 		user = self.get_user(id)
-# 		serializer = UserSerializer(user)
-# 		print("unfollow user")
-# 		return Response(serializer.data)
-
-# class AddFollowed(APIView):
-# 	permission_classes = [IsAuthenticated]
-# 	def post(self, request, format=None):
-# 		user = self.get_user(id)
-# 		followed = User.objects.get(user_id=self.request.data.get('follows'))
-# 		user.followed.add(followed)
-# 		user.save()
-# 		print(str(user) + ", " + str(followed))
 
 # class ProfilePatchView(APIView):
 #     permission_classes = [IsAuthenticated]

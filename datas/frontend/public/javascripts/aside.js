@@ -6,7 +6,7 @@ export async function print(user)
 
 	let aside = document.getElementById("friends");
 	if (aside.hasChildNodes()) {
-		console.log("has child node")
+		// console.log("has child node")
 		return;
 	}
 
@@ -31,7 +31,7 @@ export async function print(user)
 				let data		= utils.FormcreateElement("data", ["col", "justify-content-center"]);
 				let follow		= utils.FormcreateElement("div", ["col-3", "justify-content-end"]);
 
-				console.log ("my id: ", user.datas.id)
+				// console.log ("my id: ", user.datas.id)
 				// if the user is already followed : display `unfollow`. Otherwise, display `Follow!`
 				if (list_user.id == undefined){
 					follow_text = "Follow!";

@@ -28,6 +28,8 @@ urlpatterns = [
 
     path('<str:req_type>/<uuid:id>/', FollowUser.as_view(), name='follow_user'),
     # path('<text:req_type>/<uuid:id>/', FollowUser.as_view(), name='unfollow_user'),
+
+    # path('auth/intra_callback', views.intraCallback, name="intraCallback"),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
