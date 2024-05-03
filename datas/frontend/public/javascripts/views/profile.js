@@ -169,11 +169,8 @@ export default class extends AbstractView {
 				UserDatas = await response.json();
 		}
 
-		document.querySelector("#username").innerHTML = UserDatas.username;
-		if(UserDatas.avatar)
-			document.querySelector("#avatar").src = UserDatas.avatar;
-		else
-			document.querySelector("#avatar").src = "/avatars/default.png";
+		document.querySelector(".user_username").innerHTML = UserDatas.username;
+		document.querySelector("#avatar").src = (UserDatas.avatar) ? UserDatas.avatar : "/avatars/default.png";
 		document.querySelector(".tab-pane.profile #username").value = UserDatas.username;
 		document.querySelector(".tab-pane.profile #first_name").value = UserDatas.first_name;
 		document.querySelector(".tab-pane.profile #last_name").value = UserDatas.last_name;
@@ -211,11 +208,24 @@ export default class extends AbstractView {
 				document.querySelector("#status").innerText = "reading URL";
 				this.readURL(document.getElementById("fileInput"));
 			});
+
+
+	
+			document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
+				input.addEventListener("focusout", utils.checkBlankField2);
+			});
+			document.querySelector('.tab-pane.profile form #email').addEventListener("focusout", utils.checkEmail2);
+
 			document.getElementById("submit_form").addEventListener('click', async (event) =>  {
 				event.preventDefault();
+				
+				if (!this.checkAllFields())
+					return false;
+	
+				
 				let RQ_Body = {
 					avatar: document.querySelector("#avatar").src,
-					username: document.querySelector("#username").innerHTML,
+					username: document.querySelector("#username").value,
 					first_name: document.querySelector("#first_name").value,
 					last_name: document.querySelector("#last_name").value,
 					email: document.querySelector("#email").value,
@@ -235,8 +245,8 @@ export default class extends AbstractView {
 						for (const key in jsonData) {
 							if (Object.hasOwnProperty.call(jsonData, key))
 							{
-								console.warn(`${key} is invalid : ${jsonData[key]}`)
-								//is-invalid
+								document.querySelector(`.tab-pane.profile #${key}`).classList.add(`is-invalid`)
+								document.querySelector(`.tab-pane.profile #${key}Feedback`).innerHTML = jsonData[key]
 							}
 						}
 						//let errDiv = document.querySelector("#ProfileForm #errors");
@@ -245,8 +255,10 @@ export default class extends AbstractView {
 					}
 					else
 					{
-
-						// add is-valid
+						document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
+							input.classList.remove(`is-invalid`)
+							input.classList.remove(`is-valid`)
+						});
 					}
 				})
 				.catch((error) => {
@@ -257,6 +269,27 @@ export default class extends AbstractView {
 		}
 
 	}
+
+    checkAllFields = () =>
+    {
+        // Récupérer tous les champs du formulaire
+        let fields = document.querySelectorAll(".tab-pane.profile form input[type='text']");
+
+        // Vérifier chaque champ * de type text / ne dois pas etre vide.
+        let isValid = true;
+        fields.forEach(field => {
+            if (!utils.checkBlankField2({ target: field })) {
+                isValid = false;
+            }
+        });
+
+        let check_email = utils.checkEmail2({ target: document.querySelector('.tab-pane.profile form input#email') });
+       
+        if (isValid  && check_email)
+            return true;
+        return false
+    }
+
 
 	// File Upload
 	async readURL(input) {

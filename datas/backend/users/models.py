@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinLengthValidator
 import uuid
 
 class User(AbstractUser):
@@ -13,6 +14,8 @@ class User(AbstractUser):
         symmetrical=False,
         blank=True
     )
+    first_name = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(1)])
+    last_name = models.CharField(max_length=150, blank=True, validators=[MinLengthValidator(1)])
 
     def SetStatus(self, status):
         print(f'{self} status = {status} ')

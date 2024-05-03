@@ -73,7 +73,10 @@ class UserDetail(APIView):
 		serializer = UpdateUserSerializer(user, data=request.data)
 		if serializer.is_valid():
 			serializer.save()
+			#serializer.update(user, request.data)
+			print("valid")
 			return Response(serializer.data)
+		print(serializer.errors())
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(csrf_protect, name='dispatch')

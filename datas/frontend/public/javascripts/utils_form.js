@@ -55,3 +55,38 @@ export function checkBlankField(event)
         return true;
     }
 }
+
+export function checkBlankField2(event)
+{
+    let value = event.target.value;
+    let field = event.target.getAttribute("id");
+    if (value === "")
+    {
+        event.target.classList.add("is-invalid")
+        document.querySelector(`.tab-pane.profile #${field}`).classList.add(`is-invalid`)
+        document.querySelector(`.tab-pane.profile #${field}Feedback`).innerHTML = "This fields must not be blank"
+        return false;
+    }
+    else
+    {
+        document.querySelector(`.tab-pane.profile #${field}`).classList.remove(`is-invalid`)
+        document.querySelector(`.tab-pane.profile #${field}`).classList.add(`is-valid`)
+        return true;
+    }
+}
+export function checkEmail2(event) {
+    let inputEmail = event.target.value
+    let field = event.target.getAttribute("id");
+    if (inputEmail.match(EMAIL_REGEX) )
+    {
+        document.querySelector(`.tab-pane.profile #${field}`).classList.remove(`is-invalid`)
+        document.querySelector(`.tab-pane.profile #${field}`).classList.add(`is-valid`)
+        return true;
+    }
+    else
+    {
+        document.querySelector(`.tab-pane.profile #${field}`).classList.add(`is-invalid`)
+        document.querySelector(`.tab-pane.profile #${field}Feedback`).innerHTML = "Wrong email address"
+        return false;
+    }
+}

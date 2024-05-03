@@ -3,6 +3,8 @@ from rest_framework.settings import api_settings
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+from django.core.validators import MinLengthValidator
+
 #from users.models import Profile
 # from .models import Followed
 
@@ -37,9 +39,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 						"follows" : self.user.follows.all().values_list('id', flat=True),
 						"followed_by" : self.user.followed_by.all().values_list('id', flat=True)}
 						)
-
 		return data
-
 
 class UserSerializer(serializers.ModelSerializer):
 
@@ -64,15 +64,16 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('avatar','first_name', 'last_name', 'biography', 'email')
+		fields = ('avatar','username', 'first_name', 'last_name', 'biography', 'email')
 		extra_kwargs = {
-			'avatar': {'required': False},
-			'email': {
-				'validators': [UniqueValidator(queryset=User.objects.all())]}
-			}
+            'avatar': {'required': False},
+            'username': {'validators': [UniqueValidator(queryset=User.objects.all())]},
+            'email': {'validators': [UniqueValidator(queryset=User.objects.all())]}
+        }
 
 	def update(self, instance, validated_data):
 		instance.avatar = validated_data['avatar']
+		instance.username = validated_data['username']
 		instance.first_name = validated_data['first_name']
 		instance.last_name = validated_data['last_name']
 		instance.email = validated_data['email']
