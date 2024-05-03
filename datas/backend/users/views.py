@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
+import requests
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import View
 from django.middleware.csrf import get_token
@@ -170,18 +171,37 @@ class FollowUser(APIView):
 		# 	other_profile.following.remove(current_profile)
 		# 	return Response({"Remove Success" : "Successfuly removed your follower!!"},status=status.HTTP_200_OK)
 
-# mettre dans autre dossier pour login via 42 api
-# def intraCallback(request):
-# 	get_token_path = "https://api.intra.42.fr/oauth/token"
-# 	data = {
-# 		'grant_type': 'authorization_code',
-# 		'client_id': 'u-s4t2ud-32b19fff9e0bdc8b9a6274453ce546cef0f304df7e01d5b7d3be2cac715fa306',
-# 		'client_secret': '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',
-# 		'code': request.GET["code"],
-# 		'redirect_uri': 'http://localhost:88483/auth/intra_callback', 
-# 	}
-# 	r = requests.post(get_token_path, data=data)
-# 	return HttpResponse(r)
+@method_decorator(csrf_exempt, name='dispatch')
+def intraCallback(request):
+	get_token_path = "https://api.intra.42.fr/oauth/token"
+	data = {
+		'grant_type': 'authorization_code',
+		'client_id': 'u-s4t2ud-32b19fff9e0bdc8b9a6274453ce546cef0f304df7e01d5b7d3be2cac715fa306',
+		'client_secret': "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",
+		'code': request.GET["code"],
+		'redirect_uri': 'https://localhost:8443/api/users/auth/intra_callback',
+	}
+	r = requests.post(get_token_path, data=data)
+	token = r.json()['access_token']
+	headers = {"Authorization": "Bearer %s" % token}
+
+	print("code: ", data['code'])
+	
+	user_response = requests.get("https://api.intra.42.fr/v2/me", headers=headers)
+	user_response_json = user_response.json()
+	
+	user, created = User.objects.get_or_create(
+    		id=user_response_json['id'],
+    		username=user_response_json['login'],
+    		first_name=user_response_json['first_name'],
+    		last_name=user_response_json['last_name'],
+    		email=user_response_json['email'],
+	)
+	user_id = user.id
+	print("user id: ", user.id)
+	redirect_url = f'https://localhost:8483/login42/{user_id}'
+	return redirect(redirect_url)
+	# return HttpResponse("User %s %s" % (user, "created now" if created else "found"))
 
 
 # class ProfilePatchView(APIView):
