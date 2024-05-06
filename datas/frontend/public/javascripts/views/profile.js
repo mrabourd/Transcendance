@@ -94,7 +94,7 @@ export default class extends AbstractView {
 	{
 		Promise.all(
 			(this.user.datas.follows).map(async (followed) => {
-				console.log("followed: ", followed);	
+				// console.log("followed: ", followed);	
 				let url = '/api/users/profile/'+followed+'/';
 				let response = await this.user.request.get(url);
 				const userListContainer = document.getElementById("userList");

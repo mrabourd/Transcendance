@@ -60,6 +60,25 @@ class UserSerializer(serializers.ModelSerializer):
 	def create(self, validated_data):
 		return User.objects.create_user(**validated_data)
 
+
+class UserSerializer42(serializers.ModelSerializer):
+
+	class Meta:
+		model = User
+		fields = ('id', 'email', 'username', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by")
+		extra_kwargs = {
+			'avatar': {'required': False}, # 'avatar' is not required
+			'follows': {'required': False},
+			'followed_by': {'required': False},
+			'status': {'required': False},
+			'email': {
+				'validators': [UniqueValidator(queryset=User.objects.all())]
+			}
+		}
+
+	def create(self, validated_data):
+		return User.objects.create_user(**validated_data)
+
 class UpdateUserSerializer(serializers.ModelSerializer):
 
 	class Meta:
