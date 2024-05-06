@@ -29,7 +29,7 @@ export const router = async (user) => {
     const routes = [
         { id:0, path: "/", view: login },
         { id:1, path: "/login", view: login },
-        { id:1, path: "/login42/:user_id", view: login42 },
+        { id:1, path: "/login42", view: login42 },
         { id:2, path: "/register", view: register },
         { id:3, path: "/home", view: home },
         { id:4, path: "/profile", view: profile },
