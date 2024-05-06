@@ -11,7 +11,6 @@ export default class extends AbstractView {
 
 
 async  addEvents () {
-		console.log("enter 42 login")
 		// this.user.rmLocalDatas();
 		// this.user.request.rmJWTtoken()
 		// this.user.request.rmCsrfToken()
@@ -39,10 +38,29 @@ async  addEvents () {
 		};
 		let get_token_path = await this.user.request.post("/api/users/auth/intra_callback/", data);
 		if (get_token_path.ok){
-			console.log("code: ", get_token_path.code);
-			console.log("ca marche");
-			router.navigateTo("/home", this.user);
-		}
+			console.log("coucou")
+			const jsonData = await get_token_path.json();
+			console.log("get_token_path ", jsonData.user);
+
+
+			this.user.setLocalDatas(jsonData.user)
+            this.user.request.setJWTtoken(jsonData.access, jsonData.refresh)
+
+            this.user.isConnected = true;
+
+            const resp_csrf = await this.user.request.post('/api/users/ma_vue_protegee/');
+            if(resp_csrf.status == 403)
+            {
+                console.warn("CSRF attack")
+                return true;
+            }
+            
+			this.user.router.navigateTo('/profile/', this.user);
+            // return get_token_path;
+        } else if (response.status === 401) {
+            const jsonData = await response.json();
+            return jsonData.detail;
+        }
 		
 
 	}

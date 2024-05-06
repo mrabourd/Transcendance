@@ -4,13 +4,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 # We import our serializer here
-from .serializers import UserSerializer, CustomTokenObtainPairSerializer, UpdateUserSerializer
+from .serializers import UserSerializer, CustomTokenObtainPairSerializer, UpdateUserSerializer, UserSerializer42
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view
 
 User = get_user_model()
 import json
@@ -88,21 +90,21 @@ class MaVueProtegee(View):
 # Si c'est le cas, nous ajoutons le cookie CSRF à la réponse en utilisant 
 # la fonction get_token(request) pour obtenir le jeton CSRF.
 class CustomObtainTokenPairView(TokenObtainPairView):
-    permission_classes = [AllowAny]
-    serializer_class = CustomTokenObtainPairSerializer
-    
-    def post(self, request, *args, **kwargs):
-        # Appel de la méthode parente pour obtenir le token d'authentification JWT
-        response = super().post(request, *args, **kwargs)
-        
-        # Si la connexion est réussie, ajout du cookie CSRF à la réponse
-        if response.status_code == 200:
-            response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
-            response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
-            response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
-            response['Access-Control-Allow-Credentials'] = True
-            
-            return response
+	permission_classes = [AllowAny]
+	serializer_class = CustomTokenObtainPairSerializer
+
+	def post(self, request, *args, **kwargs):
+		# Appel de la méthode parente pour obtenir le token d'authentification JWT
+		response = super().post(request, *args, **kwargs)
+		
+		# Si la connexion est réussie, ajout du cookie CSRF à la réponse
+		if response.status_code == 200:
+			response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
+			response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
+			response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
+			response['Access-Control-Allow-Credentials'] = True
+			
+			return response
 
 class UserRegistrationAPIView(APIView):
 	# Note: we have to specify the following policy to allow 
@@ -171,8 +173,17 @@ class FollowUser(APIView):
 		# 	other_profile.following.remove(current_profile)
 		# 	return Response({"Remove Success" : "Successfuly removed your follower!!"},status=status.HTTP_200_OK)
 
-@csrf_exempt
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+
+@api_view(['GET', 'POST'])
 def intraCallback(request):
+	
 	get_token_path = "https://api.intra.42.fr/oauth/token"
 	if request.method == 'POST':
 		
@@ -189,36 +200,54 @@ def intraCallback(request):
 
 	else:
 		return JsonResponse({'error': 'Method not allowed'}, status=405)
-	print("Path", get_token_path)
 	print("Data", data)
 	r = requests.post(get_token_path, data=data)
 	print("r: ", r)
 	token = r.json()['access_token']
 	headers = {"Authorization": "Bearer %s" % token}
-
-	print("token: ", token)
-
-
-	print("code: ", data['code'])
 	print("headers: ", headers)
 	
 	user_response = requests.get("https://api.intra.42.fr/v2/me", headers=headers)
 	user_response_json = user_response.json()
 	
 	user, created = User.objects.get_or_create(
-    		id=user_response_json['id'],
-    		username=user_response_json['login'],
-    		first_name=user_response_json['first_name'],
-    		last_name=user_response_json['last_name'],
-    		email=user_response_json['email'],
+		id=user_response_json['id'],
+		username=user_response_json['login'],
+		first_name=user_response_json['first_name'],
+		last_name=user_response_json['last_name'],
+		email=user_response_json['email'],
 	)
-	user_id = user.id
-	print("user id: ", user.id)
-	print("user username: ", user.username)
-	print("user first_name: ", user.first_name)
-	# redirect_url = f'https://localhost:8483/login42/{user_id}'
-	# return redirect(redirect_url)
-	return HttpResponse("User %s %s" % (user, "created now" if created else "found"))
+
+	serializer = UserSerializer(user)
+
+
+	user_info = {}
+	token_info = get_tokens_for_user(user)
+	# user_info["refresh"] = token_info["refresh"]
+	# user_info["access"] = token_info["access"]
+	# user_info["user"] = user
+	user_info = {"refresh": token_info["refresh"],
+		"access": token_info["access"],
+		"user": serializer.data,
+		
+	}
+
+	print("user info: ", user_info)
+	# Let's update the response code to 201 to follow the standards
+	# response_data = {
+	# 	"user_info": user_info
+	# }
+
+	response = Response(user_info)
+	response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
+	response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
+	response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
+	response['Access-Control-Allow-Credentials'] = True
+
+	# Retourner la réponse JSON
+	return response
+
+	# return HttpResponse("User %s %s" % (user, "created now" if created else "found"))
 
 
 # class ProfilePatchView(APIView):
