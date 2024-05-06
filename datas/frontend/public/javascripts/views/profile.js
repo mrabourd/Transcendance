@@ -210,11 +210,11 @@ export default class extends AbstractView {
 			});
 
 
-	
+
 			document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
-				input.addEventListener("focusout", utils.checkBlankField2);
+				input.addEventListener("focusout", utils.checkBlankField);
 			});
-			document.querySelector('.tab-pane.profile form #email').addEventListener("focusout", utils.checkEmail2);
+			document.querySelector('.tab-pane.profile form #email').addEventListener("focusout", utils.checkEmail);
 
 			document.getElementById("submit_form").addEventListener('click', async (event) =>  {
 				event.preventDefault();
@@ -249,16 +249,23 @@ export default class extends AbstractView {
 								document.querySelector(`.tab-pane.profile #${key}Feedback`).innerHTML = jsonData[key]
 							}
 						}
-						//let errDiv = document.querySelector("#ProfileForm #errors");
-						//errDiv.classList.remove("d-none")
-						//errDiv.innerHTML = "An error occured ! Please check fields below ...";
+						let errDiv = document.querySelector("#ProfileForm #errors");
+						errDiv.classList.remove("d-none", "alert-success")
+						errDiv.classList.add("alert-danger")
+						errDiv.innerHTML = "An error occured ! Please check fields below ...";
 					}
 					else
 					{
+						this.user.setLocalDatas(jsonData)
 						document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
 							input.classList.remove(`is-invalid`)
 							input.classList.remove(`is-valid`)
 						});
+						let errDiv = document.querySelector("#ProfileForm #errors");
+						errDiv.classList.remove("d-none", "alert-danger")
+						errDiv.classList.add("alert-success")
+						errDiv.innerHTML = "Well done ! ...";
+
 					}
 				})
 				.catch((error) => {
@@ -278,12 +285,12 @@ export default class extends AbstractView {
         // Vérifier chaque champ * de type text / ne dois pas etre vide.
         let isValid = true;
         fields.forEach(field => {
-            if (!utils.checkBlankField2({ target: field })) {
+            if (!utils.checkBlankField({ target: field })) {
                 isValid = false;
             }
         });
 
-        let check_email = utils.checkEmail2({ target: document.querySelector('.tab-pane.profile form input#email') });
+        let check_email = utils.checkEmail({ target: document.querySelector('.tab-pane.profile form input#email') });
        
         if (isValid  && check_email)
             return true;

@@ -4,11 +4,37 @@ export async function print(user)
 {
 	let routes = null;
 
-	let aside = document.getElementById("friends");
+	let aside = document.querySelector("aside #friends");
 	if (aside.hasChildNodes()) {
-		console.log("has child node")
+		console.log("has child node", aside.firstChild)
 		return;
 	}
+
+
+
+	let profile_card_url = '/template/profile_card'
+	await fetch(profile_card_url).then(function (response) {
+		return response.text();
+	}).then(function (html) {
+
+		let parser = new DOMParser();
+		let doc = parser.parseFromString(html, 'text/html');
+		let DOMProfileCard = doc.querySelector('.profile_card');
+		let aside = document.querySelector('aside #friends')
+
+		let nodeCopy;
+
+		// boucle 
+		nodeCopy = DOMProfileCard.cloneNode(true);
+		aside.append(nodeCopy);
+		var dropdownToggle = nodeCopy.querySelector(".dropdown-toggle");
+		var dropdown = new bootstrap.Dropdown(dropdownToggle);
+
+
+	});
+
+
+
 
 
 	if (user.isConnected)

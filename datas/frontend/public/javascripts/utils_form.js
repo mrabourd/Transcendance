@@ -16,77 +16,58 @@ export function FormAppendElements(parent, ...children) {
     children.forEach(child => parent.appendChild(child));
 }
 
-export function checkEmail(event) {
-    let inputEmail = event.target.value
-    if (inputEmail.match(EMAIL_REGEX) )
-    {
-        printError("email", false, "")
-        return true;
-    }
-    else
-    {
-        printError("email", true, "Wrong email address")
-        return false;
-    }
-}
-
-export function printError(field, isError, innerText)
+export function printError(f, isError, innerText)
 {
+    console.log("printError", f, isError, innerText)
+    let field = document.querySelector(`form #${f}`)
     if (isError)
-        document.querySelector(`form .error[for="` + field + `"]`).classList.remove("d-none");
+    {
+       field.classList.remove(`is-valid`)
+       field.classList.add(`is-invalid`)
+    }
     else
-        document.querySelector(`form .error[for="` + field + `"]`).classList.add("d-none");
-    document.querySelector(`form .error[for="` + field + `"]`).innerHTML = innerText;
+    {
+        field.classList.remove(`is-invalid`)
+        field.classList.add(`is-valid`)
+    }
+    document.querySelector(`#${f}Feedback`).innerHTML = innerText
 }
 
 export function checkBlankField(event)
 {
     let value = event.target.value;
     let field = event.target.getAttribute("id");
-    if (value === "")
-    {
-        document.querySelector(`form .error[for="` + field + `"]`).classList.remove("d-none");
-        document.querySelector(`form .error[for="` + field + `"]`).innerHTML = "this fields must not be blank";
-        return false;
-    }
-    else
-    {
-        document.querySelector(`form .error[for="` + field + `"]`).classList.add("d-none");
-        return true;
-    }
-}
+    document.querySelector("form #errors").classList.add("d-none")
 
-export function checkBlankField2(event)
-{
-    let value = event.target.value;
-    let field = event.target.getAttribute("id");
     if (value === "")
     {
         event.target.classList.add("is-invalid")
-        document.querySelector(`.tab-pane.profile #${field}`).classList.add(`is-invalid`)
-        document.querySelector(`.tab-pane.profile #${field}Feedback`).innerHTML = "This fields must not be blank"
+        document.querySelector(`form #${field}`).classList.add(`is-invalid`)
+        document.querySelector(`form #${field}Feedback`).innerHTML = "This fields must not be blank"
         return false;
     }
     else
     {
-        document.querySelector(`.tab-pane.profile #${field}`).classList.remove(`is-invalid`)
-        document.querySelector(`.tab-pane.profile #${field}`).classList.add(`is-valid`)
+        document.querySelector(`form #${field}`).classList.remove(`is-invalid`)
+        document.querySelector(`form #${field}`).classList.add(`is-valid`)
         return true;
     }
 }
-export function checkEmail2(event) {
+export function checkEmail(event) {
     let inputEmail = event.target.value
     let field = event.target.getAttribute("id");
+    document.querySelector("form #errors").classList.add("d-none")
+
     if (inputEmail.match(EMAIL_REGEX) )
     {
-        document.querySelector(`.tab-pane.profile #${field}`).classList.remove(`is-invalid`)
-        document.querySelector(`.tab-pane.profile #${field}`).classList.add(`is-valid`)
+        document.querySelector(`form #${field}`).classList.remove(`is-invalid`)
+        document.querySelector(`form #${field}`).classList.add(`is-valid`)
         return true;
     }
     else
     {
-        document.querySelector(`.tab-pane.profile #${field}`).classList.add(`is-invalid`)
-        document.querySelector(`.tab-pane.profile #${field}Feedback`).innerHTML = "Wrong email address"
+        document.querySelector(`form #${field}`).classList.add(`is-invalid`)
+        document.querySelector(`form #${field}Feedback`).innerHTML = "Wrong email address"
         return false;
     }
 }

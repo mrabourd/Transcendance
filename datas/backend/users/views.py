@@ -70,13 +70,12 @@ class UserDetail(APIView):
 		user = self.get_user(id)
 		if user.id != request.user.id:
 			return Response(status=status.HTTP_401_UNAUTHORIZED)
+		user_serializer = UserSerializer(user)
 		serializer = UpdateUserSerializer(user, data=request.data)
 		if serializer.is_valid():
 			serializer.save()
 			#serializer.update(user, request.data)
-			print("valid")
-			return Response(serializer.data)
-		print(serializer.errors())
+			return Response(user_serializer.data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(csrf_protect, name='dispatch')

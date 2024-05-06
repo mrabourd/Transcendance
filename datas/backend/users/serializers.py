@@ -45,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('id', 'email', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by")
+		fields = ('id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by")
 		extra_kwargs = {
 			'avatar': {'required': False}, # 'avatar' is not required
 			'password': {'write_only': True},
@@ -64,7 +64,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('avatar','username', 'first_name', 'last_name', 'biography', 'email')
+		fields = ('avatar', 'username', 'first_name', 'last_name', 'biography', 'email')
 		extra_kwargs = {
             'avatar': {'required': False},
             'username': {'validators': [UniqueValidator(queryset=User.objects.all())]},

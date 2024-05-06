@@ -17,8 +17,28 @@
         <p class="lead">to join our amazing pong website</p>
         <hr class="my-4">
 
-        <form id="loginForm" class="mb-5">
+        <form id="loginForm" class="row g-3 form-floating">
           <div id="errors" class="alert alert-danger d-none"></div>
+
+          <div class="col-md-12">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" value="" aria-describedby="usernameFeedback" required>
+            <div id="usernameFeedback" class="invalid-feedback">
+              feedback
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <label for="last_name" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" value="" aria-describedby="passwordFeedback" required>
+            <div id="passwordFeedback" class="invalid-feedback">
+              feedback
+            </div>
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary" type="submit" id="submit_form">Sign In!</button>
+          </div>
+
         </form>
         <p>Not a member? <a href="/register" data-link>Register</a></p>
         <p>or sign up with: </p>

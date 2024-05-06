@@ -19,27 +19,6 @@ export default class extends AbstractView {
             let body = doc.querySelector('#app');
             DOM.innerHTML = body.innerHTML;
 
-            /* ADD FORM FIELDS */
-            let RegisterForm = document.querySelector("#loginForm");
-            new Map([
-                ['username', { libelle: "Username *", type: "text" }],
-                ['password', { libelle: "Password *", type: "password" }],
-            ]).forEach((value, key, map) => {
-                let main_div    = utils.FormcreateElement("div",  ["d-flex", "flex-row", "align-items-center", "mb-4"]);
-                let inner_div   = utils.FormcreateElement("div",  ["form-outline", "flex-fill", "mb-0"]);
-                let label       = utils.FormcreateElement("label", ["form-label"], { "for": `${key}`, "innerText": value.libelle });
-                let input       = utils.FormcreateElement("input", ["form-control"], { "type": value.type, "id": `${key}` });
-                let error       = utils.FormcreateElement("div",  ["error", "alert", "alert-danger", "d-none"], { "for": `${key}` });
-                utils.FormAppendElements(inner_div, label, input, error);
-                utils.FormAppendElements(main_div, inner_div);
-                RegisterForm.appendChild(main_div);
-            });
-            let submitBt    = utils.FormcreateElement("button",  ["btn", "btn-primary", "btn-lg"],
-                {   "innerText": "Sign In!",
-                    "id": `loginButton`,
-                    "type": "button"
-                });
-            RegisterForm.appendChild(submitBt);
         }).catch(function (err) {
             // There was an error
             console.warn('Something went wrong.', err);
@@ -48,10 +27,13 @@ export default class extends AbstractView {
 
     addEvents () {
         document.querySelectorAll('#loginForm input').forEach(input => {
-            input.addEventListener("focusout", utils.checkBlankField);
+            input.addEventListener("focusout", utils.checkBlankField2);
         });
-        document.querySelector('#loginButton').addEventListener("click", this.login);
         document.querySelector('#login42Button').addEventListener("click", this.login42);
+        document.querySelector("#loginForm #submit_form").addEventListener('click', async (event) =>  {
+            event.preventDefault();
+            this.login();
+        })
     }
 
 
