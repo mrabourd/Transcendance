@@ -196,11 +196,11 @@ def intraCallback(request):
 		body_data = json.loads(request.body.decode('utf-8'))
 		
 		data = {
-			'grant_type': body_data.get('grant_type'),
-			'client_id': body_data.get('client_id'),
-			'client_secret': body_data.get('client_secret'),
+			'grant_type': 'authorization_code',
+			'client_id': 'u-s4t2ud-32b19fff9e0bdc8b9a6274453ce546cef0f304df7e01d5b7d3be2cac715fa306',
+			'client_secret': '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',
 			'code': body_data.get('code'),
-			'redirect_uri': body_data.get('redirect_uri'),
+			'redirect_uri': 'https://localhost:8483/login42',
 		}
 
 	else:
@@ -221,16 +221,16 @@ def intraCallback(request):
 		first_name=user_response_json['first_name'],
 		last_name=user_response_json['last_name'],
 		email=user_response_json['email'],
+		# avatar=user_response_json['image']['versions']['small'],
 	)
+	print("user_response_json: ", user_response_json)
 
 	serializer = UserSerializer(user)
 
 
 	user_info = {}
 	token_info = get_tokens_for_user(user)
-	# user_info["refresh"] = token_info["refresh"]
-	# user_info["access"] = token_info["access"]
-	# user_info["user"] = user
+
 	user_info = {"refresh": token_info["refresh"],
 		"access": token_info["access"],
 		"user": serializer.data,
@@ -238,11 +238,6 @@ def intraCallback(request):
 	}
 
 	print("user info: ", user_info)
-	# Let's update the response code to 201 to follow the standards
-	# response_data = {
-	# 	"user_info": user_info
-	# }
-
 	response = Response(user_info)
 	response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
 	response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
