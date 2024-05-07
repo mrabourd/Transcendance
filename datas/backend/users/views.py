@@ -145,7 +145,7 @@ class FollowUser(APIView):
 		except User.DoesNotExist:
 			raise Http404
 
-	def post(self, request, req_type, id, format=None):    
+	def get(self, request, req_type, id, format=None):    
 		pk = id         # Here pk is opposite user's profile ID
 		# followType = request.data.get('usertype')
 		
@@ -156,12 +156,23 @@ class FollowUser(APIView):
 			# if other_profile.blocked_user.filter(pk = current_profile.id).exists():
 			# 	return Response({"Following Fail" : "You can not follow this profile becuase your ID blocked by this user!!"},status=status.HTTP_400_BAD_REQUEST)
 			current_profile.follows.add(other_profile)
-			return Response({"Following" : "Following success!!"}, status=status.HTTP_200_OK) 
+			return Response(status=status.HTTP_200_OK) 
 		
 		elif req_type == 'unfollow':
 			current_profile.follows.remove(other_profile)
 			# other_profile.followers.remove(current_profile)
-			return Response({"Unfollow" : "Unfollow success!!"},status=status.HTTP_200_OK)
+			return Response(status=status.HTTP_200_OK)
+
+			
+		elif req_type == 'block':
+			current_profile.blocks.add(other_profile)
+			# other_profile.followers.remove(current_profile)
+			return Response(status=status.HTTP_200_OK)
+			
+		elif req_type == 'unblock':
+			current_profile.blocks.remove(other_profile)
+			# other_profile.followers.remove(current_profile)
+			return Response(status=status.HTTP_200_OK)
 			
 		# elif req_type == 'accept':
 		# 	current_profile.followers.add(other_profile)

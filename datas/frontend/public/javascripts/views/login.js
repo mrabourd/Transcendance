@@ -48,9 +48,16 @@ export default class extends AbstractView {
                 router.navigateTo("/home", this.user)
             else
             {
+                console.log(result)
                 let errDiv = document.querySelector("#loginForm #errors");
                 errDiv.classList.remove("d-none")
-                errDiv.innerHTML = result;
+                errDiv.innerHTML = 'An error occured ! Please check fields below ...';
+                //jsonData = result.json()
+                for (const key in result) {
+                    console.log(key, result[key])
+                    if (Object.hasOwnProperty.call(result, key))
+                        utils.printError(key, 1, result[key])
+                }
             }
 
         })

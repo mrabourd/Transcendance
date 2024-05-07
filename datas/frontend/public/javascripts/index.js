@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", async() => {
     const user = new User();
     const result = await user.checkLocalStorage();
     
-
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();

@@ -2,15 +2,19 @@ import * as friends_utils from "./utils_friends.js"
 
 export async function print(user)
 {
+	
 	let routes = null;
 
-	let aside = document.querySelector("aside #friends");
+	let aside = document.querySelector("aside .followed");
 	if (aside.hasChildNodes()) {
 		console.log("has child node", aside.firstChild)
 		if (!user.isConnected)
 			aside.innerHTML = '';
 		return;
 	}
+
+	if (!user.isConnected)
+		return;
 	let profile_card_url = '/template/profile_card'
 	await fetch(profile_card_url).then(function (response) {
 		return response.text();
@@ -18,7 +22,7 @@ export async function print(user)
 		let parser = new DOMParser();
 		let doc = parser.parseFromString(html, 'text/html');
 		let DOMProfileCard = doc.querySelector('.profile_card');
-		let aside = document.querySelector('aside #friends')
+		let aside = document.querySelector('aside .followed')
 
 		let nodeCopy;
 
@@ -29,8 +33,9 @@ export async function print(user)
 			friends.forEach(async friend => {
 				if (friend.username === "root" || friend.username === user.datas.username)
 					return;
-				nodeCopy = await friends_utils.create_thumbnail(user, DOMProfileCard, friend)
+				nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, user, friend)
 				aside.append(nodeCopy);
+				friends_utils.update_friends_thumbnails(user, friend)
 			})
 		}
 	});

@@ -43,7 +43,7 @@ export default class extends AbstractView {
             return false;
         let RQ_BODY =
         {
-            "avatar": "/avatar/default.png",
+            "avatar": "/avatars/default.png",
             "username": document.getElementById("username").value,
             "first_name": document.getElementById("first_name").value,
             "last_name": document.getElementById("last_name").value,

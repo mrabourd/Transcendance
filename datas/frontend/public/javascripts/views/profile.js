@@ -1,10 +1,12 @@
 import AbstractView from "./AbstractView.js";
-import * as utils from "../utils_form.js"
+import * as form from "../utils_form.js"
+import * as friends_utils from "../utils_friends.js"
 
 export default class extends AbstractView {
 	constructor(params) {
 		super(params);
 		this.setTitle("Profile");
+		const UserDatas = null;
 	}
 	
 	is_user_page()
@@ -79,6 +81,21 @@ export default class extends AbstractView {
 			// There was an error
 			console.warn('Something went wrong.', err);
 		});
+
+		if (this.is_user_page())
+			this.UserDatas = this.user.datas
+		else
+		{
+			var elements = document.querySelectorAll('input, textarea');
+			elements.forEach(function(element) {
+				element.setAttribute('readonly', 'readonly');
+				element.classList.add('form-control-plaintext');
+			});
+
+			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
+			if (response.ok)
+			this.UserDatas = await response.json();
+		}
 	}
 
 	async fillHtml(DOM) {
@@ -92,6 +109,40 @@ export default class extends AbstractView {
 
 	async fillFollowed()
 	{
+		let profile_card_url = '/template/profile_card'
+		await fetch(profile_card_url).then(function (response) {
+			return response.text();
+		}).then( async (html) => {
+			let parser = new DOMParser();
+			let doc = parser.parseFromString(html, 'text/html');
+			let DOMProfileCard = doc.querySelector('.profile_card');
+			let dest_container = document.querySelector('main .followed')
+	
+			let nodeCopy;
+
+			const friends = this.UserDatas.follows;
+			if (!friends)
+				return
+			friends.forEach(async friend_id => {
+
+				let response = await this.user.request.get(`/api/users/profile/${friend_id}/`)
+				if (response.status === 200)
+				{
+					console.log('friend_id', friend_id)
+
+					let friend = await response.json();
+					if (friend.username === "root" || friend.id === this.UserDatas.id)
+						return;
+					nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, this.user, friend)
+					console.log('nodeCopy', nodeCopy)
+					dest_container.appendChild(nodeCopy);
+					friends_utils.update_friends_thumbnails(this.user, friend)
+				}
+			})
+		});
+
+
+		/*
 		Promise.all(
 			(this.user.datas.follows).map(async (followed) => {
 				// console.log("followed: ", followed);	
@@ -121,6 +172,7 @@ export default class extends AbstractView {
 		.catch((error) => {
 			console.error("Une erreur s'est produite lors du traitement des requêtes :", error);
 		});
+		*/
 	}
 
 
@@ -151,31 +203,13 @@ export default class extends AbstractView {
 
 	async fillProfile()
 	{
-		let UserDatas;
-
-
-		if (this.is_user_page())
-			UserDatas = this.user.datas
-		else
-		{
-			var elements = document.querySelectorAll('input, textarea');
-			elements.forEach(function(element) {
-				element.setAttribute('readonly', 'readonly');
-				element.classList.add('form-control-plaintext');
-			});
-
-			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
-			if (response.ok)
-				UserDatas = await response.json();
-		}
-
-		document.querySelector(".user_username").innerHTML = UserDatas.username;
-		document.querySelector("#avatar").src = (UserDatas.avatar) ? UserDatas.avatar : "/avatars/default.png";
-		document.querySelector(".tab-pane.profile #username").value = UserDatas.username;
-		document.querySelector(".tab-pane.profile #first_name").value = UserDatas.first_name;
-		document.querySelector(".tab-pane.profile #last_name").value = UserDatas.last_name;
-		document.querySelector(".tab-pane.profile #email").value = UserDatas.email;
-		document.querySelector(".tab-pane.profile #biography").value = UserDatas.biography;
+		document.querySelector(".user_username").innerHTML = this.UserDatas.username;
+		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ?  this.UserDatas.avatar : "/avatars/default.png";
+		document.querySelector(".tab-pane.profile #username").value =  this.UserDatas.username;
+		document.querySelector(".tab-pane.profile #first_name").value =  this.UserDatas.first_name;
+		document.querySelector(".tab-pane.profile #last_name").value =  this.UserDatas.last_name;
+		document.querySelector(".tab-pane.profile #email").value =  this.UserDatas.email;
+		document.querySelector(".tab-pane.profile #biography").value =  this.UserDatas.biography;
 	}
 
 
@@ -212,9 +246,9 @@ export default class extends AbstractView {
 
 
 			document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
-				input.addEventListener("focusout", utils.checkBlankField);
+				input.addEventListener("focusout", form.checkBlankField);
 			});
-			document.querySelector('.tab-pane.profile form #email').addEventListener("focusout", utils.checkEmail);
+			document.querySelector('.tab-pane.profile form #email').addEventListener("focusout", form.checkEmail);
 
 			document.getElementById("submit_form").addEventListener('click', async (event) =>  {
 				event.preventDefault();
@@ -285,12 +319,12 @@ export default class extends AbstractView {
         // Vérifier chaque champ * de type text / ne dois pas etre vide.
         let isValid = true;
         fields.forEach(field => {
-            if (!utils.checkBlankField({ target: field })) {
+            if (!form.checkBlankField({ target: field })) {
                 isValid = false;
             }
         });
 
-        let check_email = utils.checkEmail({ target: document.querySelector('.tab-pane.profile form input#email') });
+        let check_email = form.checkEmail({ target: document.querySelector('.tab-pane.profile form input#email') });
        
         if (isValid  && check_email)
             return true;

@@ -37,7 +37,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 						"biography" : self.user.biography,
 						"status" : self.user.status,
 						"follows" : self.user.follows.all().values_list('id', flat=True),
-						"followed_by" : self.user.followed_by.all().values_list('id', flat=True)}
+						"followed_by" : self.user.followed_by.all().values_list('id', flat=True),
+						"blocks" : self.user.blocks.all().values_list('id', flat=True),
+						"blocked_by" : self.user.blocked_by.all().values_list('id', flat=True)
+						}
 						)
 		return data
 
@@ -45,12 +48,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by")
+		fields = ('id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by", "blocks", "blocked_by")
 		extra_kwargs = {
 			'avatar': {'required': False}, # 'avatar' is not required
 			'password': {'write_only': True},
 			'follows': {'required': False},
 			'followed_by': {'required': False},
+			'blocks': {'required': False},
+			'blocked_by': {'required': False},
 			'status': {'required': False},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]
@@ -65,11 +70,13 @@ class UserSerializer42(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('id', 'email', 'username', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by")
+		fields = ('id', 'email', 'username', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by", "blocks", "blocked_by")
 		extra_kwargs = {
 			'avatar': {'required': False}, # 'avatar' is not required
 			'follows': {'required': False},
 			'followed_by': {'required': False},
+			'blocks': {'required': False},
+			'blocked_by': {'required': False},
 			'status': {'required': False},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]

@@ -52,9 +52,9 @@ export default class User {
             }
             
             return true;
-        } else if (response.status === 401) {
+        } else  {
             const jsonData = await response.json();
-            return jsonData.detail;
+            return jsonData;
         }
     }
 
@@ -109,7 +109,11 @@ export default class User {
         {
             let jsonData = await response.json();
             window.localStorage.setItem("LocalDatas", JSON.stringify(jsonData));
-        }      
+            this.datas = jsonData;
+            return true 
+        }
+        else
+            return false
         //this.token = jsonData;
         // TODO enregistrer un cookie pour plus de securite
     }
