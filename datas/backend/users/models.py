@@ -5,7 +5,8 @@ import uuid
 
 class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    avatar = models.TextField(max_length=500, blank=True, default="https://www.gravatar.com/avatar/")
+    # avatar = models.TextField(max_length=500, blank=True, default="https://www.gravatar.com/avatar/")
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True, default="https://www.gravatar.com/avatar/")
     biography = models.TextField(max_length=500, blank=True)
     status = models.IntegerField(default=0)
     follows = models.ManyToManyField(

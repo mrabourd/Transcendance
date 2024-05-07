@@ -35,9 +35,7 @@ export default class extends AbstractView {
 		};
 		let get_token_path = await this.user.request.post("/api/users/auth/intra_callback/", data);
 		if (get_token_path.ok){
-			console.log("coucou")
 			const jsonData = await get_token_path.json();
-			console.log("get_token_path ", jsonData.user);
 
 
 			this.user.setLocalDatas(jsonData.user)
