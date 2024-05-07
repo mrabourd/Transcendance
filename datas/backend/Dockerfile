@@ -45,9 +45,13 @@ EXPOSE 8000
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
-#bash -c "daphne -b 0.0.0.0 -p 8000 hello_django.asgi:application"
-CMD ["gunicorn", \
-    "users.wsgi:application", \
-    "--bind", "0.0.0.0:8000", \
-    "--keyfile", "/etc/ssl/sethomas.42.fr.key", \
+CMD ["daphne -b localhost -p 8000 hello_django.asgi:application" \
+	"--keyfile", "/etc/ssl/sethomas.42.fr.key", \
     "--certfile", "/etc/ssl/sethomas.42.fr.cert"]
+
+
+# CMD ["gunicorn", \
+#     "users.wsgi:application", \
+#     "--bind", "0.0.0.0:8000", \
+#     "--keyfile", "/etc/ssl/sethomas.42.fr.key", \
+#     "--certfile", "/etc/ssl/sethomas.42.fr.cert"]

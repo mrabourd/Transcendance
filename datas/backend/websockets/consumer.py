@@ -8,7 +8,9 @@ from .models import Message
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        self.accept()
+        self.accept("Authorization")
+        
+            
 
     def disconnect(self, close_code):
         pass

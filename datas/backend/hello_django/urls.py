@@ -24,9 +24,9 @@ urlpatterns = [
     path("", include("singlepage.urls")),
 	path('api/auth/', include('rest_framework.urls')),         # new
 	path('api/users/', include('users.urls')),
-	path('ws/', include('websockets.urls')),
 	path('api/match/', include('match.urls')),
 ]
+
 
 #urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

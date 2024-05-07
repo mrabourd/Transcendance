@@ -18,7 +18,7 @@ from websockets.urls import urlpatterns as ws_urlpatterns
 import django
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hello_django.settings')
+#os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hello_django.settings')
 
 
 
