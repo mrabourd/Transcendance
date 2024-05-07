@@ -15,6 +15,9 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
 
 User = get_user_model()
+
+import os
+from django.core.files.base import ContentFile
 import json
 import requests
 from django.http import JsonResponse, HttpResponse
@@ -207,11 +210,11 @@ def intraCallback(request):
 		body_data = json.loads(request.body.decode('utf-8'))
 		
 		data = {
-			'grant_type': body_data.get('grant_type'),
-			'client_id': body_data.get('client_id'),
-			'client_secret': body_data.get('client_secret'),
+			'grant_type': 'authorization_code',
+			'client_id': 'u-s4t2ud-32b19fff9e0bdc8b9a6274453ce546cef0f304df7e01d5b7d3be2cac715fa306',
+			'client_secret': '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',
 			'code': body_data.get('code'),
-			'redirect_uri': body_data.get('redirect_uri'),
+			'redirect_uri': 'https://localhost:8483/login42',
 		}
 
 	else:
@@ -225,23 +228,28 @@ def intraCallback(request):
 	
 	user_response = requests.get("https://api.intra.42.fr/v2/me", headers=headers)
 	user_response_json = user_response.json()
-	
+
+	print("user_response_json: ", user_response_json)
+	av_1 = user_response_json['image']
+	av_2 = av_1['versions']
+	avatar_url = av_2['small']
+	print(f"avatar_url: [{avatar_url}]")
+
 	user, created = User.objects.get_or_create(
 		id=user_response_json['id'],
 		username=user_response_json['login'],
 		first_name=user_response_json['first_name'],
 		last_name=user_response_json['last_name'],
 		email=user_response_json['email'],
+		avatar=avatar_url,
 	)
 
 	serializer = UserSerializer(user)
 
 
 	user_info = {}
-	token_info = get_tokens_for_user(user)
-	# user_info["refresh"] = token_info["refresh"]
-	# user_info["access"] = token_info["access"]
-	# user_info["user"] = user
+	token_info = get_tokens_for_user(user)  
+
 	user_info = {"refresh": token_info["refresh"],
 		"access": token_info["access"],
 		"user": serializer.data,
@@ -249,11 +257,6 @@ def intraCallback(request):
 	}
 
 	print("user info: ", user_info)
-	# Let's update the response code to 201 to follow the standards
-	# response_data = {
-	# 	"user_info": user_info
-	# }
-
 	response = Response(user_info)
 	response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
 	response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
