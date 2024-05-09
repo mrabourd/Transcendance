@@ -37,13 +37,21 @@ export default class extends AbstractView {
 		if (get_token_path.ok){
 			const jsonData = await get_token_path.json();
 
+			if (jsonData.error)
+            {
+                document.querySelector('#app').innerHTML =
+                    `<h1>${jsonData.error}</h1>
+                    <p>${jsonData.error_description}</p>`
+            }
+            else
+            {
+				this.user.setLocalDatas(jsonData.user)
+				this.user.request.setJWTtoken(jsonData.access, jsonData.refresh)
 
-			this.user.setLocalDatas(jsonData.user)
-			this.user.request.setJWTtoken(jsonData.access, jsonData.refresh)
+				this.user.isConnected = true;
 
-			this.user.isConnected = true;
-
-			const resp_csrf = await this.user.request.post('/api/users/ma_vue_protegee/');
+				const resp_csrf = await this.user.request.post('/api/users/ma_vue_protegee/');
+			}
 			if(resp_csrf.status == 403)
 			{
 				console.warn("CSRF attack")

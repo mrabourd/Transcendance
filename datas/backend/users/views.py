@@ -211,21 +211,23 @@ def intraCallback(request):
 		
 		data = {
 			'grant_type': 'authorization_code',
-			'client_id': 'u-s4t2ud-32b19fff9e0bdc8b9a6274453ce546cef0f304df7e01d5b7d3be2cac715fa306',
-			'client_secret': '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',
+			'client_id': os.environ.get("API42_CLIENT_ID"),
+			'client_secret': os.environ.get("API42_SECRET"),
 			'code': body_data.get('code'),
-			'redirect_uri': 'https://localhost:8483/login42',
+			'redirect_uri': os.environ.get("API42_REDIRECT_URI"),
 		}
 
 	else:
 		return JsonResponse({'error': 'Method not allowed'}, status=405)
 	print("Data", data)
 	r = requests.post(get_token_path, data=data)
+	if (r.json()['error']):
+		return  Response(r.json())
 	print("r: ", r)
 	token = r.json()['access_token']
 	headers = {"Authorization": "Bearer %s" % token}
 	print("headers: ", headers)
-	
+
 	user_response = requests.get("https://api.intra.42.fr/v2/me", headers=headers)
 	user_response_json = user_response.json()
 
