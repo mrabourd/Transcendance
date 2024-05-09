@@ -200,6 +200,17 @@ def get_tokens_for_user(user):
         'access': str(refresh.access_token),
     }
 
+# def update_user(request, user_id):
+# 	try:
+# 		user = User.objects.get(id=user_id)
+# 		user.username = 
+
+def check_user_existence(user_id):
+    # Utilisez la méthode exists() pour vérifier si un utilisateur avec cet ID existe
+    user_exists = User.objects.filter(id=user_id).exists()
+
+    return user_exists
+
 @api_view(['GET', 'POST'])
 def intraCallback(request):
 	
@@ -219,32 +230,54 @@ def intraCallback(request):
 
 	else:
 		return JsonResponse({'error': 'Method not allowed'}, status=405)
-	print("Data", data)
+	# print("Data", data)
 	r = requests.post(get_token_path, data=data)
 	if r.json().get('error'):
 		return  Response(r.json())
-	print("r: ", r)
+	# print("r: ", r)
 	token = r.json()['access_token']
 	headers = {"Authorization": "Bearer %s" % token}
-	print("headers: ", headers)
+	# print("headers: ", headers)
 
 	user_response = requests.get("https://api.intra.42.fr/v2/me", headers=headers)
 	user_response_json = user_response.json()
 
-	print("user_response_json: ", user_response_json)
+	# print("user_response_json: ", user_response_json)
 	av_1 = user_response_json['image']
 	av_2 = av_1['versions']
 	avatar_url = av_2['small']
-	print(f"avatar_url: [{avatar_url}]")
+	# print(f"avatar_url: [{avatar_url}]")
 
-	user, created = User.objects.get_or_create(
-		id=user_response_json['id'],
-		username=user_response_json['login'],
-		first_name=user_response_json['first_name'],
-		last_name=user_response_json['last_name'],
-		email=user_response_json['email'],
-		avatar=avatar_url,
-	)
+	user_id = user_response_json['id']
+
+	if check_user_existence(user_id):
+		user = User.objects.get(id=user_id)
+		user.username=user_response_json['login'],
+		user.first_name=user_response_json['first_name'],
+		user.last_name=user_response_json['last_name'],
+		user.email=user_response_json['email'],
+		user.avatar=avatar_url,
+
+	# user = User.objects.create_user(
+	# 	id=user_response_json['id'],
+	# 	username=user_response_json['login'],
+	# 	first_name=user_response_json['first_name'],
+	# 	last_name=user_response_json['last_name'],
+	# 	email=user_response_json['email'],
+	# 	avatar=avatar_url,
+	# )
+
+	else:
+		user, created = User.objects.create_user(
+			id=user_id,
+			username=user_response_json['login'],
+			first_name=user_response_json['first_name'],
+			last_name=user_response_json['last_name'],
+			email=user_response_json['email'],
+			avatar=avatar_url,
+		)
+
+
 
 	serializer = UserSerializer(user)
 
@@ -258,7 +291,7 @@ def intraCallback(request):
 		
 	}
 
-	print("user info: ", user_info)
+	# print("user info: ", user_info)
 	response = Response(user_info)
 	response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
 	response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
