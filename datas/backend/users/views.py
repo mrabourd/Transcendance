@@ -221,7 +221,7 @@ def intraCallback(request):
 		return JsonResponse({'error': 'Method not allowed'}, status=405)
 	print("Data", data)
 	r = requests.post(get_token_path, data=data)
-	if (r.json()['error']):
+	if r.json().get('error'):
 		return  Response(r.json())
 	print("r: ", r)
 	token = r.json()['access_token']
