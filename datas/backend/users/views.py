@@ -5,15 +5,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 # We import our serializer here
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer, UpdateUserSerializer, UserSerializer42
-from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model, authenticate, logout
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken, OutstandingToken
 from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
-
 User = get_user_model()
 
 import os
@@ -40,13 +39,13 @@ class UsersAPIView(APIView):
 
 	def get(self, request):
 		users = User.objects.all()
-		print(users)
+		#print(users)
 		if not users:  # Vérifie si la base de données d'utilisateurs est vide
-			print('not user')
+			#print('not user')
 			return Response({"error": "Aucun utilisateur trouvé."}, status=status.HTTP_404_NOT_FOUND)  # Renvoie une réponse avec le code d'erreur 404 (NotFound)
 
 		serializer = self.serializer_class(users, many=True)
-		print(serializer)
+		#print(serializer)
 		return Response(serializer.data, status=200)  # Renvoie une réponse avec le code d'état 200 (OK)
 
 
@@ -91,6 +90,35 @@ class MaVueProtegee(View):
         # Traitement de la requête POST ici
         return HttpResponse("Requête POST protégée reçue avec succès.")
 
+class CustomLogoutView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            #refresh_token = request.data
+            #print('refresh_token.refresh')
+            #print(refresh_token['refresh'])
+            #access_token = AccessToken(refresh_token['refresh'])
+            #user = access_token.payload.get('user_id')
+            # Assurez-vous que l'utilisateur existe et est authentifié
+            if request.user and request.user.is_authenticated:
+                print('>>>> user.SetStatus >> offline ')
+                request.user.SetStatus(User.USER_STATUS['OFFLINE'])
+                print('>>>> logout')
+                logout(request)
+                print('>>>> RefreshToken')
+                token = RefreshToken(request.data.get('refresh'))
+                print('>>>> blacklist')
+                token.blacklist()
+                #token = OutstandingToken.objects.get(token=refresh_token)
+                #token.blacklist()
+                response = Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
+                #response.delete_cookie("refresh_token")
+                return response
+            else:
+                return Response({"error": "User not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 # Dans cet exemple, nous avons étendu la vue CustomObtainTokenPairView 
 # en surchargeant sa méthode post. Après avoir obtenu le token JWT 
 # en appelant la méthode parente super().post(), 
@@ -98,22 +126,37 @@ class MaVueProtegee(View):
 # Si c'est le cas, nous ajoutons le cookie CSRF à la réponse en utilisant 
 # la fonction get_token(request) pour obtenir le jeton CSRF.
 class CustomObtainTokenPairView(TokenObtainPairView):
-	permission_classes = [AllowAny]
-	serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [AllowAny]
+    serializer_class = CustomTokenObtainPairSerializer
+    
+    def authenticate_user(self, username, password):
+        return authenticate(username=username, password=password)
 
-	def post(self, request, *args, **kwargs):
-		# Appel de la méthode parente pour obtenir le token d'authentification JWT
-		response = super().post(request, *args, **kwargs)
-		
-		# Si la connexion est réussie, ajout du cookie CSRF à la réponse
-		if response.status_code == 200:
-			response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
-			response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
-			response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
-			response['Access-Control-Allow-Credentials'] = True
-			
-			return response
+    def post(self, request, *args, **kwargs):
+        # Récupère les données du corps de la requête
+        username = request.data.get('username')
+        password = request.data.get('password')
 
+        # Authentification de l'utilisateur
+        user = self.authenticate_user(username, password)
+        if user and user.is_authenticated:
+            print('############ user is_authenticated ')
+        # Si l'utilisateur est authentifié
+        if user is not None:
+            response = super().post(request, *args, **kwargs)
+            if response.status_code == 200:
+                # Mettre à jour le statut de l'utilisateur
+                user.SetStatus(User.USER_STATUS['ONLINE'])
+                print('############ SET STATUS LOGIN')
+                # Ajouter le jeton CSRF à la réponse
+                response['X-CSRFToken'] = get_token(request)
+                response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
+                response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
+                response['Access-Control-Allow-Credentials'] = True
+                return response
+        else:
+            # Si l'authentification échoue, retourner une réponse d'erreur
+            return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 class UserRegistrationAPIView(APIView):
 	# Note: we have to specify the following policy to allow 
 	# anonymous users to call this endpoint

@@ -4,6 +4,18 @@ from django.core.validators import MinLengthValidator
 import uuid
 
 class User(AbstractUser):
+
+    # USER_STATUS cf. front contstants.js
+    USER_STATUS = {
+        'OFFLINE' : 0,
+        'ONLINE' : 1,
+        'PLAYING' : 2,
+        'WAITING_PLAYER' : 3,
+        'WAITING_FRIEND' : 4,
+        'WAITING_TOURNAMENT' : 5
+    }
+
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     avatar = models.TextField(max_length=500, blank=True, default="/avatars/default.png")
     biography = models.TextField(max_length=500, blank=True)
@@ -26,3 +38,4 @@ class User(AbstractUser):
     def SetStatus(self, status):
         print(f'{self} status = {status} ')
         self.status = status
+        self.save()

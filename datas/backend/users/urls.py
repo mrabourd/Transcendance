@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from users.views import CustomObtainTokenPairView, CustomTokenRefreshView, UserRegistrationAPIView, UsersAPIView, FollowUser
 from users.views import MaVueProtegee, GetCSRFTokenView, CustomObtainTokenPairView, UserRegistrationAPIView, UsersAPIView, UserDetail, FollowUser
+from users.views import CustomLogoutView
 from users.views import intraCallback
 from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 from django.views.decorators.csrf import csrf_exempt
@@ -19,7 +20,7 @@ urlpatterns = [
     path('register/',
          UserRegistrationAPIView.as_view(),
          name='user-register'),
-	path('logout/', TokenBlacklistView.as_view(), name='logout'),
+	path('logout/', CustomLogoutView.as_view(), name='logout'),
 
 	path('all/', UsersAPIView.as_view(), name='users-list'),
 

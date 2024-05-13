@@ -7,8 +7,6 @@ export function is_blocked(user, friend_id)
         for (const id of user.datas.blocks){
             if (id && friend_id && id == friend_id)
                 return true
-            else if (id != friend_id)
-                 return false
         }
     }
     return false
@@ -37,14 +35,14 @@ export async function update_block(user, friend_id) {
 }
 
 /// STATUS
-export async function update_status(user, friend_id, frient_status)
+export async function update_status(user, friend_id, friend_status)
 {
     let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
     
     profile_cards.forEach(profile_card => {
         let dom = profile_card.querySelector('.status i');
         let text, color
-        switch (frient_status)
+        switch (friend_status)
         {
             case USER_STATUS['OFFLINE'] :
                 text = 'offline'
@@ -52,7 +50,7 @@ export async function update_status(user, friend_id, frient_status)
                 break
             case USER_STATUS['ONLINE'] :
                 text = 'online'
-                color = '.text-success'
+                color = 'text-success'
                 break
             default:
                 text = 'playing ...'
@@ -70,10 +68,8 @@ export function is_followed(user, friend_id)
 {
     if (user.datas.follows.length) {
         for (const id of user.datas.follows){
-            if (id && friend_id && id === friend_id)
+            if (id && friend_id && id == friend_id)
                 return true
-            else if (id != friend_id)
-                 return false
         }
     }
     return false
@@ -102,12 +98,11 @@ export async function update_follow(user, friend_id) {
     });
 }
 
-
-
 export async function create_thumbnail(nodeToCopy, user, friend) {
     console.log('create_thumbnail')
     const nodeCopy = nodeToCopy.cloneNode(true);
     const profile_url = "/profile/" + friend.id
+    const chat_url = "/profile/" + friend.id
 
     await nodeCopy.setAttribute("data-friend-id", friend.id)
     nodeCopy.querySelector(".username").innerHTML = friend.username

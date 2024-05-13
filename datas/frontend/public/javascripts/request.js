@@ -31,11 +31,15 @@ export default class Request {
  
             if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
-                let RefreshResponse = await this.refreshJWTtoken();
-                if (RefreshResponse.ok)
-                    return await this.post(RQ_url);
-                else
-                    return response;
+                let jsonData = await response.json();
+                if (jsonData.code === 'token_not_valid')
+                {
+                    let RefreshResponse = await this.refreshJWTtoken();
+                    if (RefreshResponse.ok)
+                        return await this.post(RQ_url);
+                    else
+                        return response;
+                }
             }
             else
                 return response;
