@@ -23,6 +23,7 @@ urlpatterns = [
 	path('logout/', CustomLogoutView.as_view(), name='logout'),
 
 	path('all/', UsersAPIView.as_view(), name='users-list'),
+	path('list/<str:req_type>/', UsersAPIView.as_view(), name='users-list'),
 
     path('ma_vue_protegee/', MaVueProtegee.as_view(), name='ma_vue_protegee'),
 

@@ -40,7 +40,9 @@ export async function update_status(user, friend_id, friend_status)
     let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
     
     profile_cards.forEach(profile_card => {
-        let dom = profile_card.querySelector('.status i');
+        let dom = profile_card.querySelector('.status');
+        if (!dom)
+            return;
         let text, color
         switch (friend_status)
         {
@@ -89,12 +91,21 @@ export async function follow(user, friend_id, action)
 export async function update_follow(user, friend_id) {
     let dom;
     let check = is_followed(user, friend_id);
-    let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
 
+    let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
     profile_cards.forEach(profile_card => {
         dom = profile_card.querySelector('.follow');
         if (dom)
             dom.innerHTML = (check) ? 'unfollow' : 'follow';
+    });
+
+    profile_cards = document.querySelector(`.profile_card[data-friend-id="${friend_id}"]`);
+    let followed_div_all = document.querySelectorAll(`.followed`);
+    followed_div_all.forEach(followed_div => {
+        if (check && !followed_div.querySelector(`.profile_card[data-friend-id="${friend_id}"]`))
+            followed_div.append( profile_cards.cloneNode(true))
+        else if (!check && followed_div.querySelector(`.profile_card[data-friend-id="${friend_id}"]`))
+            followed_div.querySelector(`.profile_card[data-friend-id="${friend_id}"]`).remove()
     });
 }
 

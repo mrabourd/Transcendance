@@ -33,12 +33,18 @@ class GetCSRFTokenView(View):
 		csrf_token = get_token(request)
 		return JsonResponse({'csrf_token': csrf_token})
 
+
 class UsersAPIView(APIView):
 	permission_classes = [IsAuthenticated]
 	serializer_class = UserSerializer
 
-	def get(self, request):
-		users = User.objects.all()
+	def get(self, request, req_type):
+		if req_type == 'online':
+			users = User.objects.filter(status=1)
+		elif req_type == 'all':
+			users = User.objects.all()
+		elif req_type == 'followed':
+			users =  request.user.follows.all()
 		#print(users)
 		if not users:  # Vérifie si la base de données d'utilisateurs est vide
 			#print('not user')
