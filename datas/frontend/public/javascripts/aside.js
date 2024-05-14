@@ -7,7 +7,6 @@ export async function print(user)
 
 	let aside = document.querySelector("aside .followed");
 	if (aside.hasChildNodes()) {
-		console.log("has child node", aside.firstChild)
 		if (!user.isConnected)
 			aside.innerHTML = '';
 		return;

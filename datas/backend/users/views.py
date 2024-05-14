@@ -111,7 +111,8 @@ class CustomLogoutView(APIView):
                 #token = OutstandingToken.objects.get(token=refresh_token)
                 #token.blacklist()
                 response = Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
-                #response.delete_cookie("refresh_token")
+                response.delete_cookie('csrftoken')
+				#response.delete_cookie("refresh_token")
                 return response
             else:
                 return Response({"error": "User not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
@@ -142,7 +143,7 @@ class CustomObtainTokenPairView(TokenObtainPairView):
         if user and user.is_authenticated:
             print('############ user is_authenticated ')
         # Si l'utilisateur est authentifié
-        if user is not None:
+        if user is not None and user.is_authenticated:
             response = super().post(request, *args, **kwargs)
             if response.status_code == 200:
                 # Mettre à jour le statut de l'utilisateur
@@ -155,8 +156,8 @@ class CustomObtainTokenPairView(TokenObtainPairView):
                 response['Access-Control-Allow-Credentials'] = True
                 return response
         else:
-            # Si l'authentification échoue, retourner une réponse d'erreur
-            return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "Sorry, no account was found with the provided username and password"}, status=status.HTTP_401_UNAUTHORIZED)
+
 class UserRegistrationAPIView(APIView):
 	# Note: we have to specify the following policy to allow 
 	# anonymous users to call this endpoint

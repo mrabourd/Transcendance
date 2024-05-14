@@ -26,9 +26,6 @@ export default class extends AbstractView {
     }
 
     addEvents () {
-        document.querySelectorAll('#loginForm input').forEach(input => {
-            input.addEventListener("focusout", utils.checkBlankField2);
-        });
         document.querySelector('#login42Button').addEventListener("click", this.login42);
         document.querySelector("#loginForm #submit_form").addEventListener('click', async (event) =>  {
             event.preventDefault();
@@ -37,48 +34,28 @@ export default class extends AbstractView {
     }
 
 
-    login = () => {
-        if (!this.checkAllFields())
-            return false;        
+    login = async () => { 
         let username = document.querySelector("#loginForm #username").value;
         let password = document.querySelector("#loginForm #password").value;
         this.user.login(username, password)
-        .then(result => {
-            if (result === true)
+        .then(async result => {
+            if (result == true)
                 router.navigateTo("/home", this.user)
             else
             {
-                console.log(result)
-                let errDiv = document.querySelector("#loginForm #errors");
+                let errDiv = document.querySelector("#errorFeedback");
                 errDiv.classList.remove("d-none")
                 errDiv.innerHTML = 'An error occured ! Please check fields below ...';
-                //jsonData = result.json()
-                for (const key in result) {
-                    console.log(key, result[key])
-                    if (Object.hasOwnProperty.call(result, key))
-                        utils.printError(key, 1, result[key])
+                let jsonData = await result.json()
+                for (const key in jsonData) {
+                    if (Object.hasOwnProperty.call(jsonData, key))
+                        utils.printError(key, 1, jsonData[key])
                 }
             }
-
         })
         .catch(error => {
             console.error('login.js (76) : There was a problem with the fetch operation:', error);
         });
-    }
-
-    checkAllFields = () =>
-    {
-        // Récupérer tous les champs du formulaire
-        let fields = document.querySelectorAll("#loginForm input[type='text']");
-
-        // Vérifier chaque champ
-        let isValid = true;
-        fields.forEach(field => {
-            if (!utils.checkBlankField({ target: field })) {
-                isValid = false;
-            }
-        });
-        return isValid;
     }
 
     async login42() {

@@ -30,31 +30,25 @@ export default class User {
     {
         return this._datas;
     }
-
-
     async login(userName, passWord) {
-        let RQ_Body = {username: userName, password: passWord}
-        let response = await this.request.post('/api/users/login/', RQ_Body)
-        if (response.ok)
-        {
-            const jsonData = await response.json();
-
-            this.setLocalDatas(jsonData.user)
-            this.request.setJWTtoken(jsonData.access, jsonData.refresh)
-
+        let RQ_Body = {username: userName, password: passWord};
+        let response = await this.request.post('/api/users/login/', RQ_Body);
+        let response_copy = response.clone();
+        if (response_copy.ok) {
+            let jsonData = await response_copy.json();
+            this.setLocalDatas(jsonData.user);
+            this.request.setJWTtoken(jsonData.access, jsonData.refresh);
             this.isConnected = true;
-
+    
             const resp_csrf = await this.request.post('/api/users/ma_vue_protegee/');
-            if(resp_csrf.status == 403)
-            {
-                console.warn("CSRF attack")
+            if (resp_csrf.status === 403) {
+                console.warn("Attaque CSRF");
                 return true;
             }
             
             return true;
         } else  {
-            const jsonData = await response.json();
-            return jsonData;
+            return response;
         }
     }
 

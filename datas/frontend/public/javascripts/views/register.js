@@ -54,7 +54,8 @@ export default class extends AbstractView {
         this.user.request.post('/api/users/register/', RQ_BODY)
         .then((response) =>
         {
-            if (response.ok || response.status === 400)
+            console.log("Register Response :", response)
+            if (response.ok || response.status == 400)
                 return Promise.all([response.json(), response.ok, response.status]);
             else
                 throw new Error('Network response was not ok.');
@@ -81,7 +82,7 @@ export default class extends AbstractView {
                 router.navigateTo("/home", this.user)
             else
             {
-                let errDiv = document.querySelector("#registerForm #errors");
+                let errDiv = document.querySelector("#registerForm #errorFeedback");
                 errDiv.classList.remove("d-none")
                 errDiv.innerHTML = result;
             }

@@ -20,12 +20,12 @@ export function printError(f, isError, innerText)
 {
     console.log("printError", f, isError, innerText)
     let field = document.querySelector(`form #${f}`)
-    if (isError)
+    if (isError && f != 'error')
     {
        field.classList.remove(`is-valid`)
        field.classList.add(`is-invalid`)
     }
-    else
+    else if (f != 'error')
     {
         field.classList.remove(`is-invalid`)
         field.classList.add(`is-valid`)
@@ -37,7 +37,7 @@ export function checkBlankField(event)
 {
     let value = event.target.value;
     let field = event.target.getAttribute("id");
-    document.querySelector("form #errors").classList.add("d-none")
+    document.querySelector("form #errorFeedback").classList.add("d-none")
 
     if (value === "")
     {
@@ -56,7 +56,7 @@ export function checkBlankField(event)
 export function checkEmail(event) {
     let inputEmail = event.target.value
     let field = event.target.getAttribute("id");
-    document.querySelector("form #errors").classList.add("d-none")
+    document.querySelector("form #errorFeedback").classList.add("d-none")
 
     if (inputEmail.match(EMAIL_REGEX) )
     {

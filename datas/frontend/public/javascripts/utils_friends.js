@@ -99,7 +99,6 @@ export async function update_follow(user, friend_id) {
 }
 
 export async function create_thumbnail(nodeToCopy, user, friend) {
-    console.log('create_thumbnail')
     const nodeCopy = nodeToCopy.cloneNode(true);
     const profile_url = "/profile/" + friend.id
     const chat_url = "/profile/" + friend.id
