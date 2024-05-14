@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='avatar',
-            field=models.TextField(blank=True, default='https://www.gravatar.com/avatar/', max_length=500),
+            field=models.TextField(blank=True, default='/avatars/default.png', max_length=500),
         ),
     ]

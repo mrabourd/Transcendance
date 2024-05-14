@@ -1,9 +1,12 @@
 import AbstractView from "./AbstractView.js";
+import * as form from "../utils_form.js"
+import * as friends_utils from "../utils_friends.js"
 
 export default class extends AbstractView {
 	constructor(params) {
 		super(params);
 		this.setTitle("Profile");
+		const UserDatas = null;
 	}
 	
 	is_user_page()
@@ -32,10 +35,14 @@ export default class extends AbstractView {
 
 			// Get profile page HTML
 			let profile_url;
+			
+			/*
 			if (this.is_user_page())
 				profile_url = '/template/profile_profile_edit'
 			else
 				profile_url = '/template/profile_profile'
+			*/
+			profile_url = '/template/profile_profile_edit'
 			await fetch(profile_url).then(function (response) {
 				return response.text();
 			}).then(function (html) {
@@ -74,6 +81,21 @@ export default class extends AbstractView {
 			// There was an error
 			console.warn('Something went wrong.', err);
 		});
+
+		if (this.is_user_page())
+			this.UserDatas = this.user.datas
+		else
+		{
+			var elements = document.querySelectorAll('input, textarea');
+			elements.forEach(function(element) {
+				element.setAttribute('readonly', 'readonly');
+				element.classList.add('form-control-plaintext');
+			});
+
+			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
+			if (response.ok)
+			this.UserDatas = await response.json();
+		}
 	}
 
 	async fillHtml(DOM) {
@@ -87,30 +109,69 @@ export default class extends AbstractView {
 
 	async fillFollowed()
 	{
+		let profile_card_url = '/template/profile_card'
+		await fetch(profile_card_url).then(function (response) {
+			return response.text();
+		}).then( async (html) => {
+			let parser = new DOMParser();
+			let doc = parser.parseFromString(html, 'text/html');
+			let DOMProfileCard = doc.querySelector('.profile_card');
+			let dest_container = document.querySelector('main .followed')
+	
+			let nodeCopy;
+
+			const friends = this.UserDatas.follows;
+			if (!friends)
+				return
+			friends.forEach(async friend_id => {
+
+				let response = await this.user.request.get(`/api/users/profile/${friend_id}/`)
+				if (response.status === 200)
+				{
+					console.log('friend_id', friend_id)
+
+					let friend = await response.json();
+					if (friend.username === "root" || friend.id === this.UserDatas.id)
+						return;
+					nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, this.user, friend)
+					console.log('nodeCopy', nodeCopy)
+					dest_container.appendChild(nodeCopy);
+					friends_utils.update_friends_thumbnails(this.user, friend)
+				}
+			})
+		});
+
+
+		/*
 		Promise.all(
-			(this.user.datas.follows).map(async(followed) => {
+			(this.user.datas.follows).map(async (followed) => {
+				// console.log("followed: ", followed);	
 				let url = '/api/users/profile/'+followed+'/';
 				let response = await this.user.request.get(url);
+				const userListContainer = document.getElementById("userList");
+				const userDiv = document.createElement("div");
+
 				if (response.ok) {
 					const users_followed = await response.json();
-					document.getElementById("avatar").innerHTML = users_followed.avatar;
-					document.getElementById("friend_username").innerHTML = users_followed.username;
-					document.getElementById("friend_status").innerHTML = users_followed.status;
+					if (users_followed.id == undefined || users_followed.username == "root")
+						return;
+
+					userDiv.innerHTML = userListContainer.innerHTML; // Copie le HTML depuis le fichier HTML
+					userDiv.querySelector("#friend_avatar").src = users_followed.avatar;
+					userDiv.querySelector("#friend_username").textContent = users_followed.username;
+					userDiv.querySelector("#friend_status").textContent = users_followed.status;
+			  
 				}
+				
 				else
 					console.log("Not ok");
-
-			// document.getElementById("friend_username").innerHTML = user_followed;
-			}),
-		);
-		// document.getElementById("friend_username").innerHTML = followed;
-		/*
-		uid = (this.params.user_id) ? this.params.user_id : this.user.datas.id
-		let response = await this.user.request.get('/api/users/history/'+uid+'/')
-		if (response.ok)
-		{
-			let jsonData = await response.json();
-		}
+				userListContainer.appendChild(userDiv);
+			
+		}),
+		)
+		.catch((error) => {
+			console.error("Une erreur s'est produite lors du traitement des requêtes :", error);
+		});
 		*/
 	}
 
@@ -142,35 +203,13 @@ export default class extends AbstractView {
 
 	async fillProfile()
 	{
-		if (this.is_user_page())
-		{
-			document.querySelector("#username").innerHTML = this.user.datas.username;
-			if(this.user.datas.avatar)
-				document.querySelector("#avatar").src = this.user.datas.avatar;
-			else
-				document.querySelector("#avatar").src = "/avatars/default.png";
-			document.querySelector(".tab-pane.profile #first_name").value = this.user.datas.first_name;
-			document.querySelector(".tab-pane.profile #last_name").value = this.user.datas.last_name;
-			document.querySelector(".tab-pane.profile #email").value = this.user.datas.email;
-			document.querySelector(".tab-pane.profile #biography").value = this.user.datas.biography;
-		}
-		else
-		{
-			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
-			if (response.ok)
-			{
-				let jsonData = await response.json();
-				document.querySelector("#username").innerHTML = jsonData.username;
-				if(jsonData.avatar)
-					document.querySelector("#avatar").src = jsonData.avatar;
-				else
-					document.querySelector("#avatar").src = "/avatars/default.png";
-				document.querySelector(".tab-pane.profile #first_name").innerText = jsonData.first_name;
-				document.querySelector(".tab-pane.profile #last_name").innerText = jsonData.last_name;
-				document.querySelector(".tab-pane.profile #email").innerText = jsonData.email;
-				document.querySelector(".tab-pane.profile #biography").innerText = jsonData.biography;
-			}
-		}
+		document.querySelector(".user_username").innerHTML = this.UserDatas.username;
+		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ?  this.UserDatas.avatar : "/avatars/default.png";
+		document.querySelector(".tab-pane.profile #username").value =  this.UserDatas.username;
+		document.querySelector(".tab-pane.profile #first_name").value =  this.UserDatas.first_name;
+		document.querySelector(".tab-pane.profile #last_name").value =  this.UserDatas.last_name;
+		document.querySelector(".tab-pane.profile #email").value =  this.UserDatas.email;
+		document.querySelector(".tab-pane.profile #biography").value =  this.UserDatas.biography;
 	}
 
 
@@ -203,21 +242,95 @@ export default class extends AbstractView {
 				document.querySelector("#status").innerText = "reading URL";
 				this.readURL(document.getElementById("fileInput"));
 			});
-			document.getElementById("saveChanges").addEventListener('click', async (event) =>  {
+
+
+
+			document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
+				input.addEventListener("focusout", form.checkBlankField);
+			});
+			document.querySelector('.tab-pane.profile form #email').addEventListener("focusout", form.checkEmail);
+
+			document.getElementById("submit_form").addEventListener('click', async (event) =>  {
 				event.preventDefault();
+				
+				if (!this.checkAllFields())
+					return false;
+	
+				
 				let RQ_Body = {
 					avatar: document.querySelector("#avatar").src,
-					username: document.querySelector("#username").innerHTML,
+					username: document.querySelector("#username").value,
 					first_name: document.querySelector("#first_name").value,
 					last_name: document.querySelector("#last_name").value,
 					email: document.querySelector("#email").value,
 					biography: document.querySelector("#biography").value
 				}
-				let response = await this.user.request.put('/api/users/profile/'+this.user.datas.id+'/', RQ_Body)
+				this.user.request.put('/api/users/profile/'+this.user.datas.id+'/', RQ_Body)
+				.then((response) =>
+				{
+					if (response.ok || response.status === 400)
+                    	return Promise.all([response.json(), response.ok, response.status]);
+                	else
+                    	throw new Error('Network response was not ok.');
+				})
+				.then(([jsonData, ok, status]) => {
+					if (!ok)
+					{
+						for (const key in jsonData) {
+							if (Object.hasOwnProperty.call(jsonData, key))
+							{
+								document.querySelector(`.tab-pane.profile #${key}`).classList.add(`is-invalid`)
+								document.querySelector(`.tab-pane.profile #${key}Feedback`).innerHTML = jsonData[key]
+							}
+						}
+						let errDiv = document.querySelector("#ProfileForm #errorFeedback");
+						errDiv.classList.remove("d-none", "alert-success")
+						errDiv.classList.add("alert-danger")
+						errDiv.innerHTML = "An error occured ! Please check fields below ...";
+					}
+					else
+					{
+						this.user.setLocalDatas(jsonData)
+						document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
+							input.classList.remove(`is-invalid`)
+							input.classList.remove(`is-valid`)
+						});
+						let errDiv = document.querySelector("#ProfileForm #errorFeedback");
+						errDiv.classList.remove("d-none", "alert-danger")
+						errDiv.classList.add("alert-success")
+						errDiv.innerHTML = "Well done ! ...";
+
+					}
+				})
+				.catch((error) => {
+					// Gérer les erreurs de requête ou de conversion JSON
+					console.error('There was a problem with the fetch operation:', error);
+				});
 			})
 		}
 
 	}
+
+    checkAllFields = () =>
+    {
+        // Récupérer tous les champs du formulaire
+        let fields = document.querySelectorAll(".tab-pane.profile form input[type='text']");
+
+        // Vérifier chaque champ * de type text / ne dois pas etre vide.
+        let isValid = true;
+        fields.forEach(field => {
+            if (!form.checkBlankField({ target: field })) {
+                isValid = false;
+            }
+        });
+
+        let check_email = form.checkEmail({ target: document.querySelector('.tab-pane.profile form input#email') });
+       
+        if (isValid  && check_email)
+            return true;
+        return false
+    }
+
 
 	// File Upload
 	async readURL(input) {

@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 from users.views import CustomObtainTokenPairView, CustomTokenRefreshView, UserRegistrationAPIView, UsersAPIView, FollowUser
 from users.views import MaVueProtegee, GetCSRFTokenView, CustomObtainTokenPairView, UserRegistrationAPIView, UsersAPIView, UserDetail, FollowUser
+from users.views import CustomLogoutView
+from users.views import intraCallback
 from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.views import LogoutView
@@ -18,7 +20,7 @@ urlpatterns = [
     path('register/',
          UserRegistrationAPIView.as_view(),
          name='user-register'),
-	path('logout/', TokenBlacklistView.as_view(), name='logout'),
+	path('logout/', CustomLogoutView.as_view(), name='logout'),
 
 	path('all/', UsersAPIView.as_view(), name='users-list'),
 
@@ -28,6 +30,8 @@ urlpatterns = [
 
     path('<str:req_type>/<uuid:id>/', FollowUser.as_view(), name='follow_user'),
     # path('<text:req_type>/<uuid:id>/', FollowUser.as_view(), name='unfollow_user'),
+
+    path('auth/intra_callback/', views.intraCallback, name="intraCallback"),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])

@@ -29,16 +29,23 @@ export default class Request {
             if (response.headers.has('X-CSRFToken'))
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
  
-            if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
+            if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
-                let RefreshResponse = await this.refreshJWTtoken();
-                if (RefreshResponse.ok)
-                    return await this.post(RQ_url);
-                else
-                    return response;
+                let response_copy = response.clone()
+                let jsonData = await response_copy.json();
+                if (jsonData.code === 'token_not_valid')
+                {
+                    let RefreshResponse = await this.refreshJWTtoken();
+                    if (RefreshResponse.ok)
+                        return await this.post(RQ_url);
+                    //else
+                    //    return response;
+                }
+               // else
+                //    return response;
             }
-            else
-                return response;
+          // else
+            return response;
         } catch (error) {
             console.error('request.js post error :', error);
             throw error;
@@ -54,8 +61,14 @@ export default class Request {
                 body: JSON.stringify(RQ_body),
                 credentials: 'include'
             });
-            if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
+            if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
+                let jsonData = await response.json();
+                if (jsonData.code === "user_not_found")
+                {
+                    throw "user not found"
+                }
+
                 let RefreshResponse = await this.refreshJWTtoken();
                 if (RefreshResponse.ok)
                     return await this.put(RQ_url);
@@ -77,13 +90,26 @@ export default class Request {
                 method: 'GET',
                 headers: await this.get_request_header(),
             });
-            if (response.status == 401 && RQ_url != '/api/users/login/refresh/')
+            console.log("response.status ", response.status)
+            console.log("RQ_url ", RQ_url)
+            if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
-                let RefreshResponse = await this.refreshJWTtoken();
-                if (RefreshResponse.ok)
-                    return await this.get(RQ_url);
-                else
-                    return response;
+
+                let jsonData = await response.json();
+                if (jsonData.code === "user_not_found")
+                {
+                    //throw "user not found"
+                }
+                if (jsonData.code === 'token_not_valid')
+                {
+                    console.log("refreshJWTtoken() ")
+
+                    let RefreshResponse = await this.refreshJWTtoken();
+                    if (RefreshResponse.ok)
+                        return await this.get(RQ_url);
+                    //else
+                      //  return response;
+                }
             }
             else
                 return response;
@@ -95,7 +121,7 @@ export default class Request {
 
     async refreshJWTtoken()
     {
-        let response = await this.post('/api/users/login/refresh/', this.JWTtoken);
+        let response = await this.post('/api/users/login/refresh/', this.getJWTtoken());
 		if (response.ok)
 		{
 			let jsonData = await response.json();
@@ -133,10 +159,15 @@ export default class Request {
     async checkJWTtoken()
     {
         let response = await this.get("/api/users/all/")
-        if (response.ok)
+        if (response && response.ok)
             return true;
         else
+        {
+            console.log('rm tokens')
+            this.rmCsrfToken()
+            this.rmJWTtoken()
             return false;
+        }
     }
 
     getCookie = (name) =>
