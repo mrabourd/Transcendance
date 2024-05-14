@@ -257,7 +257,7 @@ def check_user_existence(user_id):
 
 @api_view(['GET', 'POST'])
 def intraCallback(request):
-	
+	print("get in intra callback")
 	get_token_path = "https://api.intra.42.fr/oauth/token"
 	if request.method == 'POST':
 		
