@@ -283,7 +283,7 @@ export default class extends AbstractView {
 								document.querySelector(`.tab-pane.profile #${key}Feedback`).innerHTML = jsonData[key]
 							}
 						}
-						let errDiv = document.querySelector("#ProfileForm #errors");
+						let errDiv = document.querySelector("#ProfileForm #errorFeedback");
 						errDiv.classList.remove("d-none", "alert-success")
 						errDiv.classList.add("alert-danger")
 						errDiv.innerHTML = "An error occured ! Please check fields below ...";
@@ -295,7 +295,7 @@ export default class extends AbstractView {
 							input.classList.remove(`is-invalid`)
 							input.classList.remove(`is-valid`)
 						});
-						let errDiv = document.querySelector("#ProfileForm #errors");
+						let errDiv = document.querySelector("#ProfileForm #errorFeedback");
 						errDiv.classList.remove("d-none", "alert-danger")
 						errDiv.classList.add("alert-success")
 						errDiv.innerHTML = "Well done ! ...";
