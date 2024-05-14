@@ -8,7 +8,9 @@ from .models import Message
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        self.accept("Authorization")
+        self.accept()
+        self.user = self.scope["user"]
+        self.send(text_data=json.dumps({"message": "Connected"}))
         
             
 

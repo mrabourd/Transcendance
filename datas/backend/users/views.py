@@ -13,7 +13,6 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
-User = get_user_model()
 
 import os
 from django.core.files.base import ContentFile
@@ -27,6 +26,7 @@ from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404, redirect
 
+User = get_user_model()
 
 class GetCSRFTokenView(View):
 	def get(self, request, *args, **kwargs):
