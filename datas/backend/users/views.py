@@ -263,7 +263,7 @@ def check_user_existence(user_id):
 
 @api_view(['GET', 'POST'])
 def intraCallback(request):
-	
+	print("get in intra callback")
 	get_token_path = "https://api.intra.42.fr/oauth/token"
 	if request.method == 'POST':
 		
@@ -318,7 +318,7 @@ def intraCallback(request):
 	# )
 
 	else:
-		user, created = User.objects.create_user(
+		user = User.objects.create_user(
 			id=user_id,
 			username=user_response_json['login'],
 			first_name=user_response_json['first_name'],

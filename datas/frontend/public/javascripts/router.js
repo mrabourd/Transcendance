@@ -1,5 +1,6 @@
 import login from "./views/login.js";
 import login42 from "./views/login42.js";
+import login2FA from "./views/login2FA.js";
 import home from "./views/home.js";
 import about from "./views/about.js";
 import contact from "./views/contact.js";
@@ -31,6 +32,7 @@ export const router = async (user) => {
         { id:0, path: "/", view: login },
         { id:1, path: "/login", view: login },
         { id:1, path: "/login42", view: login42 },
+        { id:1, path: "/login2FA", view: login2FA },
         { id:2, path: "/register", view: register },
         { id:3, path: "/home", view: home },
         { id:4, path: "/profile", view: profile },

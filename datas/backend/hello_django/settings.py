@@ -91,6 +91,7 @@ INSTALLED_APPS = [
 	'rest_framework_simplejwt',
 	'rest_framework_simplejwt.token_blacklist',
     'oauth2_provider',
+    'rest_pyotp',
 	
 
 	'websockets',

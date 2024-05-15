@@ -13,7 +13,7 @@
     <div id="app">
 
       <div class="jumbotron">
-        <h1 class="display-4">Login</h1>
+        <h1 class="display-4">Login 2FA</h1>
         <p class="lead">to join our amazing pong website</p>
         <hr class="my-4">
 
@@ -28,9 +28,9 @@
           </div>
 
           <div class="col-md-12">
-            <label for="last_name" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" value="" aria-describedby="passwordFeedback" required>
-            <div id="passwordFeedback" class="invalid-feedback">
+            <label for="last_name" class="form-label">Phone number</label>
+            <input type="phonenumber" class="form-control" id="phonenumber" value="" aria-describedby="phonenumberFeedback" required>
+            <!-- <div id="passwordFeedback" class="invalid-feedback"> -->
               feedback
             </div>
           </div>
@@ -39,14 +39,6 @@
           </div>
 
         </form>
-        <p>Not a member? <a href="/register" data-link>Register</a></p>
-        <p>or sign up with: </p>
-        <div class="col-12">
-          <button id="login42Button" type="button" class="btn btn-primary btn-block mb-4">Login with 42</button>
-        </div>
-        <div class="col-12">
-          <button id="login2FAButton" type="button" class="btn btn-primary btn-block mb-4">Login with 2FA</button>
-      </div>
       </div>
 
     </div>
