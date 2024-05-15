@@ -5,16 +5,21 @@ export async function print(user)
 	
 	let routes = null;
 	if (!user.isConnected)
+	{
+		document.querySelector('aside').classList.add('d-none')
 		return;
+	}
+	else
+		document.querySelector('aside').classList.remove('d-none')
 
 
-	let aside = document.querySelector("aside .online");
+	let aside = document.querySelector("aside .online ul.userList");
 	if (aside.hasChildNodes()) {
 		if (!user.isConnected)
 			aside.innerHTML = '';
 		return;
 	}
-	aside = document.querySelector("aside .followed");
+	aside = document.querySelector("aside .followed ul.userList");
 	if (aside.hasChildNodes()) {
 		if (!user.isConnected)
 			aside.innerHTML = '';
@@ -33,7 +38,7 @@ export async function print(user)
 		let response;
 
 		
-		let detination_followed = document.querySelector('aside .followed')
+		let detination_followed = document.querySelector('aside .followed ul.userList')
 		response = await user.request.get('/api/users/list/followed/')
 		if (response.ok)
 		{
@@ -51,7 +56,7 @@ export async function print(user)
 		}
 
 
-		let detination_online = document.querySelector('aside .online')
+		let detination_online = document.querySelector('aside .online ul.userList')
 		response = await user.request.get('/api/users/list/online/')
 		if (response.ok)
 		{
@@ -65,7 +70,7 @@ export async function print(user)
 			})
 		}
 
-		let detination_all = document.querySelector('aside .all')
+		let detination_all = document.querySelector('aside .all ul.userList')
 		response = await user.request.get('/api/users/list/all/')
 		if (response.ok)
 		{
