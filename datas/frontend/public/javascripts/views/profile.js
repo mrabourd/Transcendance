@@ -42,7 +42,7 @@ export default class extends AbstractView {
 			else
 				profile_url = '/template/profile_profile'
 			*/
-			profile_url = '/template/profile_profile_edit'
+			profile_url = '/template/profile_profile'
 			await fetch(profile_url).then(function (response) {
 				return response.text();
 			}).then(function (html) {
@@ -116,10 +116,11 @@ export default class extends AbstractView {
 			let parser = new DOMParser();
 			let doc = parser.parseFromString(html, 'text/html');
 			let DOMProfileCard = doc.querySelector('.profile_card');
-			let dest_container = document.querySelector('main .followed')
+			let dest_container = document.querySelector('main .followed ul')
 	
 			let nodeCopy;
-
+			if (dest_container.hasChildNodes())
+				return ;
 			const friends = this.UserDatas.follows;
 			if (!friends)
 				return
@@ -128,13 +129,13 @@ export default class extends AbstractView {
 				let response = await this.user.request.get(`/api/users/profile/${friend_id}/`)
 				if (response.status === 200)
 				{
-					console.log('friend_id', friend_id)
-
 					let friend = await response.json();
 					if (friend.username === "root" || friend.id === this.UserDatas.id)
 						return;
+					let test = dest_container.querySelector(`.profile_card[data-friend-id="${friend.id}"]`);
+					if (test)
+						return;
 					nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, this.user, friend)
-					console.log('nodeCopy', nodeCopy)
 					dest_container.appendChild(nodeCopy);
 					friends_utils.update_friends_thumbnails(this.user, friend)
 				}

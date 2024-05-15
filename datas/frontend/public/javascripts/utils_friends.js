@@ -18,12 +18,12 @@ export async function block(user, friend_id, action)
     if (response.status == 200)
     {
         user.RefreshLocalDatas().then(() => {
-            update_block(user, friend_id);
+            update_block_text(user, friend_id);
         });
     }
 }
 
-export async function update_block(user, friend_id) {
+export async function update_block_text(user, friend_id) {
     let dom;
     let check = is_blocked(user, friend_id);
     let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
@@ -31,6 +31,20 @@ export async function update_block(user, friend_id) {
         dom = profile_card.querySelector('.block');
         if (dom)
             dom.innerHTML = (check) ? 'unblock' : 'block';
+   
+    });
+}
+export async function add_block_event(user, friend_id) {
+    let dom;
+    let check = is_blocked(user, friend_id);
+    let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
+    profile_cards.forEach(profile_card => {
+        dom = profile_card.querySelector('.block');  
+        dom.removeEventListener('click',async (e) => {})
+        dom.addEventListener('click', async (e) => {
+            e.preventDefault();
+            block(user, friend_id, e.target.innerHTML )
+        });
     });
 }
 
@@ -83,24 +97,28 @@ export async function follow(user, friend_id, action)
     if (response.status == 200)
     {
         user.RefreshLocalDatas().then(() => {
-            update_follow(user, friend_id);
+            update_follow_text(user, friend_id);
         });
     }
 }
 
-export async function update_follow(user, friend_id) {
+export async function update_follow_text(user, friend_id) {
     let dom;
     let check = is_followed(user, friend_id);
 
     let profile_cards
     
     profile_cards = document.querySelector(`.profile_card[data-friend-id="${friend_id}"]`);
-    let followed_div_all = document.querySelectorAll(`.followed ul.userList`);
-    followed_div_all.forEach(followed_div => {
-        if (check && !followed_div.querySelector(`.profile_card[data-friend-id="${friend_id}"]`))
-            followed_div.append( profile_cards.cloneNode(true))
-        else if (!check && followed_div.querySelector(`.profile_card[data-friend-id="${friend_id}"]`))
-            followed_div.querySelector(`.profile_card[data-friend-id="${friend_id}"]`).remove()
+    let followed_div_all = document.querySelectorAll(`aside .followed ul.userList`);
+    followed_div_all.forEach( followed_div => {
+        let test = followed_div.querySelector(`.profile_card[data-friend-id="${friend_id}"]`)
+        if (check && !test && profile_cards)
+        {
+            followed_div.append(profile_cards.cloneNode(true))
+            add_follow_event(user, friend_id)
+        }
+        else if (!check && test)
+            test.remove()
     });
 
     profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
@@ -108,6 +126,13 @@ export async function update_follow(user, friend_id) {
         dom = profile_card.querySelector('.follow');
         if (dom)
             dom.innerHTML = (check) ? 'unfollow' : 'follow';
+    });
+}
+export async function add_follow_event(user, friend_id) {
+
+    let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
+    profile_cards.forEach(profile_card => {
+        let dom = profile_card.querySelector('.follow');
         dom.removeEventListener('click',async (e) => {})
         dom.addEventListener('click', async (e) => {
             e.preventDefault();
@@ -115,7 +140,6 @@ export async function update_follow(user, friend_id) {
         });
     });
 }
-
 export async function create_thumbnail(nodeToCopy, user, friend) {
     const nodeCopy = nodeToCopy.cloneNode(true);
     const profile_url = "/profile/" + friend.id
@@ -147,26 +171,15 @@ export async function create_thumbnail(nodeToCopy, user, friend) {
         user.router.navigateTo(profile_url, user);
     });
 
-    let dom
-    // block
-    dom = nodeCopy.querySelector('.block');
-    dom.addEventListener('click', async (e) => {
-        e.preventDefault();
-        block(user, friend.id, e.target.innerHTML )
-    });
-    // follow
-    dom = nodeCopy.querySelector('.follow');
-    dom.addEventListener('click', async (e) => {
-        e.preventDefault();
-        follow(user, friend.id, e.target.innerHTML )
-    });
     return nodeCopy;
 }
 
 
 export async function update_friends_thumbnails(user, friend)
 {
-    update_block(user, friend.id)
-    update_follow(user, friend.id)
+    update_block_text(user, friend.id)
+    update_follow_text(user, friend.id)
     update_status(user, friend.id, friend.status)
+    add_block_event(user, friend.id)
+    add_follow_event(user, friend.id)
 }
