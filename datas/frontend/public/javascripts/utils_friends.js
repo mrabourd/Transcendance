@@ -140,6 +140,44 @@ export async function add_follow_event(user, friend_id) {
         });
     });
 }
+// export function is_waiting(user, friend_id)
+// {
+//     if (user.datas.??) {
+//         for (const id of user.datas.??){
+//             if (id && friend_id && id == friend_id)
+//                 return true
+//         }
+//     }
+//     return false
+// }
+
+export async function update_invite(user, friend_id) {
+    let dom;
+    // let check = is_waiting(user, friend_id);
+    let check = false;
+    let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
+
+    profile_cards.forEach(profile_card => {
+        dom = profile_card.querySelector('.play');
+        if (dom){
+            dom.innerHTML = (check) ? 'invite to play' : 'invited';
+        }
+    });
+    // change my status to waiting...
+}
+
+export async function play(user, friend_id, action)
+{
+    let response = await user.request.get(`/api/match/${action}/${friend_id}/`)
+    if (response.status == 200)
+    {
+        user.RefreshLocalDatas().then(() => {
+            update_invite(user, friend_id);
+        });
+    }
+    // wait for friend to answer
+}
+
 export async function create_thumbnail(nodeToCopy, user, friend) {
     const nodeCopy = nodeToCopy.cloneNode(true);
     const profile_url = "/profile/" + friend.id
@@ -171,9 +209,26 @@ export async function create_thumbnail(nodeToCopy, user, friend) {
         user.router.navigateTo(profile_url, user);
     });
 
+    let dom
+    // block
+    dom = nodeCopy.querySelector('.block');
+    dom.addEventListener('click', async (e) => {
+        e.preventDefault();
+        block(user, friend.id, e.target.innerHTML )
+    });
+    // follow
+    dom = nodeCopy.querySelector('.follow');
+    dom.addEventListener('click', async (e) => {
+        e.preventDefault();
+        follow(user, friend.id, e.target.innerHTML )
+    });
+    dom = nodeCopy.querySelector('.play');
+    dom.addEventListener('click', async (e) => {
+        e.preventDefault();
+        play(user, friend.id, 'invite')
+    });
     return nodeCopy;
 }
-
 
 export async function update_friends_thumbnails(user, friend)
 {

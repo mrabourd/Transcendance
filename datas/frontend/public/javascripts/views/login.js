@@ -93,8 +93,8 @@ export default class extends AbstractView {
         // // Rediriger l'utilisateur vers l'URL d'autorisation
         // window.location.href = formattedUrl;
     // }
+    
     login2FA = async () => { 
-        console.log("call API 42 now");
         this.user.router.navigateTo('/login2FA', this.user);
     }
 }

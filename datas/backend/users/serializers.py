@@ -39,16 +39,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 						"follows" : self.user.follows.all().values_list('id', flat=True),
 						"followed_by" : self.user.followed_by.all().values_list('id', flat=True),
 						"blocks" : self.user.blocks.all().values_list('id', flat=True),
-						"blocked_by" : self.user.blocked_by.all().values_list('id', flat=True)
-						}
-						)
+						"blocked_by" : self.user.blocked_by.all().values_list('id', flat=True),
+						})
 		return data
 
 class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by", "blocks", "blocked_by")
+		fields = ('id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by", "blocks", "blocked_by", 'otp', 'otp_expiry_time')
 		extra_kwargs = {
 			'avatar': {'required': False}, # 'avatar' is not required
 			'password': {'write_only': True},
@@ -59,7 +58,9 @@ class UserSerializer(serializers.ModelSerializer):
 			'status': {'required': False},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]
-			}
+			},
+			'otp': {'required': False},
+			'otp_expiry_time': {'required': False}
 		}
 
 	def create(self, validated_data):
