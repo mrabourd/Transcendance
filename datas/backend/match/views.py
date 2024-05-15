@@ -17,3 +17,11 @@ class Subscribe(APIView):
         print(f'user id = {request.user.id}')
         request.user.SetStatus(2)
         return HttpResponse("Subscribe !")
+
+# @method_decorator(csrf_protect, name='dispatch')
+class Invite(APIView):
+    print("invite to play")
+
+    def get(self, request, id):
+        print("friend_id: ", id)
+        return HttpResponse("Invite to play !")
