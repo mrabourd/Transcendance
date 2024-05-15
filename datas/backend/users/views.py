@@ -312,7 +312,7 @@ def intraCallback(request):
 	# )
 
 	else:
-		user, created = User.objects.create_user(
+		user = User.objects.create_user(
 			id=user_id,
 			username=user_response_json['login'],
 			first_name=user_response_json['first_name'],
