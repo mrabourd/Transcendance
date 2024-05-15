@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 # We import our serializer here
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer, UpdateUserSerializer, UserSerializer42
-from django.contrib.auth import get_user_model, authenticate, logout
+from django.contrib.auth import get_user_model, authenticate, logout, login as django_login
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken, OutstandingToken
 from rest_framework.permissions import IsAuthenticated
@@ -27,6 +27,9 @@ from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404, redirect
 
+from datetime import timedelta
+from django.utils import timezone
+from django.core.mail import send_mail
 
 class GetCSRFTokenView(View):
 	def get(self, request, *args, **kwargs):
@@ -355,3 +358,76 @@ def intraCallback(request):
 #         users = User.objects.all()
 # 		serializer = self.serializer(users, many=True)
 # 		return Response(serializer.data)
+
+def generate_random_digits(n=6):
+    return "".join(map(str, random.sample(range(0, 10), n)))
+
+@api_view(['POST'])
+def login2FA(request):
+	permission_classes = [AllowAny]
+	email = request.data.get('email')
+	username = request.data.get('username')
+	password = request.data.get('password')
+	user = authenticate(request, username=username, password=password)
+	print("user:", user)
+	print("user id:", user.id)
+
+	if user is not None:
+		verification_code = generate_random_digits
+		print("verification_code: ", verification_code)
+		# User credentials are valid, proceed with code generation and email sending
+		user_profile = User.objects.get(id=user.id)
+		print("user profile: ", user_profile)
+		# Generate a 6-digit code and set the expiry time to 1 hour from now
+		user_profile.otp = verification_code
+		print("verification_code entered")
+		user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
+		print("expiring time entered")
+		user_profile.save()
+		print("profile saved")
+		# Send the code via email (use Django's send_mail function)
+		send_mail(
+			'Verification Code',
+			f'Your verification code is: {otp}',
+			'from@example.com',
+			[email],
+			fail_silently=False,
+		)
+		print("mail sent to: ", email)
+
+		return Response({'detail': 'Verification code sent successfully.'}, status=status.HTTP_200_OK)
+	print("user is None in login2FA")
+	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+def verify(request):
+	email = request.data.get('email')
+	password = request.data.get('password')
+	otp = request.data.get('otp')
+
+	user = authenticate(request, email=email, password=password)
+
+	if user is not None:
+		user_profile = User.objects.get(user=user)
+
+		# Check if the verification code is valid and not expired
+		if (
+			user_profile.verification_code == otp and
+			user_profile.otp_expiry_time is not None and
+			user_profile.otp_expiry_time > timezone.now()
+		):
+			# Verification successful, generate access and refresh tokens
+			django_login(request, user)
+			# Implement your token generation logic here
+
+			# Use djangorestframework_simplejwt to generate tokens
+			refresh = RefreshToken.for_user(user)
+			access_token = str(refresh.access_token)
+
+			# Reset verification code and expiry time
+			user_profile.otp = ''
+			user_profile.otp_expiry_time = None
+			user_profile.save()
+
+			return Response({'access_token': access_token, 'refresh_token': str(refresh)}, status=status.HTTP_200_OK)
+	print("not ok in verify")
+	return Response({'detail': 'Invalid verification code or credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
