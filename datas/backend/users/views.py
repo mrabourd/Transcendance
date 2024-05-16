@@ -2,7 +2,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework import status
+from rest_framework import status, authentication
 # We import our serializer here
 from .serializers import UserSerializer, CustomTokenObtainPairSerializer, UpdateUserSerializer, UserSerializer42
 from django.contrib.auth import get_user_model, authenticate, logout, login as django_login
@@ -13,7 +13,6 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
-User = get_user_model()
 
 import os
 from django.core.files.base import ContentFile
@@ -26,10 +25,11 @@ from django.http import Http404
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404, redirect
-
 from datetime import timedelta
 from django.utils import timezone
 from django.core.mail import send_mail
+
+User = get_user_model()
 
 class GetCSRFTokenView(View):
 	def get(self, request, *args, **kwargs):
