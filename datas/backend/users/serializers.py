@@ -57,7 +57,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by", "blocks", "blocked_by", 'otp', 'otp_expiry_time')
+		fields = ('id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by", "blocks", "blocked_by", 'otp')
 		extra_kwargs = {
 			'avatar': {'required': False}, # 'avatar' is not required
 			'password': {'write_only': True},
@@ -70,7 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
 				'validators': [UniqueValidator(queryset=User.objects.all())]
 			},
 			'otp': {'required': False},
-			'otp_expiry_time': {'required': False}
+			# 'otp_expiry_time': {'required': False}
 		}
 
 	def create(self, validated_data):
