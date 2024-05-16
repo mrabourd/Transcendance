@@ -56,6 +56,7 @@ class UserSerializer(serializers.ModelSerializer):
 			'blocks': {'required': False},
 			'blocked_by': {'required': False},
 			'status': {'required': False},
+			'invited_user_id': {'required': False},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]
 			},
@@ -79,6 +80,7 @@ class UserSerializer42(serializers.ModelSerializer):
 			'blocks': {'required': False},
 			'blocked_by': {'required': False},
 			'status': {'required': False},
+			'invited_user_id': {'required': False},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]
 			}

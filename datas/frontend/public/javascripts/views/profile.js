@@ -121,6 +121,8 @@ export default class extends AbstractView {
 			let nodeCopy;
 			if (dest_container.hasChildNodes())
 				return ;
+			if(!this.UserDatas)
+				return;
 			const friends = this.UserDatas.follows;
 			if (!friends)
 				return
@@ -202,6 +204,8 @@ export default class extends AbstractView {
 
 	async fillProfile()
 	{
+		if(!this.UserDatas)
+			return;
 		document.querySelector(".user_username").innerHTML = this.UserDatas.username;
 		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ?  this.UserDatas.avatar : "/avatars/default.png";
 		document.querySelector(".tab-pane.profile #username").value =  this.UserDatas.username;

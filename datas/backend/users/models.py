@@ -15,7 +15,6 @@ class User(AbstractUser):
         'WAITING_TOURNAMENT' : 5
     }
 
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     avatar = models.TextField(max_length=500, blank=True, default="/avatars/default.png")
     biography = models.TextField(max_length=500, blank=True)
@@ -32,7 +31,7 @@ class User(AbstractUser):
         symmetrical=False,
         blank=True
     )
-    invited = models.UUIDField(default=0, editable=True, blank=True)
+    invited_user_id = models.UUIDField(default=0, editable=True, blank=True)
     first_name = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(1)])
     last_name = models.CharField(max_length=150, blank=True, validators=[MinLengthValidator(1)])
     

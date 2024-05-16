@@ -39,14 +39,14 @@ export async function block(user, friend_id, action)
 
 export async function invite(user, friend_id, action)
 {
-    let response = await user.request.get(`/api/match/invite/${action}/`)
+    let response = await user.request.get(`/api/match/invite/${action}/${friend_id}/`)
     if (response.status == 200)
     {
         await user.RefreshLocalDatas();
         // todo add/rm blocked user_id in local_datas
-        let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"] .block`);
+        let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"] .invite`);
         profile_cards.forEach(dom => {
-            dom.innerHTML = (action == 'invite') ? 'cancel invitation' : 'invite to play';
+            dom.innerHTML = (action == 'send') ? 'cancel invitation' : 'invite to play';
         });
     }
 }
@@ -63,10 +63,10 @@ export async function follow(user, friend_id, action)
         profile_cards.forEach(dom => {
             dom.innerHTML = (action == 'follow') ? 'unfollow' : 'follow';
         });
+
         let profile_card = document.querySelector(`.profile_card[data-friend-id="${friend_id}"]`);
         let followed_div = document.querySelector(`aside .followed ul.userList`);
-
-        let test = followed_div.querySelector(`.profile_card[data-friend-id="${friend_id}"]`)
+        let test = followed_div.querySelector(`aside .profile_card[data-friend-id="${friend_id}"]`)
         if (action =='follow' && !test && profile_card)
             followed_div.append(profile_card.cloneNode(true))
         else if (action =='unfollow' && test)
@@ -98,9 +98,6 @@ export async function update_invite_text(user, profile_card, friend_id) {
     if (dom)
         dom.innerHTML = 'invite to play';
 }
-
-
-
 
 
 export async function add_block_event(user, profile_card, friend_id) {
