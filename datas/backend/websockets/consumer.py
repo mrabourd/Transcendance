@@ -43,22 +43,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 	# Receive message from room group
 	async def chat_message(self, event):
 		message = event["message"]
-
 		# Send message to WebSocket
-		await self.send(text_data=json.dumps({"message": message}))
-# class ChatConsumer(AsyncWebsocketConsumer):
-# 	async def connect(self):
-# 		await self.accept()
-# 		await self.send(text_data=json.dumps({"message": "Connected"}))
-        
-            
+		await self.send(text_data=json.dumps({"message": message, "user": self.user.username}))
 
-# 	async def disconnect(self, close_code):
-# 		pass
 
-# 	async def receive(self, text_data):
-# 		text_data_json = json.loads(text_data)
-# 		message = text_data_json["message"]
-# 		#Message.create(user=self.user, content=message)
-
-# 		await self.send(text_data=json.dumps({"user": "hihi", "message": message}))
+#class PushConsumer(AsyncWebsocketConsumer):

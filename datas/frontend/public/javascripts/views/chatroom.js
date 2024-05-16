@@ -27,7 +27,7 @@ export default class extends AbstractView {
 		//const chatSocket = new WebSocket('wss://echo.websocket.org/');
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            document.querySelector('#chat-log').value += (data.user + " : " + data.message + '\n');
         };
 
         chatSocket.onclose = function(e) {
