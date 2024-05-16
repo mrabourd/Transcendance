@@ -90,8 +90,8 @@ export default class Request {
                 method: 'GET',
                 headers: await this.get_request_header(),
             });
-            console.log("response.status ", response.status)
-            console.log("RQ_url ", RQ_url)
+            //console.log("response.status ", response.status)
+            //console.log("RQ_url ", RQ_url)
             if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
 

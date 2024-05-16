@@ -35,7 +35,7 @@ export async function print(user)
 		friends.forEach(async friend => {
 			if (friend.username === "root" || friend.username === user.datas.username)
 				return;
-			let followed_div_all = document.querySelectorAll(`.followed ul.userList`);
+			let followed_div_all = document.querySelectorAll(`aside .followed ul.userList`);
 			followed_div_all.forEach( async detination_followed => {
 				test = detination_followed.querySelector(`.profile_card[data-friend-id="${friend.id}"]`);
 				if (test)
@@ -43,7 +43,6 @@ export async function print(user)
 				nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, user, friend)
 				detination_followed.append(nodeCopy);
 			});
-			friends_utils.update_friends_thumbnails(user, friend)
 		})
 		}
 
@@ -62,7 +61,6 @@ export async function print(user)
 						return;
 					nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, user, friend)
 					detination_online.append(nodeCopy);
-					friends_utils.update_friends_thumbnails(user, friend)
 				})
 			}
 		}
@@ -82,7 +80,6 @@ export async function print(user)
 						return;
 					nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, user, friend)
 					detination_all.append(nodeCopy);
-					friends_utils.update_friends_thumbnails(user, friend)
 				})
 			}
 		}

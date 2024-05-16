@@ -8,6 +8,7 @@ import play from "./views/play.js";
 import profile from "./views/profile.js";
 import register from "./views/register.js";
 import chatroom from "./views/chatroom.js";
+import * as friends_utils from "./utils_friends.js"
 
 
 export const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -80,4 +81,25 @@ export const router = async (user) => {
 
     await user.view.printHeader();
     await user.view.printAside();
+
+
+
+
+    let observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            // Parcourez les nœuds ajoutés
+            mutation.addedNodes.forEach(function(node) {
+                // Vérifiez si le nœud ajouté est une div avec la classe profile_card
+                if (node instanceof HTMLElement && node.classList.contains('profile_card')) {
+                    // Faites quelque chose avec la nouvelle div profile_card
+                    friends_utils.update_profile_cards(user, node);                       // Vous pouvez accéder à ses propriétés et attributs ici
+                }
+            });
+        });
+    });
+
+    // Configurez l'observer pour surveiller les ajouts d'enfants au corps de la page
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    
 };
