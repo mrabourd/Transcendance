@@ -384,15 +384,15 @@ def login2FA(request):
 		print("user profile: ", user_profile)
 		# Generate a 6-digit code and set the expiry time to 1 hour from now
 		user_profile.otp = verification_code
-		print("verification_code entered")
-		user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
-		print("expiring time entered")
+		print("verification_code entered", user_profile.otp)
+		# user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
+		# print("expiring time entered: ", user_profile.otp_expiry_time)
 		user_profile.save()
 		print("profile saved")
 		# Send the code via email (use Django's send_mail function)
 		send_mail(
 			'Verification Code',
-			f'Your verification code is: {otp}',
+			f'Your verification code is: {user_profile.otp}',
 			'from@example.com',
 			[email],
 			fail_silently=False,
