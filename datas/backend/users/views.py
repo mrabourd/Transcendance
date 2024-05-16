@@ -368,6 +368,7 @@ def generate_random_digits(n=6):
 @api_view(['POST'])
 def login2FA(request):
 	permission_classes = [AllowAny]
+	print("enter login2FA")
 	email = request.data.get('email')
 	username = request.data.get('username')
 	password = request.data.get('password')
@@ -395,22 +396,25 @@ def login2FA(request):
 		return Response({'detail': 'Verification code sent successfully.'}, status=status.HTTP_200_OK)
 	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+@api_view(['POST'])
 def verify(request):
 	email = request.data.get('email')
+	username = request.data.get('username')
 	password = request.data.get('password')
-	otp = request.data.get('otp')
+	otp = request.data.get('verificationcode')
 
-	user = authenticate(request, email=email, password=password)
+	user = authenticate(request, username=username, password=password)
 
 	if user is not None:
-		user_profile = User.objects.get(user=user)
+		user_profile = User.objects.get(id=user.id)
 
 		# Check if the verification code is valid and not expired
 		if (
-			user_profile.verification_code == otp and
-			user_profile.otp_expiry_time is not None and
-			user_profile.otp_expiry_time > timezone.now()
+			user_profile.otp == otp
+			# user_profile.otp_expiry_time is not None
+			# user_profile.otp_expiry_time > timezone.now()
 		):
+			print("ok")
 			# Verification successful, generate access and refresh tokens
 			django_login(request, user)
 			# Implement your token generation logic here
@@ -421,7 +425,7 @@ def verify(request):
 
 			# Reset verification code and expiry time
 			user_profile.otp = ''
-			user_profile.otp_expiry_time = None
+			# user_profile.otp_expiry_time = None
 			user_profile.save()
 
 			return Response({'access_token': access_token, 'refresh_token': str(refresh)}, status=status.HTTP_200_OK)
