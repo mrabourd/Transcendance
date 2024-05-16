@@ -30,7 +30,6 @@ urlpatterns = [
     path('profile/<uuid:id>/', UserDetail.as_view(), name='profile-id'),
 
     path('<str:req_type>/<uuid:id>/', FollowUser.as_view(), name='follow_user'),
-    # path('<text:req_type>/<uuid:id>/', FollowUser.as_view(), name='unfollow_user'),
 
     path('auth/intra_callback/', views.intraCallback, name="intraCallback"),
     path('auth/login2FA/', views.login2FA, name='login2FA'),
