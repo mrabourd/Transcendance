@@ -31,7 +31,7 @@ class User(AbstractUser):
         symmetrical=False,
         blank=True
     )
-    invited_user_id = models.UUIDField(default=0, editable=True, blank=True)
+    #invited_user_id = models.UUIDField(default=uuid.uuid4, editable=True, blank=True)
     first_name = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(1)])
     last_name = models.CharField(max_length=150, blank=True, validators=[MinLengthValidator(1)])
     

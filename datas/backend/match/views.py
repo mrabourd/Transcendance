@@ -30,7 +30,7 @@ class Invite(APIView):
             print("invite to play: ", id)
             # enregistrer la personne que j'invite
             request.user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
-            request.user.invited_user_id = id
+            #request.user.invited_user_id = id
             return HttpResponse("Invite to play !")
 
         if req_type == 'cancel':
