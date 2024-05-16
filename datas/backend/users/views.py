@@ -14,6 +14,7 @@ from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
 
+import random
 import os
 from django.core.files.base import ContentFile
 import json
@@ -377,7 +378,7 @@ def login2FA(request):
 	print("user id:", user.id)
 
 	if user is not None:
-		verification_code = generate_random_digits
+		verification_code = random.randbytes(6)
 		print("verification_code: ", verification_code)
 		# User credentials are valid, proceed with code generation and email sending
 		user_profile = User.objects.get(id=user.id)
