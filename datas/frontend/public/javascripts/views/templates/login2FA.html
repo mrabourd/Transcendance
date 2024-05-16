@@ -13,11 +13,11 @@
     <div id="app">
 
       <div class="jumbotron">
-        <h1 class="display-4">Login</h1>
+        <h1 class="display-4">Login 2FA</h1>
         <p class="lead">to join our amazing pong website</p>
         <hr class="my-4">
 
-        <form id="loginForm" class="row g-3 form-floating">
+        <form id="login2FAForm" class="row g-3 form-floating">
           <div id="errorFeedback" class="alert alert-danger d-none"></div>
           <div class="col-md-12">
             <label for="username" class="form-label">Username</label>
@@ -28,6 +28,12 @@
           </div>
 
           <div class="col-md-12">
+            <label for="last_name" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" value="" aria-describedby="phonenumberFeedback" required>
+            <!-- <div id="passwordFeedback" class="invalid-feedback"> -->
+            </div>
+          </div>
+          <div class="col-md-12">
             <label for="last_name" class="form-label">Password</label>
             <input type="password" class="form-control" id="password" value="" aria-describedby="passwordFeedback" required>
             <div id="passwordFeedback" class="invalid-feedback">
@@ -35,18 +41,12 @@
             </div>
           </div>
           <div class="col-12">
-            <button class="btn btn-primary" type="submit" id="submit_form">Sign In!</button>
+            <button class="btn btn-primary" type="submit" id="send_code">Send code!</button>
+          </div>
+
           </div>
 
         </form>
-        <p>Not a member? <a href="/register" data-link>Register</a></p>
-        <p>or sign up with: </p>
-        <div class="col-12">
-          <button id="login42Button" type="button" class="btn btn-primary btn-block mb-4">Login with 42</button>
-        </div>
-        <div class="col-12">
-          <button id="login2FAButton" type="button" class="btn btn-primary btn-block mb-4">Login with 2FA</button>
-      </div>
       </div>
 
     </div>

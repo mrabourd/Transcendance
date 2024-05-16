@@ -90,8 +90,8 @@ export default class Request {
                 method: 'GET',
                 headers: await this.get_request_header(),
             });
-            console.log("response.status ", response.status)
-            console.log("RQ_url ", RQ_url)
+            //console.log("response.status ", response.status)
+            //console.log("RQ_url ", RQ_url)
             if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
 
@@ -158,7 +158,7 @@ export default class Request {
 
     async checkJWTtoken()
     {
-        let response = await this.get("/api/users/all/")
+        let response = await this.get("/api/users/list/all/")
         if (response && response.ok)
             return true;
         else

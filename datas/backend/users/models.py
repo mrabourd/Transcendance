@@ -32,8 +32,12 @@ class User(AbstractUser):
         symmetrical=False,
         blank=True
     )
+    invited = models.UUIDField(default=0, editable=True, blank=True)
     first_name = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(1)])
     last_name = models.CharField(max_length=150, blank=True, validators=[MinLengthValidator(1)])
+    
+    otp = models.CharField(max_length=6, blank=True)
+    otp_expiry_time = models.DateTimeField(blank=True, null=True)
 
     def SetStatus(self, status):
         print(f'{self} status = {status} ')

@@ -27,6 +27,7 @@ export default class extends AbstractView {
 
     addEvents () {
         document.querySelector('#login42Button').addEventListener("click", this.login42);
+        document.querySelector('#login2FAButton').addEventListener("click", this.login2FA);
         document.querySelector("#loginForm #submit_form").addEventListener('click', async (event) =>  {
             event.preventDefault();
             this.login();
@@ -59,6 +60,7 @@ export default class extends AbstractView {
     }
 
     async login42() {
+        console.log("call API 42 now")
         const url42 = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-32b19fff9e0bdc8b9a6274453ce546cef0f304df7e01d5b7d3be2cac715fa306&redirect_uri=https%3A%2F%2Flocalhost%3A8483%2Flogin42&response_type=code`
         window.open(url42, "_self");
 
@@ -91,5 +93,8 @@ export default class extends AbstractView {
         // // Rediriger l'utilisateur vers l'URL d'autorisation
         // window.location.href = formattedUrl;
     // }
-
+    
+    login2FA = async () => { 
+        this.user.router.navigateTo('/login2FA', this.user);
+    }
 }

@@ -1,5 +1,6 @@
 import login from "./views/login.js";
 import login42 from "./views/login42.js";
+import login2FA from "./views/login2FA.js";
 import home from "./views/home.js";
 import about from "./views/about.js";
 import contact from "./views/contact.js";
@@ -7,6 +8,7 @@ import play from "./views/play.js";
 import profile from "./views/profile.js";
 import register from "./views/register.js";
 import chatroom from "./views/chatroom.js";
+import * as friends_utils from "./utils_friends.js"
 
 
 export const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
@@ -31,6 +33,7 @@ export const router = async (user) => {
         { id:0, path: "/", view: login },
         { id:1, path: "/login", view: login },
         { id:1, path: "/login42", view: login42 },
+        { id:1, path: "/login2FA", view: login2FA },
         { id:2, path: "/register", view: register },
         { id:3, path: "/home", view: home },
         { id:4, path: "/profile", view: profile },
@@ -71,9 +74,32 @@ export const router = async (user) => {
     }
     user.view = new match.route.view(getParams(match));
     user.view.user = user;
-    user.view.printHeader();
-    user.view.printAside();
+
     await user.view.getHtml(document.querySelector("#app"));
     await user.view.fillHtml();
     await user.view.addEvents();
+
+    await user.view.printHeader();
+    await user.view.printAside();
+
+
+
+
+    let observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            // Parcourez les nœuds ajoutés
+            mutation.addedNodes.forEach(function(node) {
+                // Vérifiez si le nœud ajouté est une div avec la classe profile_card
+                if (node instanceof HTMLElement && node.classList.contains('profile_card')) {
+                    // Faites quelque chose avec la nouvelle div profile_card
+                    friends_utils.update_profile_cards(user, node);                       // Vous pouvez accéder à ses propriétés et attributs ici
+                }
+            });
+        });
+    });
+
+    // Configurez l'observer pour surveiller les ajouts d'enfants au corps de la page
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    
 };

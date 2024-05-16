@@ -23,15 +23,16 @@ urlpatterns = [
 	path('logout/', CustomLogoutView.as_view(), name='logout'),
 
 	path('all/', UsersAPIView.as_view(), name='users-list'),
+	path('list/<str:req_type>/', UsersAPIView.as_view(), name='users-list'),
 
     path('ma_vue_protegee/', MaVueProtegee.as_view(), name='ma_vue_protegee'),
 
     path('profile/<uuid:id>/', UserDetail.as_view(), name='profile-id'),
 
     path('<str:req_type>/<uuid:id>/', FollowUser.as_view(), name='follow_user'),
-    # path('<text:req_type>/<uuid:id>/', FollowUser.as_view(), name='unfollow_user'),
 
     path('auth/intra_callback/', views.intraCallback, name="intraCallback"),
+    path('auth/login2FA/', views.login2FA, name='login2FA'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])

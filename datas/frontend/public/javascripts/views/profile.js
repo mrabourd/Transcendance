@@ -35,14 +35,7 @@ export default class extends AbstractView {
 
 			// Get profile page HTML
 			let profile_url;
-			
-			/*
-			if (this.is_user_page())
-				profile_url = '/template/profile_profile_edit'
-			else
-				profile_url = '/template/profile_profile'
-			*/
-			profile_url = '/template/profile_profile_edit'
+			profile_url = '/template/profile_profile'
 			await fetch(profile_url).then(function (response) {
 				return response.text();
 			}).then(function (html) {
@@ -70,13 +63,21 @@ export default class extends AbstractView {
 			});
 
 			// Get Followed page HTML
-			await fetch( '/template/profile_followed').then(function (response) {
-				return response.text();
-			}).then(function (html) {
-				let parser = new DOMParser();
-				let doc = parser.parseFromString(html, 'text/html');
-				document.querySelector('.tab-content').append(doc.querySelector('body div'));
-			});
+			if (!this.is_user_page())
+			{
+				await fetch( '/template/profile_followed').then(function (response) {
+					return response.text();
+				}).then(function (html) {
+					let parser = new DOMParser();
+					let doc = parser.parseFromString(html, 'text/html');
+					document.querySelector('.tab-content').append(doc.querySelector('body div'));
+				});
+			}
+			else
+			{
+				let del = document.querySelector('.nav-item[data-target="followed"]');
+				del.remove()
+			}
 		}).catch(function (err) {
 			// There was an error
 			console.warn('Something went wrong.', err);
@@ -91,10 +92,9 @@ export default class extends AbstractView {
 				element.setAttribute('readonly', 'readonly');
 				element.classList.add('form-control-plaintext');
 			});
-
 			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
 			if (response.ok)
-			this.UserDatas = await response.json();
+				this.UserDatas = await response.json();
 		}
 	}
 
@@ -116,27 +116,26 @@ export default class extends AbstractView {
 			let parser = new DOMParser();
 			let doc = parser.parseFromString(html, 'text/html');
 			let DOMProfileCard = doc.querySelector('.profile_card');
-			let dest_container = document.querySelector('main .followed')
+			let dest_container = document.querySelector('main .followed ul')
 	
 			let nodeCopy;
-
+			if (dest_container.hasChildNodes())
+				return ;
 			const friends = this.UserDatas.follows;
 			if (!friends)
 				return
 			friends.forEach(async friend_id => {
-
 				let response = await this.user.request.get(`/api/users/profile/${friend_id}/`)
 				if (response.status === 200)
 				{
-					console.log('friend_id', friend_id)
-
 					let friend = await response.json();
 					if (friend.username === "root" || friend.id === this.UserDatas.id)
 						return;
+					let test = dest_container.querySelector(`.profile_card[data-friend-id="${friend.id}"]`);
+					if (test)
+						return;
 					nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, this.user, friend)
-					console.log('nodeCopy', nodeCopy)
 					dest_container.appendChild(nodeCopy);
-					friends_utils.update_friends_thumbnails(this.user, friend)
 				}
 			})
 		});
