@@ -3,5 +3,5 @@ from .consumer import ChatConsumer
 
 
 urlpatterns = [
-    path('ws/msg/', ChatConsumer.as_asgi()),
+    path('ws/msg/<str:room_name>/', ChatConsumer.as_asgi()),
 ]

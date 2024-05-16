@@ -193,6 +193,8 @@ SIMPLE_JWT = {
 
   # It will work instead of the default serializer(TokenObtainPairSerializer).
   	"TOKEN_OBTAIN_SERIALIZER": "users.serializers.CustomTokenObtainPairSerializer",
+	"USER_ID_FIELD": "id",
+	"USER_ID_CLAIM": "id",
 
 }
 
@@ -201,7 +203,6 @@ REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': [
 # ...
 		'rest_framework_simplejwt.authentication.JWTAuthentication',
-        # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
 	]
 
 }
