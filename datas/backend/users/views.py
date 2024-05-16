@@ -216,13 +216,11 @@ class FollowUser(APIView):
 		
 		elif req_type == 'unfollow':
 			current_profile.follows.remove(other_profile)
-			# other_profile.followers.remove(current_profile)
 			return Response(status=status.HTTP_200_OK)
 
 			
 		elif req_type == 'block':
 			current_profile.blocks.add(other_profile)
-			# other_profile.followers.remove(current_profile)
 			return Response(status=status.HTTP_200_OK)
 			
 		elif req_type == 'unblock':

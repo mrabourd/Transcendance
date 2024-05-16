@@ -6,7 +6,7 @@ import uuid
 
 urlpatterns = [
     path('subscribe/', Subscribe.as_view(),name='subscribe'),
-    path('invite/<uuid:id>/', Invite.as_view(),name='invite'),
+    path('invite/<str:req_type>/<uuid:id>/', Invite.as_view(),name='invite'),
     
 ]
 
