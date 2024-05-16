@@ -3,6 +3,7 @@ export default class extends AbstractView {
     constructor(params) {
         super(params);
         this.setTitle("home");
+
     }
     async getHtml(DOM) {
         await fetch('/template/chatroom').then(function (response) {
@@ -15,15 +16,18 @@ export default class extends AbstractView {
         }).catch(function (err) {
             console.warn('Something went wrong.', err);
         });
+
     }
 
 	async addEvents() {
-
-        const chatSocket = new WebSocket('wss://0.0.0.0:8483/ws/msg/');
-
+		//let headers = await this.user.request.get_request_header();
+		
+        const chatSocket = new WebSocket('wss://localhost:8443/ws/msg/general/?token=' + this.user.request.getJWTtoken()["access"]);
+		//https://echo.websocket.org/
+		//const chatSocket = new WebSocket('wss://echo.websocket.org/');
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            document.querySelector('#chat-log').value += (data.user + " : " + data.message + '\n');
         };
 
         chatSocket.onclose = function(e) {

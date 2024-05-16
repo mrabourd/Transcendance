@@ -18,8 +18,18 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
 		data = super().validate(attrs)
 		return data
 
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+""" 	@classmethod
+	def get_token(self, user):
+		token = super().get_token(user)
 
+		# Add custom claims
+		token['id'] = user.id
+		# ...
+
+		return token """
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+	
 	def validate(self, attrs):
 		data = super().validate(attrs)
 		refresh = self.get_token(self.user)
@@ -111,27 +121,3 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 		instance.save()
 
 		return instance
-
-
-"""
-def validate_password(self, value):
-		if len(value) < 8:
-			raise serializers.ValidationError(
-				'The password must be at least 8 characters long.')
-		return value
-
-
-def validate_email(self, value):
-        # Skip validation if no value provided
-        if value is None:
-            return value
-
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError(
-                'A user with this email address already exists.')
-
-        # Note: it's important to return the value at the end of this method
-        return value
-
-
-"""
