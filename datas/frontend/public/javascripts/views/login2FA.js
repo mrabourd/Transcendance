@@ -35,7 +35,6 @@ export default class extends AbstractView {
 	}
 	
 	login2FA = async () => {
-		console.log("coucou")
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
 		let password = document.getElementById("password").value;
@@ -48,6 +47,7 @@ export default class extends AbstractView {
 		if (resp_2FA.ok){
 			const jsonData = await resp_2FA.json();
 			console.log("data: ", jsonData);
+			document.querySelector(".verify").innerHTML = "toto"
 			if (jsonData.error)
 			{
 				console.log("error in login2FA")

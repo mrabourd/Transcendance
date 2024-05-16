@@ -14,6 +14,7 @@ from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
 
+import random, string
 import os
 from django.core.files.base import ContentFile
 import json
@@ -358,8 +359,11 @@ def intraCallback(request):
 # 		serializer = self.serializer(users, many=True)
 # 		return Response(serializer.data)
 
+# def generate_random_digits(n=6):
+#     return "".join(map(str, random.sample(range(0, 10), n)))
+
 def generate_random_digits(n=6):
-    return "".join(map(str, random.sample(range(0, 10), n)))
+    return ''.join(random.choices(string.digits, k=n))
 
 @api_view(['POST'])
 def login2FA(request):
@@ -368,34 +372,27 @@ def login2FA(request):
 	username = request.data.get('username')
 	password = request.data.get('password')
 	user = authenticate(request, username=username, password=password)
-	print("user:", user)
-	print("user id:", user.id)
 
 	if user is not None:
-		verification_code = generate_random_digits
-		print("verification_code: ", verification_code)
+		verification_code = generate_random_digits()
 		# User credentials are valid, proceed with code generation and email sending
 		user_profile = User.objects.get(id=user.id)
-		print("user profile: ", user_profile)
 		# Generate a 6-digit code and set the expiry time to 1 hour from now
 		user_profile.otp = verification_code
-		print("verification_code entered")
-		user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
-		print("expiring time entered")
+		# user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
+		# print("expiring time entered: ", user_profile.otp_expiry_time)
 		user_profile.save()
-		print("profile saved")
 		# Send the code via email (use Django's send_mail function)
 		send_mail(
 			'Verification Code',
-			f'Your verification code is: {otp}',
-			'from@example.com',
+			f'Your verification code is: {user_profile.otp}',
+			'marierab@gmail.com',
 			[email],
 			fail_silently=False,
 		)
 		print("mail sent to: ", email)
 
 		return Response({'detail': 'Verification code sent successfully.'}, status=status.HTTP_200_OK)
-	print("user is None in login2FA")
 	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 def verify(request):

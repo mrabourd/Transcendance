@@ -36,7 +36,7 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=150, blank=True, validators=[MinLengthValidator(1)])
     invited_user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6, blank=True)
-    otp_expiry_time = models.DateTimeField(blank=True, null=True)
+    # otp_expiry_time = models.DateTimeField(blank=True, null=True)
 
     def SetStatus(self, status):
         print(f'{self} status = {status} ')
