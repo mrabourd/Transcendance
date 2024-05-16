@@ -144,6 +144,12 @@ export async function add_invite_event(user, profile_card, profile_id)
     let dom = profile_card.querySelector('.invite');
     if (!dom)
         return
+    if (user.status != USER_STATUS['ONLINE'])
+    {
+        dom.classList.add('d-none')
+        return ;
+    }
+    dom.classList.remove('d-none')
     dom.removeEventListener('click',async (e) => {})
     dom.addEventListener('click', async (e) => {
         e.preventDefault();

@@ -27,15 +27,16 @@ class Invite(APIView):
 
     def get(self, request, req_type, id):
         if req_type == 'send':
-            print("invite to play: ", id)
-            # enregistrer la personne que j'invite
             request.user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
-            #request.user.invited_user_id = id
-            return HttpResponse("Invite to play !")
+            user_invited = User.objects.get(id=id)
+            request.user.invited_user = user_invited
+            request.user.save()
+            return HttpResponse("invitation sent !")
 
         if req_type == 'cancel':
-            print("cancel invitation: ", id)
             request.user.SetStatus(User.USER_STATUS['ONLINE'])
+            request.user.invited_user = None
+            request.user.save()
             return HttpResponse("Cancel invitation !")
 
         if req_type == 'deny':

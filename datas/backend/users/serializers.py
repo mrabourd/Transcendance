@@ -46,6 +46,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 						"avatar" : self.user.avatar,
 						"biography" : self.user.biography,
 						"status" : self.user.status,
+    					"invited_user": self.user.invited_user.id if self.user.invited_user else None,  # Accédez à l'ID de l'utilisateur invité
 						"follows" : self.user.follows.all().values_list('id', flat=True),
 						"followed_by" : self.user.followed_by.all().values_list('id', flat=True),
 						"blocks" : self.user.blocks.all().values_list('id', flat=True),
@@ -57,7 +58,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by", "blocks", "blocked_by", 'otp', 'otp_expiry_time')
+		fields = ('id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "invited_user", "follows", "followed_by", "blocks", "blocked_by", 'otp', 'otp_expiry_time')
 		extra_kwargs = {
 			'avatar': {'required': False}, # 'avatar' is not required
 			'password': {'write_only': True},
@@ -66,11 +67,13 @@ class UserSerializer(serializers.ModelSerializer):
 			'blocks': {'required': False},
 			'blocked_by': {'required': False},
 			'status': {'required': False},
+			'invited_user': {'required': False},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]
 			},
 			'otp': {'required': False},
-			'otp_expiry_time': {'required': False}
+			'otp_expiry_time': {'required': False},
+            'id': {'read_only': True},  # Définir le champ 'id' en lecture seule
 		}
 
 	def create(self, validated_data):
@@ -81,7 +84,7 @@ class UserSerializer42(serializers.ModelSerializer):
 
 	class Meta:
 		model = User
-		fields = ('id', 'email', 'username', 'first_name', 'last_name', 'biography', "status", "follows", "followed_by", "blocks", "blocked_by")
+		fields = ('id', 'email', 'username', 'first_name', 'last_name', 'biography', "status", "invited_user", "follows", "followed_by", "blocks", "blocked_by")
 		extra_kwargs = {
 			'avatar': {'required': False}, # 'avatar' is not required
 			'follows': {'required': False},
@@ -89,6 +92,7 @@ class UserSerializer42(serializers.ModelSerializer):
 			'blocks': {'required': False},
 			'blocked_by': {'required': False},
 			'status': {'required': False},
+			'invited_user': {'required': False},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]
 			}
