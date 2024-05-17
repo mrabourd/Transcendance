@@ -1,6 +1,16 @@
 /// BLOCK FUNCTIONS
 import {USER_STATUS} from "./constants.js";
 
+export function is_invited(user,friend_id )
+{
+    //console.log('datas',user.datas)
+    console.log('is_invited',user.datas.invitation_received_by, user.datas.id)
+    if (user.datas.invitation_received_by == friend_id) {
+        return true
+    }
+    return false
+}
+
 export function is_blocked(user, friend_id)
 {
     if (user.datas.blocks.length) {
@@ -43,11 +53,7 @@ export async function invite(user, friend_id, action)
     if (response.status == 200)
     {
         await user.RefreshLocalDatas();
-        // todo add/rm blocked user_id in local_datas
-        let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"] .invite`);
-        profile_cards.forEach(dom => {
-            dom.innerHTML = (action == 'send') ? 'cancel invitation' : 'invite to play';
-        });
+        update_profile_cards_text(user)
     }
 }
 export async function follow(user, friend_id, action)
@@ -94,9 +100,27 @@ export async function update_follow_text(user, profile_card, friend_id) {
 export async function update_invite_text(user, profile_card, friend_id) {
     /// TODO / update invite en fonction des status
     let dom;
+    let check = is_invited(user, friend_id)
+    let friend_status = profile_card.getAttribute('data-friend-status');
+
     dom = profile_card.querySelector('.invite');
-    if (dom)
+    console.log("update_invite_text ", friend_id,check)
+
+    if (!dom)
+        return ;
+    if ( (parseInt(friend_status) != USER_STATUS['ONLINE']) || 
+        (parseInt(user.datas.status) != USER_STATUS['ONLINE'] 
+        && !check))
+    {
+        dom.classList.add('d-none')
+        return ;
+    }
+    console.log("update_invite_text ", friend_id,check)
+    dom.classList.remove('d-none')
+    if (!check)
         dom.innerHTML = 'invite to play';
+    else
+        dom.innerHTML = 'cancel invitation';
 }
 
 
@@ -144,12 +168,6 @@ export async function add_invite_event(user, profile_card, profile_id)
     let dom = profile_card.querySelector('.invite');
     if (!dom)
         return
-    if (user.status != USER_STATUS['ONLINE'])
-    {
-        dom.classList.add('d-none')
-        return ;
-    }
-    dom.classList.remove('d-none')
     dom.removeEventListener('click',async (e) => {})
     dom.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -186,8 +204,6 @@ export async function update_status_text(user, profile_card)
     dom.classList.add(color)
 }
 
-
-
 export async function update_invite(user, friend_id) {
     let dom;
     // let check = is_waiting(user, friend_id);
@@ -208,6 +224,7 @@ export async function create_thumbnail(nodeToCopy, user, friend) {
     await nodeCopy.setAttribute("data-friend-id", friend.id)
     await nodeCopy.setAttribute("data-friend-status", friend.status)
     nodeCopy.querySelector(".username").innerHTML = friend.username
+    nodeCopy.querySelector(".id").innerHTML = friend.id
     let avatar = (friend.avatar) ? friend.avatar : '/avatars/default.png'
     nodeCopy.querySelector("img.avatar").src = avatar
 
@@ -221,18 +238,30 @@ export async function create_thumbnail(nodeToCopy, user, friend) {
     return nodeCopy;
 }
 
+export function update_profile_cards_text(user)
+{
+    let profile_cards = document.querySelectorAll(`.profile_card`);
+
+    profile_cards.forEach(profile_card => {
+        let profile_id = profile_card.getAttribute('data-friend-id');
+        update_block_text(user, profile_card, profile_id)
+        update_follow_text(user, profile_card, profile_id)
+        update_status_text(user, profile_card)
+        update_invite_text(user, profile_card, profile_id)
+    });
+}
+
 export function update_profile_cards(user, profile_card)
 {
     let profile_id = profile_card.getAttribute('data-friend-id');
     update_block_text(user, profile_card, profile_id)
     update_follow_text(user, profile_card, profile_id)
     update_status_text(user, profile_card)
-    update_invite_text(user, profile_card)
+    update_invite_text(user, profile_card, profile_id)
     
     add_follow_event(user, profile_card, profile_id)
     add_block_event(user, profile_card, profile_id)
     add_profile_event(user, profile_card, profile_id)
-
     add_invite_event(user, profile_card, profile_id)
     //add_chat_event(user, profile_card, profile_id)
 }

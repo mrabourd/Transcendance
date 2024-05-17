@@ -84,6 +84,4 @@ export async function print(user)
 			}
 		}
 	});
-
-
 }
