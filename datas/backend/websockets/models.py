@@ -7,4 +7,8 @@ class Message(models.Model):
 	message = models.JSONField()
 	user = models.ForeignKey(to=User, on_delete=models.CASCADE, null=True, blank=True)
 	created_at = models.DateTimeField(auto_now_add=True)
-	
+
+# 1. 👇 Add the following line
+class Notification(models.Model):
+    message = models.CharField(max_length=100)
+    

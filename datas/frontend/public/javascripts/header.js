@@ -20,6 +20,10 @@ export function print(user)
 		{ path: "/register", libelle: "register" }
 	];
 	}
+
+		
+
+		
 	document.querySelector("header nav ul").innerHTML = "";
 	document.querySelector("footer nav ul").innerHTML = "";
 
