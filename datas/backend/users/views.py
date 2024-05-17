@@ -111,7 +111,7 @@ class CustomLogoutView(APIView):
             # Assurez-vous que l'utilisateur existe et est authentifié
             if request.user and request.user.is_authenticated:
                 request.user.SetStatus(User.USER_STATUS['OFFLINE'])
-                request.user.invited_user = None
+                #request.user.invitation_sender = None
                 request.user.save()
                 logout(request)
                 token = RefreshToken(request.data.get('refresh'))

@@ -26,6 +26,7 @@ export default class extends AbstractView {
     }
 
     addEvents () {
+        document.querySelector('#createUsers').addEventListener("click", this.createUsers);
         document.querySelector('#login42Button').addEventListener("click", this.login42);
         document.querySelector('#login2FAButton').addEventListener("click", this.login2FA);
         document.querySelector("#loginForm #submit_form").addEventListener('click', async (event) =>  {
@@ -96,5 +97,89 @@ export default class extends AbstractView {
     
     login2FA = async () => { 
         this.user.router.navigateTo('/login2FA', this.user);
+    }
+    createUsers = async () => {
+        let RQ_BODY
+        let response
+        RQ_BODY =
+        {
+            "avatar": "/avatars/avataaars_0.png",
+            "username": 'edgar',
+            "first_name": 'Edgar',
+            "last_name": 'Thomas',
+            "email": 'edgar@sethomas.com',
+            "password": 'root'
+        }
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
+
+        RQ_BODY.avatar = '/avatars/avataaars_1.png'
+        RQ_BODY.username = 'eugene'
+        RQ_BODY.first_name = 'Eugene'
+        RQ_BODY.last_name = 'Thomas'
+        RQ_BODY.email = 'eugene@sethomas.com'
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
+
+        RQ_BODY.avatar = '/avatars/avataaars_2.png'
+        RQ_BODY.username = 'romain'
+        RQ_BODY.first_name = 'Romain'
+        RQ_BODY.last_name = 'Thomas'
+        RQ_BODY.email = 'romain@sethomas.com'
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
+
+        RQ_BODY.avatar = '/avatars/avataaars_3.png'
+        RQ_BODY.username = 'alice'
+        RQ_BODY.first_name = 'Alice'
+        RQ_BODY.last_name = 'Vedrenne'
+        RQ_BODY.email = 'alive@sethomas.com'
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
+
+        RQ_BODY.avatar = '/avatars/avataaars_4.png'
+        RQ_BODY.username = 'marieaimee'
+        RQ_BODY.first_name = 'Marie Aimee'
+        RQ_BODY.last_name = 'Rabourdin'
+        RQ_BODY.email = 'marieaimee@sethomas.com'
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
+
+        RQ_BODY.avatar = '/avatars/avataaars_5.png'
+        RQ_BODY.username = 'selen'
+        RQ_BODY.first_name = 'Selen'
+        RQ_BODY.last_name = 'Thomas'
+        RQ_BODY.email = 'selen@sethomas.com'
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
+
+        RQ_BODY.avatar = '/avatars/avataaars_6.png'
+        RQ_BODY.username = 'eric'
+        RQ_BODY.first_name = 'Eric'
+        RQ_BODY.last_name = 'Bremond'
+        RQ_BODY.email = 'eric@sethomas.com'
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
+
+        RQ_BODY.avatar = '/avatars/avataaars_7.png'
+        RQ_BODY.username = 'salome'
+        RQ_BODY.first_name = 'Salome'
+        RQ_BODY.last_name = 'Danel'
+        RQ_BODY.email = 'salome@sethomas.com'
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
+
+        RQ_BODY.avatar = '/avatars/avataaars_8.png'
+        RQ_BODY.username = 'thomas'
+        RQ_BODY.first_name = 'Thomas'
+        RQ_BODY.last_name = 'Michel V'
+        RQ_BODY.email = 'thomas@sethomas.com'
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
+
+        RQ_BODY.avatar = '/avatars/avataaars_9.png'
+        RQ_BODY.username = 'audrey'
+        RQ_BODY.first_name = 'Audrey'
+        RQ_BODY.last_name = 'Coffignot'
+        RQ_BODY.email = 'audrey@sethomas.com'
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
+
+        RQ_BODY.avatar = '/avatars/avataaars_10.png'
+        RQ_BODY.username = 'arsene'
+        RQ_BODY.first_name = 'Arsene'
+        RQ_BODY.last_name = 'Monarcha'
+        RQ_BODY.email = 'arsene@sethomas.com'
+        response = await this.user.request.post('/api/users/register/', RQ_BODY)
     }
 }

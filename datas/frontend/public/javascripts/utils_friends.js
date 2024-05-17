@@ -3,7 +3,9 @@ import {USER_STATUS} from "./constants.js";
 
 export function is_invited(user,friend_id )
 {
-    if (user.datas.invited_user === friend_id) {
+    //console.log('datas',user.datas)
+    console.log('is_invited',user.datas.invitation_received_by, user.datas.id)
+    if (user.datas.invitation_received_by == friend_id) {
         return true
     }
     return false
@@ -102,15 +104,18 @@ export async function update_invite_text(user, profile_card, friend_id) {
     let friend_status = profile_card.getAttribute('data-friend-status');
 
     dom = profile_card.querySelector('.invite');
+    console.log("update_invite_text ", friend_id,check)
+
     if (!dom)
         return ;
-    if ( (friend_status != USER_STATUS['ONLINE']) || 
+    if ( (parseInt(friend_status) != USER_STATUS['ONLINE']) || 
         (parseInt(user.datas.status) != USER_STATUS['ONLINE'] 
         && !check))
     {
         dom.classList.add('d-none')
         return ;
     }
+    console.log("update_invite_text ", friend_id,check)
     dom.classList.remove('d-none')
     if (!check)
         dom.innerHTML = 'invite to play';
@@ -219,6 +224,7 @@ export async function create_thumbnail(nodeToCopy, user, friend) {
     await nodeCopy.setAttribute("data-friend-id", friend.id)
     await nodeCopy.setAttribute("data-friend-status", friend.status)
     nodeCopy.querySelector(".username").innerHTML = friend.username
+    nodeCopy.querySelector(".id").innerHTML = friend.id
     let avatar = (friend.avatar) ? friend.avatar : '/avatars/default.png'
     nodeCopy.querySelector("img.avatar").src = avatar
 
