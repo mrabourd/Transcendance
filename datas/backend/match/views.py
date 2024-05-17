@@ -32,15 +32,14 @@ class Invite(APIView):
             user = request.user  # Assuming request.user is the user sending the invitation
             user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
             user_invited = get_object_or_404(User, id=id)  # Retrieve the user being invited
-            user_invited.invitation_sender = user
-            user_invited.save()
+            user.invitation_sent = user_invited
+            user.save()
             return HttpResponse("Invitation sent!")
 
         if req_type == 'cancel':
             request.user.SetStatus(User.USER_STATUS['ONLINE'])
-            user_invited = get_object_or_404(User, id=id)  # Retrieve the user being invited
-            user_invited.invitation_sender = None
-            user_invited.save()
+            request.user.invitation_sent = None
+            request.user.save()
             return HttpResponse("Cancel invitation !")
 
         if req_type == 'deny':

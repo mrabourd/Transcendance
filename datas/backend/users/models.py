@@ -34,12 +34,12 @@ class User(AbstractUser):
     )
     first_name = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(1)])
     last_name = models.CharField(max_length=150, blank=True, validators=[MinLengthValidator(1)])
-    invitation_sender = models.OneToOneField(
+    invitation_sent = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        related_name='invitation_received_by',
+        related_name='invitation_received',
         verbose_name='Invitation sender'
     )
     otp = models.CharField(max_length=6, blank=True)

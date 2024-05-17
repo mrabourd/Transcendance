@@ -4,8 +4,8 @@ import {USER_STATUS} from "./constants.js";
 export function is_invited(user,friend_id )
 {
     //console.log('datas',user.datas)
-    console.log('is_invited',user.datas.invitation_received_by, user.datas.id)
-    if (user.datas.invitation_received_by == friend_id) {
+    console.log('is_invited',user.datas.invitation_sent, friend_id)
+    if (user.datas.invitation_sent == friend_id) {
         return true
     }
     return false
