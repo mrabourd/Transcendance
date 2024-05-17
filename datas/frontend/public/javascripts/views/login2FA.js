@@ -89,6 +89,31 @@ export default class extends AbstractView {
 
 	}
 
+
+    login = async () => { 
+        let username =  document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+        this.user.login(username, password)
+        .then(async result => {
+            if (result == true)
+                router.navigateTo("/home", this.user)
+            else
+            {
+                let errDiv = document.querySelector("#errorFeedback");
+                errDiv.classList.remove("d-none")
+                errDiv.innerHTML = 'An error occured ! Please check fields below ...';
+                let jsonData = await result.json()
+                for (const key in jsonData) {
+                    if (Object.hasOwnProperty.call(jsonData, key))
+                        utils.printError(key, 1, jsonData[key])
+                }
+            }
+        })
+        .catch(error => {
+            console.error('login.js (76) : There was a problem with the fetch operation:', error);
+        });
+    }
+
 	verify2FA = async () => {
 		console.log("verify 2FA code")
 		let username = document.getElementById("username").value;
@@ -116,19 +141,8 @@ export default class extends AbstractView {
 			else
 			{
 				console.log("ok")
-				this.user.setLocalDatas(jsonData.user)
-				this.user.request.setJWTtoken(jsonData.access, jsonData.refresh)
-	
-				this.user.isConnected = true;
-	
-				// const resp_csrf = await this.user.request.post('/api/users/ma_vue_protegee/');
-				// if(resp_csrf.status == 403)
-				// {
-				// 	console.warn("CSRF attack")
-				// 	return true;
-				// }
-				console.log("navigate to profile")
-				this.user.router.navigateTo('/profile/', this.user);
+			
+				this.login();
 			}
 			
 			// return resp_2FA;

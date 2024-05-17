@@ -87,6 +87,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
 	'corsheaders',
 	'rest_framework',
 	"rest_framework.authtoken",
@@ -218,3 +219,7 @@ CHANNEL_LAYERS = {
         'BACKEND': "channels.layers.InMemoryChannelLayer"
     }
 }
+
+CRONJOBS = [
+    ('* * * * *', 'users.cron.login_2FA')
+]
