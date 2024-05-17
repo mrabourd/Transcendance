@@ -68,6 +68,7 @@ class UserSerializer(serializers.ModelSerializer):
 			'blocked_by': {'required': False},
 			'status': {'required': False},
 			'invitation_sender': {'required': False},
+			'invitation_received_by': {'required': False},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]
 			},
@@ -93,6 +94,7 @@ class UserSerializer42(serializers.ModelSerializer):
 			'blocked_by': {'required': False},
 			'status': {'required': False},
 			'invitation_sender': {'required': False},
+			'invitation_received_by': {'required': False},
 			'email': {
 				'validators': [UniqueValidator(queryset=User.objects.all())]
 			}
