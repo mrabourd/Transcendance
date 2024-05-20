@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
-from .models import Message
+from .models import Message, Notification
 
 class ChatConsumer(AsyncWebsocketConsumer):
 	
@@ -39,6 +39,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		await self.channel_layer.group_send(
 			self.room_group_name, {"type": "chat.message", "message": message, "user": self.user}
 		)
+		#new_notif = Notification(message=message)
+		#await self.create_notification(new_notif) """
+		# Save message to database
+		#await self.save_message(message)
+
 
 	# Receive message from room group
 	async def chat_message(self, event):

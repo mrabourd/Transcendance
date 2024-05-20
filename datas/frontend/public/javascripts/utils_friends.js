@@ -160,8 +160,20 @@ export async function add_profile_event(user, profile_card, friend_id) {
         e.preventDefault();
         user.router.navigateTo(profile_url, user);
     });
-
 }
+
+export async function add_chat_event(user, profile_card, friend_id) {
+	let dom = profile_card.querySelector('.chat');
+	if (!dom)
+		return
+	dom.removeEventListener('click',async (e) => {})
+	dom.addEventListener('click', async (e) => {
+		e.preventDefault();
+		let chat_url = "/chatroom/" + friend_id + "/"
+		user.router.navigateTo(chat_url, user);
+	});
+}
+
 
 export async function add_invite_event(user, profile_card, profile_id)
 {
@@ -263,5 +275,5 @@ export function update_profile_cards(user, profile_card)
     add_block_event(user, profile_card, profile_id)
     add_profile_event(user, profile_card, profile_id)
     add_invite_event(user, profile_card, profile_id)
-    //add_chat_event(user, profile_card, profile_id)
+    add_chat_event(user, profile_card, profile_id)
 }
