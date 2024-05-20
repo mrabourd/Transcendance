@@ -5,6 +5,7 @@ export default class User {
         this._isConnected = false;
         this._datas = {username:"john"};
         this.request = new Request;
+		this.notifyScoket = null;
     }
     set isConnected(n)
     {
@@ -14,6 +15,7 @@ export default class User {
     {
         return this._isConnected;
     }
+	
     set view(n)
     {
         this._view = n;
@@ -40,11 +42,12 @@ export default class User {
             this.request.setJWTtoken(jsonData.access, jsonData.refresh);
             this.isConnected = true;
     
-            const resp_csrf = await this.request.post('/api/users/ma_vue_protegee/');
+            /* const resp_csrf = await this.request.post('/api/users/ma_vue_protegee/');
             if (resp_csrf.status === 403) {
                 console.warn("Attaque CSRF");
                 return true;
-            }
+            } */
+			
             
             return true;
         } else  {

@@ -12,7 +12,6 @@ export default class extends AbstractView {
 
 	async  addEvents () {
 		console.log("enter 42 login now")
-		// this.user.logout();
 		// this.user.rmLocalDatas();
 		// this.user.request.rmJWTtoken()
 		// this.user.request.rmCsrfToken()
