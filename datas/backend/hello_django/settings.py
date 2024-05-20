@@ -39,7 +39,12 @@ SECURE_HSTS_PRELOAD = False  # Désactivé en développement, mettre à True en 
 # Chemins vers le certificat et la clé privée
 SSL_CERTIFICATE = '/etc/ssl/cert.pem'
 SSL_KEY = '/etc/ssl/key.pem'
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST='smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -82,6 +87,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
 	'corsheaders',
 	'rest_framework',
 	"rest_framework.authtoken",
@@ -213,3 +219,7 @@ CHANNEL_LAYERS = {
         'BACKEND': "channels.layers.InMemoryChannelLayer"
     }
 }
+
+CRONJOBS = [
+    ('* * * * *', 'users.cron.login_2FA')
+]

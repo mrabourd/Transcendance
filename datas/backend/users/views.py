@@ -14,6 +14,7 @@ from django.middleware.csrf import get_token
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
 
+import random, string
 import os
 from django.core.files.base import ContentFile
 import json
@@ -27,7 +28,12 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404, redirect
 from datetime import timedelta
 from django.utils import timezone
-from django.core.mail import send_mail
+from django.core.mail import send_mail, BadHeaderError
+
+import smtplib
+import dns.resolver
+from django.core.mail import EmailMessage
+from smtplib import SMTPException
 
 User = get_user_model()
 
@@ -109,19 +115,14 @@ class CustomLogoutView(APIView):
             #user = access_token.payload.get('user_id')
             # Assurez-vous que l'utilisateur existe et est authentifié
             if request.user and request.user.is_authenticated:
-                print('>>>> user.SetStatus >> offline ')
                 request.user.SetStatus(User.USER_STATUS['OFFLINE'])
-                print('>>>> logout')
+                #request.user.invitation_sender = None
+                request.user.save()
                 logout(request)
-                print('>>>> RefreshToken')
                 token = RefreshToken(request.data.get('refresh'))
-                print('>>>> blacklist')
                 token.blacklist()
-                #token = OutstandingToken.objects.get(token=refresh_token)
-                #token.blacklist()
                 response = Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
                 response.delete_cookie('csrftoken')
-				#response.delete_cookie("refresh_token")
                 return response
             else:
                 return Response({"error": "User not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
@@ -363,62 +364,95 @@ def intraCallback(request):
 # 		serializer = self.serializer(users, many=True)
 # 		return Response(serializer.data)
 
+# def generate_random_digits(n=6):
+#     return "".join(map(str, random.sample(range(0, 10), n)))
+
 def generate_random_digits(n=6):
-    return "".join(map(str, random.sample(range(0, 10), n)))
+    return ''.join(random.choices(string.digits, k=n))
 
-@api_view(['POST'])
-def login2FA(request):
-	permission_classes = [AllowAny]
-	email = request.data.get('email')
-	username = request.data.get('username')
-	password = request.data.get('password')
-	user = authenticate(request, username=username, password=password)
-	print("user:", user)
-	print("user id:", user.id)
+def sendEmaiWithCode(user_profile, email):
 
-	if user is not None:
-		verification_code = generate_random_digits
-		print("verification_code: ", verification_code)
-		# User credentials are valid, proceed with code generation and email sending
-		user_profile = User.objects.get(id=user.id)
-		print("user profile: ", user_profile)
-		# Generate a 6-digit code and set the expiry time to 1 hour from now
-		user_profile.otp = verification_code
-		print("verification_code entered")
-		user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
-		print("expiring time entered")
-		user_profile.save()
-		print("profile saved")
-		# Send the code via email (use Django's send_mail function)
+	try:
 		send_mail(
 			'Verification Code',
-			f'Your verification code is: {otp}',
-			'from@example.com',
+			f'Your verification code is: {user_profile.otp}',
+			'transcendancespies@gmail.com',
 			[email],
 			fail_silently=False,
 		)
 		print("mail sent to: ", email)
+	except smtplib.SMTPRecipientsRefused as e:
+		# Gestion de l'erreur 550 ou autres erreurs de destinataire
+		if e.recipients[email_address][0] == 550:
+			return {"error": "Adresse email invalide"}
+		else:
+			return {"error": "Erreur lors de l'envoi de l'email"}
+	except SMTPException as e:
+		return {"error": "Erreur SMTP: " + str(e)}
+	except Exception as e:
+		return {"error": "Erreur inconnue: " + str(e)}
 
-		return Response({'detail': 'Verification code sent successfully.'}, status=status.HTTP_200_OK)
-	print("user is None in login2FA")
-	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+def validate_email_domain(email_address):
+	domain = email_address.split('@')[1]
+	try:
+		# Check MX records for the domain
+		mx_records = dns.resolver.resolve(domain, 'MX')
+		return True
+	except dns.resolver.NoAnswer:
+		return False
+	except dns.resolver.NXDOMAIN:
+		return False
+	except dns.exception.DNSException:
+		return False
 
-def verify(request):
+@api_view(['POST'])
+def login2FA(request):
+	permission_classes = [AllowAny]
+	print("enter login2FA")
 	email = request.data.get('email')
-	password = request.data.get('password')
-	otp = request.data.get('otp')
 
-	user = authenticate(request, email=email, password=password)
+	if not validate_email_domain(email):
+		return Response({"error": "Le domaine de l'adresse email est invalide"}, status=status.HTTP_401_UNAUTHORIZED)
+	username = request.data.get('username')
+	password = request.data.get('password')
+	user = authenticate(request, username=username, password=password)
 
 	if user is not None:
-		user_profile = User.objects.get(user=user)
+		verification_code = generate_random_digits()
+		# User credentials are valid, proceed with code generation and email sending
+		user_profile = User.objects.get(id=user.id)
+		# Generate a 6-digit code and set the expiry time to 1 hour from now
+		user_profile.otp = verification_code
+		user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
+		print("expiring time entered: ", user_profile.otp_expiry_time)
+		user_profile.save()
+		# Send the code via email (use Django's send_mail function)
+
+		result = sendEmaiWithCode(user_profile, email)
+		if "error" in result:
+			return Response({"error": result["error"]}, status=400)
+
+		return Response({'detail': 'Verification code sent successfully.'}, status=status.HTTP_200_OK)
+	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['POST'])
+def verify(request):
+	email = request.data.get('email')
+	username = request.data.get('username')
+	password = request.data.get('password')
+	otp = request.data.get('verificationcode')
+	user = authenticate(request, username=username, password=password)
+
+	if user is not None:
+		user_profile = User.objects.get(id=user.id)
 
 		# Check if the verification code is valid and not expired
 		if (
-			user_profile.verification_code == otp and
+			user_profile.otp == otp and
 			user_profile.otp_expiry_time is not None and
 			user_profile.otp_expiry_time > timezone.now()
 		):
+			print("ok")
 			# Verification successful, generate access and refresh tokens
 			django_login(request, user)
 			# Implement your token generation logic here

@@ -33,6 +33,7 @@ urlpatterns = [
 
     path('auth/intra_callback/', views.intraCallback, name="intraCallback"),
     path('auth/login2FA/', views.login2FA, name='login2FA'),
+    path('auth/verify2FA/', views.verify, name='verify2FA'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])

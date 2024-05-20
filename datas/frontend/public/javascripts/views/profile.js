@@ -207,6 +207,7 @@ export default class extends AbstractView {
 		if(!this.UserDatas)
 			return;
 		document.querySelector(".user_username").innerHTML = this.UserDatas.username;
+		document.querySelector(".id").innerHTML = this.UserDatas.id;
 		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ?  this.UserDatas.avatar : "/avatars/default.png";
 		document.querySelector(".tab-pane.profile #username").value =  this.UserDatas.username;
 		document.querySelector(".tab-pane.profile #first_name").value =  this.UserDatas.first_name;

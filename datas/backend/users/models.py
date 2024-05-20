@@ -1,7 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 from django.core.validators import MinLengthValidator
 import uuid
+from django.conf import settings
 
 class User(AbstractUser):
 
@@ -31,10 +32,16 @@ class User(AbstractUser):
         symmetrical=False,
         blank=True
     )
-    #invited_user_id = models.UUIDField(default=uuid.uuid4, editable=True, blank=True)
     first_name = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(1)])
     last_name = models.CharField(max_length=150, blank=True, validators=[MinLengthValidator(1)])
-    
+    invitation_sender = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='invitation_received_by',
+        verbose_name='Invitation sender'
+    )
     otp = models.CharField(max_length=6, blank=True)
     otp_expiry_time = models.DateTimeField(blank=True, null=True)
 

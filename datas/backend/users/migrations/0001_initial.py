@@ -6,6 +6,7 @@ import django.contrib.auth.validators
 from django.db import migrations, models
 import django.utils.timezone
 import uuid
+from django.contrib.auth.models import User
 
 
 class Migration(migrations.Migration):
@@ -34,6 +35,7 @@ class Migration(migrations.Migration):
                 ('avatar', models.ImageField(blank=True, null=True, upload_to='profile_pics/')),
                 ('biography', models.TextField(blank=True, max_length=500)),
                 ('status', models.IntegerField()),
+                ('invitation_sender', models.OneToOneField(settings.AUTH_USER_MODEL,null=True,blank=True,on_delete=models.CASCADE,related_name='invitation_received_by',verbose_name='Invitation sender')),
                 ('follows', models.ManyToManyField(blank=True, related_name='followed_by', to=settings.AUTH_USER_MODEL)),
                 ('blocks', models.ManyToManyField(blank=True, related_name='blocked_by', to=settings.AUTH_USER_MODEL)),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
