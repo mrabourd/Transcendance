@@ -45,7 +45,7 @@ export default class {
         { id:3, path: "/home", view: home },
         { id:4, path: "/profile", view: profile },
         { id:5, path: "/profile/:id", view: profile },
-        { id:6, path: "/about", view: about },
+        { id:6, path: "/tournament", view: tournament },
         { id:7, path: "/contact", view: contact },
         { id:7, path: "/websocket", view: websocket },
         { id:8, path: "/play", view: play }

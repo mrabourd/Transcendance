@@ -45,23 +45,22 @@ export default class extends AbstractView {
 			'email': email,
 			'password': password,
 		};
-		console.log("data", data);
 		const resp_2FA = await this.user.request.post('/api/users/auth/login2FA/', data);
 
 		if (resp_2FA.ok){
 			const jsonData = await resp_2FA.json();
-			console.log("data: ", jsonData);
 			document.querySelector(".verify").classList.remove("d-none")
 			if (jsonData.error)
 			{
-				console.log("error in login2FA")
-			//     document.querySelector('#app').innerHTML =
-			//         `<h1>${jsonData.error}</h1>
-			//         <p>${jsonData.error_description}</p>`
+				console.log("error in resp_2FA")
+				let errDiv = document.getElementById("errorFeedback");
+				errDiv.classList.remove("d-none")
+				errDiv.innerHTML = "Bad input!";
+				const jsonData = await resp_2FA.json();
+				return jsonData.detail;
 			}
 			else
 			{
-				console.log("ok")
 				document.getElementById("verify2FA").addEventListener('click', async (event) =>  {
 					event.preventDefault();
 					this.verify2FA();
@@ -87,6 +86,7 @@ export default class extends AbstractView {
 			return jsonData.detail;
 		}
 		else if (resp_2FA.status === 404) {
+			console.log("error 404")
 			let errDiv = document.getElementById("errorFeedback");
 			errDiv.classList.remove("d-none")
 			errDiv.innerHTML = 'The domain of your email is invalid';
@@ -94,9 +94,10 @@ export default class extends AbstractView {
 			return jsonData.detail;
 		}
 		else if (resp_2FA.status === 400) {
+			console.log("error 400")
 			let errDiv = document.getElementById("errorFeedback");
 			errDiv.classList.remove("d-none")
-			errDiv.innerHTML = "The user doesn't exist!";
+			errDiv.innerHTML = "Bad input!";
 			const jsonData = await resp_2FA.json();
 			return jsonData.detail;
 		}
@@ -144,7 +145,6 @@ export default class extends AbstractView {
 		if (verif_2FA.ok){
 			console.log("verif_2FA.ok)");
 			const jsonData = await verif_2FA.json();
-			console.log("data: ", jsonData);
 			if (jsonData.error)
 			{
 				console.log("error in verif_2FA")
@@ -167,27 +167,4 @@ export default class extends AbstractView {
 		}
 	
 	}
-	// verifyPassword = async () => { 
-    //     let username = document.querySelector("#loginForm #username").value;
-    //     let password = document.querySelector("#loginForm #password").value;
-    //     this.user.login(username, password)
-    //     .then(async result => {
-    //         if (result == true)
-    //             router.navigateTo("/home", this.user)
-    //         else
-    //         {
-    //             let errDiv = document.querySelector("#errorFeedback");
-    //             errDiv.classList.remove("d-none")
-    //             errDiv.innerHTML = 'An error occured ! Please check fields below ...';
-    //             let jsonData = await result.json()
-    //             for (const key in jsonData) {
-    //                 if (Object.hasOwnProperty.call(jsonData, key))
-    //                     utils.printError(key, 1, jsonData[key])
-    //             }
-    //         }
-    //     })
-    //     .catch(error => {
-    //         console.error('login.js (76) : There was a problem with the fetch operation:', error);
-    //     });
-    // }
 }
