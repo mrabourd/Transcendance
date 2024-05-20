@@ -86,6 +86,20 @@ export default class extends AbstractView {
 			const jsonData = await resp_2FA.json();
 			return jsonData.detail;
 		}
+		else if (resp_2FA.status === 404) {
+			let errDiv = document.getElementById("errorFeedback");
+			errDiv.classList.remove("d-none")
+			errDiv.innerHTML = 'The domain of your email is invalid';
+			const jsonData = await resp_2FA.json();
+			return jsonData.detail;
+		}
+		else if (resp_2FA.status === 400) {
+			let errDiv = document.getElementById("errorFeedback");
+			errDiv.classList.remove("d-none")
+			errDiv.innerHTML = "The user doesn't exist!";
+			const jsonData = await resp_2FA.json();
+			return jsonData.detail;
+		}
 
 	}
 
@@ -151,6 +165,7 @@ export default class extends AbstractView {
 			const jsonData = await verif_2FA.json();
 			return jsonData.detail;
 		}
+	
 	}
 	// verifyPassword = async () => { 
     //     let username = document.querySelector("#loginForm #username").value;

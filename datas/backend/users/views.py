@@ -412,7 +412,8 @@ def login2FA(request):
 	email = request.data.get('email')
 
 	if not validate_email_domain(email):
-		return Response({"error": "Le domaine de l'adresse email est invalide"}, status=status.HTTP_401_UNAUTHORIZED)
+		return Response({'detail': 'Domain of email not invalid'}, status=status.HTTP_404_NOT_FOUND)
+
 	username = request.data.get('username')
 	password = request.data.get('password')
 	user = authenticate(request, username=username, password=password)
@@ -433,6 +434,11 @@ def login2FA(request):
 			return Response({"error": result["error"]}, status=400)
 
 		return Response({'detail': 'Verification code sent successfully.'}, status=status.HTTP_200_OK)
+
+	else:
+		return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST )
+
+
 	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
