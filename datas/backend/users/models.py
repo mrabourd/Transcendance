@@ -43,7 +43,7 @@ class User(AbstractUser):
         verbose_name='Invitation sender'
     )
     otp = models.CharField(max_length=6, blank=True)
-    # otp_expiry_time = models.DateTimeField(blank=True, null=True)
+    otp_expiry_time = models.DateTimeField(blank=True, null=True)
 
     def SetStatus(self, status):
         print(f'{self} status = {status} ')
