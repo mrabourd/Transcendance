@@ -57,8 +57,15 @@ volumes:
     }
 
 
-
-
-
-
-
+Navigate in DB in POSTGRE container:
+docker exec -it [postgre container name] psql -U [sql user name] -W [sql database name]
+-to navigate inside the database:  \c [sql database name]
+-to show the tables created:       \dt
+-to show one table specifically:   SELECT * FROM [TABLE NAME];   (ne surtout pas oublier le ';')
+-and then for example, to query for just the COLUMNS from a specific table and show the column names from the specific table 'users_user' in our database:
+SELECT
+  COLUMN_NAME
+FROM
+  INFORMATION_SCHEMA.COLUMNS
+WHERE
+  TABLE_NAME = 'users_user';

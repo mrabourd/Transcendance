@@ -80,10 +80,6 @@ export default class extends AbstractView {
 			}
 			
 			// return resp_2FA;
-		} else if (resp_2FA.status === 401) {
-			console.log("error 401")
-			const jsonData = await resp_2FA.json();
-			return jsonData.detail;
 		}
 		else if (resp_2FA.status === 404) {
 			console.log("error 404")

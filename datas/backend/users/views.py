@@ -372,26 +372,17 @@ def generate_random_digits(n=6):
 
 def sendEmailWithCode(user_profile, email):
 
-	try:
-		send_mail(
-			'Verification Code',
-			f'Your verification code is: {user_profile.otp}',
-			'transcendancespies@gmail.com',
-			[email],
-			fail_silently=False,
-		)
-		print("mail sent to: ", email)
-		return {"success"}
-	except smtplib.SMTPRecipientsRefused as e:
-		# Gestion de l'erreur 550 ou autres erreurs de destinataire
-		if e.recipients[email_address][0] == 550:
-			return {"error": "Adresse email invalide"}
-		else:
-			return {"error": "Erreur lors de l'envoi de l'email"}
-	except SMTPException as e:
-		return {"error": "Erreur SMTP: " + str(e)}
-	except Exception as e:
-		return {"error": "Erreur inconnue: " + str(e)}
+	send_mail(
+		'Verification Code',
+		f'Your verification code is: {user_profile.otp}',
+		'transcendancespies@gmail.com',
+		[email],
+		fail_silently=False,
+	)
+	print("mail sent to: ", email)
+	return {"success"}
+
+
 
 def validate_email_domain(email_address):
 	domain = email_address.split('@')[1]
@@ -449,11 +440,8 @@ def login2FA(request):
 
 		return Response({'detail': 'Verification code sent successfully.'}, status=status.HTTP_200_OK)
 
-	else:
-		return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST )
+	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST )
 
-
-	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
 def verify(request):
