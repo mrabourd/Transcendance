@@ -30,23 +30,23 @@ export default class extends AbstractView {
 			return false
 		}
 
+		console.log(this.user.datas.username + ' is connected to the chatroom.');
+		const user = this.user;
 		const chatSocket = new WebSocket(
-			'wss://localhost:8443/ws/msg/'+ this.user.datas.id + friend_id +'?token=' + this.user.request.getJWTtoken()["access"] +'/'
+			'wss://localhost:8443/ws/msg/'+ user.datas.id + friend_id +'?token=' + this.user.request.getJWTtoken()["access"]
 		);
 
 		// on socket open
 		chatSocket.onopen = function (e) {
-			console.log('Socket between ' + this.user.datas.id + ' and ' + friend_id + ' successfully connected.');
+			console.log('Socket between ' + user.datas.id + ' and ' + friend_id + ' successfully connected.');
 		};
 
 		// on socket close
 		chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-		
+			const chatText = document.querySelector('#chat-text-left').innerHTML;
+			document.querySelector('#chat-text-left').innerHTML = chatText + '<br>' + data.user + ' : ' + data.message;
 
-
-            document.querySelector('#chat-text-left').value = (data.user + " : " + data.message + '\n');
-	
         };
 
         chatSocket.onclose = function(e) {

@@ -4,6 +4,7 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from users.serializers import UserSerializer
 
 #from channels.auth import channel_session_user_from_http, channel_session_user
 
@@ -48,8 +49,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 	# Receive message from room group
 	async def chat_message(self, event):
 		message = event["message"]
+		user = event["user"]
+		#newMsg = Message.objects.create_message(message=message, user=user)
+		
 		# Send message to WebSocket
-		await self.send(text_data=json.dumps({"message": message, "user": self.user.username}))
+		await self.send(text_data=json.dumps({"message": message, "user": user.username}))
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):

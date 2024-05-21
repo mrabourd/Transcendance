@@ -30,5 +30,6 @@ class WebSocketJWTAuthMiddleware():
             scope["user"] = await get_user(access_token["id"])
         except TokenError:
             scope["user"] = AnonymousUser()
+            raise TokenError("Invalid token") 
 
         return await self.app(scope, receive, send)
