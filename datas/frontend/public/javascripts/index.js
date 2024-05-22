@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
 	// setup chat scoket
 	const notifyScoket = new WebSocket(
-		'wss://localhost:8443/ws/notify/?token=' + user.request.getJWTtoken()["access"] +'/'
+		'wss://localhost:8443/ws/notify/?token=' + user.request.getJWTtoken()["access"]
 	);
 
 	// on socket open
