@@ -44,7 +44,7 @@ class UsersAPIView(APIView):
 
 	def get(self, request, req_type):
 		if req_type == 'online':
-			users = User.objects.filter(status=1)
+			users = User.objects.exclude(status=0)
 		elif req_type == 'all':
 			users = User.objects.all()
 		elif req_type == 'followed':
