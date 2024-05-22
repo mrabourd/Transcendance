@@ -31,13 +31,18 @@ export default class extends AbstractView {
         let player_score = document.getElementById('player-score')
         let computer_score = document.getElementById('computer-score')
         
-        if (this.params.id === "vs_computer"){
+        if (this.params.adversaire === "vs_computer"){
             this._game = new pongComputer(canvas, player_score, computer_score);
             // document.querySelector('#start-game').addEventListener('click',  this._game.computerMove);
         }
-        else{
+        else if (this.params.adversaire === "vs_player")
+        {
             this._game = new pongPlayer(canvas, player_score, computer_score);
             // document.addEventListener('keydown', this._game.secondPlayerMove);
+        }
+        else
+        {
+            console.log("vs user id: creer avec websocket")
         }
         
         document.querySelector('#start-game').addEventListener('click',  this._game.start);

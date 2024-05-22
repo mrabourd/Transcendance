@@ -475,5 +475,4 @@ def verify(request):
 			user_profile.save()
 
 			return Response({'access_token': access_token, 'refresh_token': str(refresh)}, status=status.HTTP_200_OK)
-	print("not ok in verify")
 	return Response({'detail': 'Invalid verification code or credentials.'}, status=status.HTTP_401_UNAUTHORIZED)

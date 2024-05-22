@@ -10,6 +10,11 @@ export default class extends AbstractPong {
     playerMoveKey = (event) => {
 		if (event)
 		{
+			window.addEventListener("keydown", function(e) {
+				if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+					e.preventDefault();
+				}
+			}, false);
 			if (event.key === "ArrowDown"){
 				if (this._game.player.y + PLAYER_HEIGHT > this._canvas.height){
 					this._game.player.y = this._canvas.height - PLAYER_HEIGHT;
