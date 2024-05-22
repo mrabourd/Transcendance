@@ -1,11 +1,11 @@
 import Request from "./request.js";
+import Websockets from "./websockets.js";
 
 export default class User {
     constructor() {
-        this._isConnected = false;
-        this._datas = {username:"john"};
+        this.isConnected = false;
         this.request = new Request;
-		this.notifyScoket = null;
+		this.websockets = null;
     }
     set isConnected(n)
     {
@@ -48,7 +48,7 @@ export default class User {
                 return true;
             } */
 			
-            
+            this.websockets = new Websockets(this)
             return true;
         } else  {
             return response;
@@ -63,6 +63,8 @@ export default class User {
             if (TockenCheck == true)
             {
                 this._isConnected = true;
+                this.websockets = new Websockets(this)
+
             }
             else
             {

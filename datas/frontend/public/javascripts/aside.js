@@ -1,13 +1,8 @@
 import * as friends_utils from "./utils_friends.js"
-
-
 	// Create a new li element
-
-
 
 export async function print(user)
 {
-	
 	let routes = null;
 	if (!user.isConnected)
 	{
@@ -16,10 +11,6 @@ export async function print(user)
 	}
 	else
 		document.querySelector('aside').classList.remove('d-none')
-
-
-	
-		
 
 	let profile_card_url = '/template/profile_card'
 	await fetch(profile_card_url).then(function (response) {
@@ -35,7 +26,7 @@ export async function print(user)
 		let friends
 
 		response = await user.request.get('/api/users/list/followed/')
-		if (response.ok)
+		if (response.status == 200)
 		{
 		friends = await response.json();
 		friends.forEach(async friend => {
@@ -56,7 +47,7 @@ export async function print(user)
 		if (!detination_online.hasChildNodes())
 		{
 			response = await user.request.get('/api/users/list/online/')
-			if (response.ok)
+			if (response.status == 200)
 			{
 				const friends = await response.json();
 				friends.forEach(async friend => {
@@ -75,7 +66,7 @@ export async function print(user)
 		if (!detination_all.hasChildNodes())
 		{
 			response = await user.request.get('/api/users/list/all/')
-			if (response.ok)
+			if (response.status == 200)
 			{
 				const friends = await response.json();
 				friends.forEach(async friend => {

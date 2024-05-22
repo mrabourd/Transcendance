@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
+from websockets.models import Notification
 # Create your views here.
 from users.models import User, Invitation  # Import your User model
 User = get_user_model()
@@ -35,14 +36,14 @@ class Invite(APIView):
             
             # Vérifier si l'utilisateur a déjà envoyé une invitation
             if hasattr(user, 'sent_invitation'):
-                print(user.sent_invitation.delete())
                 return HttpResponse("You have already sent an invitation.", status=400)
-
             try:
                 invitation = Invitation.objects.create(sender=user, receiver=user_invited)
                 user.invitation_sent = invitation
                 user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
                 user.save()
+                Notification.objects.create(message="coucou")
+                
                 return HttpResponse("Invitation sent!")
             except IntegrityError:
                 return HttpResponse("An error occurred while sending the invitation.", status=500)
@@ -51,7 +52,6 @@ class Invite(APIView):
             # Vérifier si l'utilisateur a effectivement envoyé une invitation
             if not hasattr(user, 'sent_invitation'):
                 return HttpResponse("No invitation to cancel.", status=400)
-
             user.SetStatus(User.USER_STATUS['ONLINE'])
             user.save()
             user.invitation_sent.delete()

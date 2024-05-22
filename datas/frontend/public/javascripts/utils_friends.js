@@ -3,8 +3,6 @@ import {USER_STATUS} from "./constants.js";
 
 export function is_invited(user,friend_id )
 {
-    //console.log('datas',user.datas)
-    console.log('is_invited',user.datas.invitation_sent, friend_id)
     if (user.datas.invitation_sent === friend_id) {
         return true
     }
@@ -104,7 +102,6 @@ export async function update_invite_text(user, profile_card, friend_id) {
     let friend_status = profile_card.getAttribute('data-friend-status');
 
     dom = profile_card.querySelector('.invite');
-    console.log("update_invite_text ", friend_id,check)
 
     if (!dom)
         return ;
@@ -115,7 +112,6 @@ export async function update_invite_text(user, profile_card, friend_id) {
         dom.classList.add('d-none')
         return ;
     }
-    console.log("update_invite_text ", friend_id,check)
     dom.classList.remove('d-none')
     if (!check)
         dom.innerHTML = 'invite to play';

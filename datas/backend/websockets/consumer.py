@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from users.serializers import UserSerializer
-
+from django.contrib.auth.models import AnonymousUser
 #from channels.auth import channel_session_user_from_http, channel_session_user
 
 User = get_user_model()
@@ -60,6 +60,11 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.user = self.scope["user"]
 		self.group_name = 'public_room'
+		if isinstance(self.user, AnonymousUser):
+			await self.accept()
+			await self.send(text_data=json.dumps({"error": "token_not_valid"}))
+			await self.close()
+			return
 		await self.channel_layer.group_add(
 			self.group_name,
 			self.channel_name
