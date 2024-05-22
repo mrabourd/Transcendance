@@ -41,7 +41,7 @@ export const router = async (user) => {
         { id:6, path: "/tournament", view: tournament },
         { id:7, path: "/contact", view: contact },
         { id:8, path: "/chatroom", view: chatroom },
-		{ id:8, path: "/chatroom/:user_id", view: mpchat},
+		{ id:8, path: "/chatroom/:friend_id", view: mpchat},
         { id:9, path: "/play/:user_id", view: play }
     ];
 

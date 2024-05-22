@@ -40,7 +40,7 @@ export default class extends AbstractView {
 
 		
 
-		let friend_id = this.params.user_id;
+		let friend_id = this.params.friend_id;
     //console.log('datas',user.datas)
 		console.log("send_message", this.user.datas.id)
 		if (this.user.datas.id == friend_id) {
@@ -50,7 +50,7 @@ export default class extends AbstractView {
 		console.log(this.user.datas.username + ' is connected to the chatroom.');
 		const user = this.user;
 		const chatSocket = new WebSocket(
-			'wss://localhost:8443/ws/msg/'+ user.datas.id + friend_id +'?token=' + this.user.request.getJWTtoken()["access"]
+			'wss://localhost:8443/ws/msg/'+ friend_id +'/?token=' + this.user.request.getJWTtoken()["access"]
 		);
 
 		// on socket open

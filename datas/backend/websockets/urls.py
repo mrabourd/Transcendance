@@ -4,6 +4,6 @@ import uuid
 
 
 urlpatterns = [
-    path('ws/msg/<str:room_name>/', ChatConsumer.as_asgi()),
+    path('ws/msg/<str:friend_id>/', ChatConsumer.as_asgi()),
 	path('ws/notify/', NotificationConsumer.as_asgi()),
 ]

@@ -165,7 +165,7 @@ export async function add_chat_event(user, profile_card, friend_id) {
 	dom.removeEventListener('click',async (e) => {})
 	dom.addEventListener('click', async (e) => {
 		e.preventDefault();
-		let chat_url = "/chatroom/" + friend_id + "/"
+		let chat_url = "/chatroom/" + friend_id
 		user.router.navigateTo(chat_url, user);
 	});
 }
