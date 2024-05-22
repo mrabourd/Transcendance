@@ -1,13 +1,13 @@
 import AbstractView from "./AbstractView.js";
 import pongComputer from "../pongComputer.js";
 import pongPlayer from "../pongPlayer.js";
-
-
+import AbstractPong from "../AbstractPong.js";
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
         this.setTitle("Play PlayJS");
+        // this.currentKeysDown = [];
     }
 
     async getHtml(DOM) {
@@ -38,6 +38,7 @@ export default class extends AbstractView {
         else if (this.params.adversaire === "vs_player")
         {
             this._game = new pongPlayer(canvas, player_score, computer_score);
+            // console.log("pong current key down: ", this._game.currentKeysDown);
             // document.addEventListener('keydown', this._game.secondPlayerMove);
         }
         else
@@ -48,8 +49,23 @@ export default class extends AbstractView {
         document.querySelector('#start-game').addEventListener('click',  this._game.start);
         document.querySelector('#stop-game').addEventListener('click',  this._game.stop);
         
-		document.addEventListener('keydown', this._game.playerMoveKey);
 
+        document.addEventListener("keydown", (event) => {
+            if (!this._game.currentKeysDown.includes(event.key)) {
+                this._game.currentKeysDown.push(event.key);
+            }
+            this._game.movePaddles()
+          })
+          
+          document.addEventListener("keyup", (event) => {
+            this._game.currentKeysDown.splice(this._game.currentKeysDown.indexOf(event.key), 1)
+          
+            this._game.movePaddles()
+          })
+		// document.addEventListener('keydown', this._game.playerMoveKeyDown);
+        // if (this.params.adversaire === "vs_player"){
+        //     document.addEventListener('keyup', this._game.playerMoveKeyUp);
+        // }
 
         // document.addEventListener('keydown', () => {
 		// 	if (controller[KeyboardEvent.code]) {

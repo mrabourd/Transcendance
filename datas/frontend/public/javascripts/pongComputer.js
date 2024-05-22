@@ -7,7 +7,7 @@ export default class extends AbstractPong {
         super(params);
     }
 
-    playerMoveKey = (event) => {
+    playerMoveKeyDown = (event) => {
 		if (event)
 		{
 			window.addEventListener("keydown", function(e) {
