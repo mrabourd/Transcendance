@@ -28,7 +28,12 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404, redirect
 from datetime import timedelta
 from django.utils import timezone
-from django.core.mail import send_mail
+from django.core.mail import send_mail, BadHeaderError
+
+import smtplib
+import dns.resolver
+from django.core.mail import EmailMessage
+from smtplib import SMTPException
 
 User = get_user_model()
 
@@ -365,52 +370,97 @@ def intraCallback(request):
 def generate_random_digits(n=6):
     return ''.join(random.choices(string.digits, k=n))
 
+def sendEmailWithCode(user_profile, email):
+
+	send_mail(
+		'Verification Code',
+		f'Your verification code is: {user_profile.otp}',
+		'transcendancespies@gmail.com',
+		[email],
+		fail_silently=False,
+	)
+	print("mail sent to: ", email)
+	return {"success"}
+
+
+
+def validate_email_domain(email_address):
+	domain = email_address.split('@')[1]
+	try:
+		# Check MX records for the domain
+		mx_records = dns.resolver.resolve(domain, 'MX')
+		return True
+	except dns.resolver.NoAnswer:
+		return False
+	except dns.resolver.NXDOMAIN:
+		return False
+	except dns.exception.DNSException:
+		return False
+
+def emailCorrespondsToUser(user_profile, email):
+
+	if user_profile.email == email:
+		return True
+
+	print("the email doesn't correspond to the user")
+	return False
+
 @api_view(['POST'])
 def login2FA(request):
 	permission_classes = [AllowAny]
+	print("enter login2FA")
 	email = request.data.get('email')
+
+	if not validate_email_domain(email):
+		return Response({'detail': 'Domain of email not invalid'}, status=status.HTTP_404_NOT_FOUND)
+
 	username = request.data.get('username')
 	password = request.data.get('password')
 	user = authenticate(request, username=username, password=password)
+
 
 	if user is not None:
 		verification_code = generate_random_digits()
 		# User credentials are valid, proceed with code generation and email sending
 		user_profile = User.objects.get(id=user.id)
+
+		if not emailCorrespondsToUser(user_profile, email):
+			return Response({'detail': 'Invalid email address.'}, status=status.HTTP_400_BAD_REQUEST )
+
 		# Generate a 6-digit code and set the expiry time to 1 hour from now
 		user_profile.otp = verification_code
-		# user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
-		# print("expiring time entered: ", user_profile.otp_expiry_time)
+		user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
+		print("expiring time entered: ", user_profile.otp_expiry_time)
 		user_profile.save()
 		# Send the code via email (use Django's send_mail function)
-		send_mail(
-			'Verification Code',
-			f'Your verification code is: {user_profile.otp}',
-			'marierab@gmail.com',
-			[email],
-			fail_silently=False,
-		)
-		print("mail sent to: ", email)
+
+		result = sendEmailWithCode(user_profile, email)
+		if "error" in result:
+			return Response({"error": result["error"]}, status=status.HTTP_400_BAD_REQUEST)
 
 		return Response({'detail': 'Verification code sent successfully.'}, status=status.HTTP_200_OK)
-	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST )
+
+
+@api_view(['POST'])
 def verify(request):
 	email = request.data.get('email')
+	username = request.data.get('username')
 	password = request.data.get('password')
-	otp = request.data.get('otp')
-
-	user = authenticate(request, email=email, password=password)
+	otp = request.data.get('verificationcode')
+	user = authenticate(request, username=username, password=password)
 
 	if user is not None:
-		user_profile = User.objects.get(user=user)
+		user_profile = User.objects.get(id=user.id)
 
 		# Check if the verification code is valid and not expired
 		if (
-			user_profile.verification_code == otp and
+			user_profile.otp == otp and
 			user_profile.otp_expiry_time is not None and
 			user_profile.otp_expiry_time > timezone.now()
 		):
+			print("ok")
 			# Verification successful, generate access and refresh tokens
 			django_login(request, user)
 			# Implement your token generation logic here

@@ -1,5 +1,10 @@
 import * as friends_utils from "./utils_friends.js"
 
+
+	// Create a new li element
+
+
+
 export async function print(user)
 {
 	
@@ -14,6 +19,7 @@ export async function print(user)
 
 
 	
+		
 
 	let profile_card_url = '/template/profile_card'
 	await fetch(profile_card_url).then(function (response) {

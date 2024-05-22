@@ -82,8 +82,8 @@ class UserSerializer(serializers.ModelSerializer):
 				'validators': [UniqueValidator(queryset=User.objects.all())]
 			},
 			'otp': {'required': False},
-			# 'otp_expiry_time': {'required': False},
-			'id': {'read_only': True},  # Définir le champ 'id' en lecture seule
+			'otp_expiry_time': {'required': False},
+            'id': {'read_only': True},  # Définir le champ 'id' en lecture seule
 		}
 
 	def create(self, validated_data):

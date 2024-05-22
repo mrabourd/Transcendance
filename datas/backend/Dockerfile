@@ -22,6 +22,8 @@ RUN openssl \
 	-keyout /etc/ssl/sethomas.42.fr.key \
 	-subj "/C=FR/ST=Paris/L=Paris/O=42 School/OU=sethomas/CN=sethomas.42.fr"
 
+# RUN apt-get install -y cron
+
 # install dependencies
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
