@@ -2,6 +2,19 @@ import AbstractView from "./AbstractView.js";
 
 import { send_message } from "../utils_chat.js";
 
+function	createChatMessage(data, user_id) {
+	let side = 'left';
+	const messageElement = document.createElement('div');
+	messageElement.innerText = data.message;
+	if (data.user_id === user_id) {
+		side = 'right';
+	}
+	messageElement.classList.add(`chat-message-${side}`);
+	document.querySelector(`#chat-text-${side}`).append(messageElement);
+	
+
+}
+
 export default class extends AbstractView {
     constructor(params) {
         super(params);
@@ -23,6 +36,9 @@ export default class extends AbstractView {
     }
 
 	async addEvents() {
+
+		
+
 		let friend_id = this.params.user_id;
     //console.log('datas',user.datas)
 		console.log("send_message", this.user.datas.id)
@@ -44,8 +60,9 @@ export default class extends AbstractView {
 		// on socket close
 		chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-			const chatText = document.querySelector('#chat-text-left').innerHTML;
-			document.querySelector('#chat-text-left').innerHTML = chatText + '<br>' + data.user + ' : ' + data.message;
+			createChatMessage(data, user.datas.id);
+			//const chatText = document.querySelector('#chat-text-left').innerHTML;
+			//document.querySelector('#chat-text-left').innerHTML = chatText + data.created_at + '<br>' + data.username + ' : ' + data.message;
 
         };
 

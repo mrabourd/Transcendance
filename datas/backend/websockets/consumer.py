@@ -5,6 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from users.serializers import UserSerializer
+from channels.db import database_sync_to_async
 
 #from channels.auth import channel_session_user_from_http, channel_session_user
 
@@ -16,6 +17,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 	
 	async def connect(self):
 		self.user = self.scope["user"]
+		if self.user.is_anonymous:
+			await self.close()
 		self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
 		self.room_group_name = f"chat_{self.room_name}"
 
@@ -47,18 +50,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 	# Receive message from room group
+	@database_sync_to_async
+	def save_message(self, message):
+		Message.objects.create(message=message, user=self.user)
+		return Message.objects.last()
+
 	async def chat_message(self, event):
 		message = event["message"]
 		user = event["user"]
-		#newMsg = Message.objects.create_message(message=message, user=user)
+		save_message = await self.save_message(message)
 		
 		# Send message to WebSocket
-		await self.send(text_data=json.dumps({"message": message, "user": user.username}))
+		await self.send(text_data=json.dumps({"message": message, "username": user.username, "user_id" : str(user.id), "avatar" : user.avatar, "created_at": save_message.created_at.strftime("%Y-%m-%d %H:%M:%S")}))
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.user = self.scope["user"]
+		if self.user.is_anonymous:
+			await self.close()
+		#self.group_name = str(self.scope["user"].pk)  # Setting the group name as the pk of the user primary key as it is unique to each user. The group name is used to communicate with the user.
+		#async_to_sync(self.channel_layer.group_add)(self.group_name, self.channel_name)
 		self.group_name = 'public_room'
 		await self.channel_layer.group_add(
 			self.group_name,

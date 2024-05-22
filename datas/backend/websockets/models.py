@@ -12,3 +12,4 @@ class Message(models.Model):
 class Notification(models.Model):
     message = models.CharField(max_length=100)
     
+    
