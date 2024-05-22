@@ -3,7 +3,7 @@ import {USER_STATUS} from "./constants.js";
 
 export function is_invited(user,friend_id )
 {
-    if (user.datas.invitation_received_by == friend_id) {
+    if (user.datas.invitation_sent === friend_id) {
         return true
     }
     return false
@@ -47,7 +47,7 @@ export async function block(user, friend_id, action)
 
 export async function invite(user, friend_id, action)
 {
-    let response = await user.request.get(`/api/match/invite/${action}/${friend_id}/`)
+    let response = await user.request.post(`/api/match/invite/${action}/${friend_id}/`)
     if (response.status == 200)
     {
         await user.RefreshLocalDatas();

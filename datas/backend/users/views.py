@@ -49,7 +49,7 @@ class UsersAPIView(APIView):
 
 	def get(self, request, req_type):
 		if req_type == 'online':
-			users = User.objects.filter(status=1)
+			users = User.objects.exclude(status=0)
 		elif req_type == 'all':
 			users = User.objects.all()
 		elif req_type == 'followed':
@@ -116,7 +116,7 @@ class CustomLogoutView(APIView):
             # Assurez-vous que l'utilisateur existe et est authentifié
             if request.user and request.user.is_authenticated:
                 request.user.SetStatus(User.USER_STATUS['OFFLINE'])
-                #request.user.invitation_sender = None
+                #request.user.invitation_sent = None
                 request.user.save()
                 logout(request)
                 token = RefreshToken(request.data.get('refresh'))
