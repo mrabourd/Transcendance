@@ -11,5 +11,5 @@ class Message(models.Model):
 # 1. 👇 Add the following line
 class Notification(models.Model):
     message = models.CharField(max_length=100)
-    #sender = models.ForeignKey(to=User, on_delete=models.CASCADE, null=True, blank=True)
-    #type = models.CharField(max_length=100)
+    
+    
