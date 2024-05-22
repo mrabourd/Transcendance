@@ -370,27 +370,19 @@ def intraCallback(request):
 def generate_random_digits(n=6):
     return ''.join(random.choices(string.digits, k=n))
 
-def sendEmaiWithCode(user_profile, email):
+def sendEmailWithCode(user_profile, email):
 
-	try:
-		send_mail(
-			'Verification Code',
-			f'Your verification code is: {user_profile.otp}',
-			'transcendancespies@gmail.com',
-			[email],
-			fail_silently=False,
-		)
-		print("mail sent to: ", email)
-	except smtplib.SMTPRecipientsRefused as e:
-		# Gestion de l'erreur 550 ou autres erreurs de destinataire
-		if e.recipients[email_address][0] == 550:
-			return {"error": "Adresse email invalide"}
-		else:
-			return {"error": "Erreur lors de l'envoi de l'email"}
-	except SMTPException as e:
-		return {"error": "Erreur SMTP: " + str(e)}
-	except Exception as e:
-		return {"error": "Erreur inconnue: " + str(e)}
+	send_mail(
+		'Verification Code',
+		f'Your verification code is: {user_profile.otp}',
+		'transcendancespies@gmail.com',
+		[email],
+		fail_silently=False,
+	)
+	print("mail sent to: ", email)
+	return {"success"}
+
+
 
 def validate_email_domain(email_address):
 	domain = email_address.split('@')[1]
@@ -405,6 +397,14 @@ def validate_email_domain(email_address):
 	except dns.exception.DNSException:
 		return False
 
+def emailCorrespondsToUser(user_profile, email):
+
+	if user_profile.email == email:
+		return True
+
+	print("the email doesn't correspond to the user")
+	return False
+
 @api_view(['POST'])
 def login2FA(request):
 	permission_classes = [AllowAny]
@@ -418,10 +418,15 @@ def login2FA(request):
 	password = request.data.get('password')
 	user = authenticate(request, username=username, password=password)
 
+
 	if user is not None:
 		verification_code = generate_random_digits()
 		# User credentials are valid, proceed with code generation and email sending
 		user_profile = User.objects.get(id=user.id)
+
+		if not emailCorrespondsToUser(user_profile, email):
+			return Response({'detail': 'Invalid email address.'}, status=status.HTTP_400_BAD_REQUEST )
+
 		# Generate a 6-digit code and set the expiry time to 1 hour from now
 		user_profile.otp = verification_code
 		user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
@@ -429,17 +434,14 @@ def login2FA(request):
 		user_profile.save()
 		# Send the code via email (use Django's send_mail function)
 
-		result = sendEmaiWithCode(user_profile, email)
+		result = sendEmailWithCode(user_profile, email)
 		if "error" in result:
-			return Response({"error": result["error"]}, status=400)
+			return Response({"error": result["error"]}, status=status.HTTP_400_BAD_REQUEST)
 
 		return Response({'detail': 'Verification code sent successfully.'}, status=status.HTTP_200_OK)
 
-	else:
-		return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST )
+	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST )
 
-
-	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
 def verify(request):

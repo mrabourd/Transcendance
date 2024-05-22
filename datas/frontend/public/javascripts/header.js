@@ -6,7 +6,7 @@ export function print(user)
 	routes = [
 		{ path: "/home", libelle: "home" },
 		{ path: "/profile", libelle: "profile" },
-		{ path: "/about", libelle: "about" },
+		{ path: "/tournament", libelle: "tournament" },
 		{ path: "/contact", libelle: "contact"  },
 		{ path: "/chatroom", libelle: "chatroom" },
 		{ path: "/play", libelle: "play",

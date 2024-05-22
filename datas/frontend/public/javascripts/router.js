@@ -2,7 +2,7 @@ import login from "./views/login.js";
 import login42 from "./views/login42.js";
 import login2FA from "./views/login2FA.js";
 import home from "./views/home.js";
-import about from "./views/about.js";
+import tournament from "./views/tournament.js";
 import contact from "./views/contact.js";
 import play from "./views/play.js";
 import profile from "./views/profile.js";
@@ -38,7 +38,7 @@ export const router = async (user) => {
         { id:3, path: "/home", view: home },
         { id:4, path: "/profile", view: profile },
         { id:5, path: "/profile/:user_id", view: profile },
-        { id:6, path: "/about", view: about },
+        { id:6, path: "/tournament", view: tournament },
         { id:7, path: "/contact", view: contact },
         { id:8, path: "/chatroom", view: chatroom },
 		{ id:8, path: "/chatroom/:user_id", view: mpchat},

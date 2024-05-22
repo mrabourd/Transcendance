@@ -3,11 +3,11 @@ import AbstractView from "./AbstractView.js";
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("About");
+        this.setTitle("Tournament");
     }
 
     async getHtml(DOM) {
-        await fetch('/template/about').then(function (response) {
+        await fetch('/template/tournament').then(function (response) {
             // The API call was successful!
             return response.text();
         }).then(function (html) {
@@ -16,15 +16,25 @@ export default class extends AbstractView {
             let doc = parser.parseFromString(html, 'text/html');
             let body = doc.querySelector('#app');
             DOM.innerHTML = body.innerHTML;
-
-
+            
+            
         }).catch(function (err) {
             // There was an error
             console.warn('Something went wrong.', err);
         });
+        document.getElementById("createTournament").classList.add("d-none");
     }
 
     addEvents () {
-        //console.log("Add Events")
+        console.log("Add Event Tournament")
+        document.getElementById('tournament').addEventListener('click', async (event) =>  {
+            event.preventDefault();
+            this.createTournament();
+        })
+    }
+
+    createTournament = async () => { 
+        console.log("now you can create tournament")
+        document.getElementById("createTournament").classList.remove("d-none")
     }
 }
