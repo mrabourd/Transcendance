@@ -6,7 +6,8 @@ function	createChatMessage(data, user_id) {
 	let side = 'left';
 	const messageElement = document.createElement('div');
 	messageElement.innerText = data.message;
-	if (data.user_id === user_id) {
+	if (data.user_id == user_id) {
+		
 		side = 'right';
 	}
 	messageElement.classList.add(`chat-message-${side}`);
