@@ -12,13 +12,6 @@ export async function print(user)
 	else
 		document.querySelector('aside').classList.remove('d-none')
 
-	let profile_card_url = '/template/profile_card'
-	await fetch(profile_card_url).then(function (response) {
-		return response.text();
-	}).then( async (html) => {
-		let parser = new DOMParser();
-		let doc = parser.parseFromString(html, 'text/html');
-		let DOMProfileCard = doc.querySelector('.profile_card');
 
 		let nodeCopy;
 		let response;
@@ -37,7 +30,7 @@ export async function print(user)
 				test = detination_followed.querySelector(`.profile_card[data-friend-id="${friend.id}"]`);
 				if (test)
 					return;
-				nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, user, friend)
+				nodeCopy = await friends_utils.create_thumbnail(user.view.DOMProfileCard, user, friend)
 				detination_followed.append(nodeCopy);
 			});
 		})
@@ -56,12 +49,12 @@ export async function print(user)
 					test = detination_online.querySelector(`.profile_card[data-friend-id="${friend.id}"]`);
 					if (test)
 						return;
-					nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, user, friend)
+					nodeCopy = await friends_utils.create_thumbnail(user.view.DOMProfileCard, user, friend)
 					detination_online.append(nodeCopy);
 				})
 			}
 		}
-
+		/*
 		let detination_all = document.querySelector('aside .all ul.userList')
 		if (!detination_all.hasChildNodes())
 		{
@@ -75,10 +68,10 @@ export async function print(user)
 					test = detination_all.querySelector(`.profile_card[data-friend-id="${friend.id}"]`);
 					if (test)
 						return;
-					nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, user, friend)
+					nodeCopy = await friends_utils.create_thumbnail(user.view.DOMProfileCard, user, friend)
 					detination_all.append(nodeCopy);
 				})
 			}
 		}
-	});
+		*/
 }

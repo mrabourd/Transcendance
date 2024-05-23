@@ -3,7 +3,8 @@ import {USER_STATUS} from "./constants.js";
 
 export function is_invited(user,friend_id )
 {
-    if (user.datas.invitation_sent === friend_id) {
+    console.log('is_invited', user.datas.invitation_sent, friend_id )
+    if (user.datas.invitation_sent && user.datas.invitation_sent === friend_id) {
         return true
     }
     return false
@@ -105,9 +106,7 @@ export async function update_invite_text(user, profile_card, friend_id) {
 
     if (!dom)
         return ;
-    if ( (parseInt(friend_status) != USER_STATUS['ONLINE']) || 
-        (parseInt(user.datas.status) != USER_STATUS['ONLINE'] 
-        && !check))
+    if ( (parseInt(friend_status) != USER_STATUS['ONLINE']) && !check)
     {
         dom.classList.add('d-none')
         return ;

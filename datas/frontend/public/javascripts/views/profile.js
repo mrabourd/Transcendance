@@ -113,9 +113,6 @@ export default class extends AbstractView {
 		await fetch(profile_card_url).then(function (response) {
 			return response.text();
 		}).then( async (html) => {
-			let parser = new DOMParser();
-			let doc = parser.parseFromString(html, 'text/html');
-			let DOMProfileCard = doc.querySelector('.profile_card');
 			let dest_container = document.querySelector('main .followed ul')
 	
 			let nodeCopy;
@@ -136,7 +133,7 @@ export default class extends AbstractView {
 					let test = dest_container.querySelector(`.profile_card[data-friend-id="${friend.id}"]`);
 					if (test)
 						return;
-					nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, this.user, friend)
+					nodeCopy = await friends_utils.create_thumbnail(this.DOMProfileCard, this.user, friend)
 					dest_container.appendChild(nodeCopy);
 				}
 			})

@@ -33,7 +33,6 @@ class Invite(APIView):
         user_invited = get_object_or_404(User, id=id)  # L'utilisateur cible de l'action
 
         if req_type == 'send':
-            
             # Vérifier si l'utilisateur a déjà envoyé une invitation
             if hasattr(user, 'sent_invitation'):
                 return HttpResponse("You have already sent an invitation.", status=400)
@@ -67,8 +66,12 @@ class Invite(APIView):
 
         elif req_type == 'accept':
             # Vérifier si l'utilisateur cible a reçu une invitation
-            invitation = get_object_or_404(Invitation, id=id, receiver=user)
+            invitation_sender = user_invited
+            print(f'invitation_sender ${invitation_sender} invitation_receiver = ${user}')
+            invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
             user.SetStatus(User.USER_STATUS['PLAYING'])
-            return HttpResponse("accept invitation!")
+            match_id = 'XXX' 
+            response_data = {'message': 'accept invitation!', 'match_id': match_id}
+            return JsonResponse(response_data)
 
         return HttpResponse("Invalid request type.", status=400)
