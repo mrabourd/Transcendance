@@ -6,12 +6,23 @@ from .models import Notification
 
 @receiver(post_save, sender=Notification)
 def notification_created(sender, instance, created, **kwargs):
-    if created:
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            'public_room',
-            {
-                "type": "send_notification",
-                "message": instance.message
-            }
-        )
+	if created and instance.type == 'public':
+		channel_layer = get_channel_layer()
+		async_to_sync(channel_layer.group_send)(
+			'public_room',
+			{
+				"type": "send_notification",
+				"message": instance.message
+			}
+		)
+	elif created and instance.type == 'private':
+		channel_layer = get_channel_layer()
+		async_to_sync(channel_layer.group_send)(
+			f"{instance.receiver.id}",
+			{
+				"type": "send_notification",
+				"message": instance.message,
+				"link": instance.link,
+				"sender": instance.sender.username
+			}
+		)
