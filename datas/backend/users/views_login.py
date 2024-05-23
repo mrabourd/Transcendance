@@ -42,61 +42,12 @@ class GetCSRFTokenView(View):
 		csrf_token = get_token(request)
 		return JsonResponse({'csrf_token': csrf_token})
 
-
-class UsersAPIView(APIView):
-	permission_classes = [IsAuthenticated]
-	serializer_class = UserSerializer
-
-	def get(self, request, req_type):
-		if req_type == 'online':
-			users = User.objects.exclude(status=0)
-		elif req_type == 'all':
-			users = User.objects.all()
-		elif req_type == 'followed':
-			users =  request.user.follows.all()
-		#print(users)
-		if not users:  # Vérifie si la base de données d'utilisateurs est vide
-			#print('not user')
-			return Response({"error": "Aucun utilisateur trouvé."}, status=204)
-
-		serializer = self.serializer_class(users, many=True)
-		#print(serializer)
-		return Response(serializer.data, status=200)  # Renvoie une réponse avec le code d'état 200 (OK)
-
-
 class CustomTokenRefreshView(TokenRefreshView):
 	permission_classes = [AllowAny]
 	serializer_class = CustomTokenObtainPairSerializer
 	def get (self, request):
 		return Response('ok')
-	
-class UserDetail(APIView):
 
-	def get_user(self, id):
-		try:
-			return User.objects.get(id=id)
-		except User.DoesNotExist:
-			raise Http404
-
-	def get(self, request, id, format=None):
-		user = self.get_user(id)
-		serializer = UserSerializer(user)
-
-		return Response(serializer.data)
-
-	# permission_classes = [IsAuthenticated]
-
-	def put(self, request, id, format=None):
-		user = self.get_user(id)
-		if user.id != request.user.id:
-			return Response(status=status.HTTP_401_UNAUTHORIZED)
-		user_serializer = UserSerializer(user)
-		serializer = UpdateUserSerializer(user, data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			#serializer.update(user, request.data)
-			return Response(user_serializer.data)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(csrf_protect, name='dispatch')
 class MaVueProtegee(View):
@@ -187,62 +138,6 @@ class UserRegistrationAPIView(APIView):
 		# Let's update the response code to 201 to follow the standards
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-class FollowUser(APIView):
-	permission_classes = [IsAuthenticated]
-	
-	def current_profile(self):
-		try:
-			return self.request.data.get('me')
-		except User.DoesNotExist:
-			raise Http404
-			
-	def other_profile(self, pk):
-		try:
-			return User.objects.get(id = pk)
-		except User.DoesNotExist:
-			raise Http404
-
-	def get(self, request, req_type, id, format=None):    
-		pk = id         # Here pk is opposite user's profile ID
-		# followType = request.data.get('usertype')
-		
-		current_profile = request.user
-		other_profile = self.other_profile(pk)
-		
-		if req_type == 'follow':
-			# if other_profile.blocked_user.filter(pk = current_profile.id).exists():
-			# 	return Response({"Following Fail" : "You can not follow this profile becuase your ID blocked by this user!!"},status=status.HTTP_400_BAD_REQUEST)
-			current_profile.follows.add(other_profile)
-			return Response(status=status.HTTP_200_OK) 
-		
-		elif req_type == 'unfollow':
-			current_profile.follows.remove(other_profile)
-			return Response(status=status.HTTP_200_OK)
-
-			
-		elif req_type == 'block':
-			current_profile.blocks.add(other_profile)
-			return Response(status=status.HTTP_200_OK)
-			
-		elif req_type == 'unblock':
-			current_profile.blocks.remove(other_profile)
-			# other_profile.followers.remove(current_profile)
-			return Response(status=status.HTTP_200_OK)
-			
-		# elif req_type == 'accept':
-		# 	current_profile.followers.add(other_profile)
-		# 	other_profile.following.add(current_profile)
-		# 	current_profile.panding_request.remove(other_profile)
-		# 	return Response({"Accepted" : "Follow request successfuly accespted!!"},status=status.HTTP_200_OK)
-		
-		# elif req_type == 'decline':
-		# 	current_profile.panding_request.remove(other_profile)
-		# 	return Response({"Decline" : "Follow request successfully declined!!"},status=status.HTTP_200_OK)
-		
-		# elif req_type == 'remove':     # You can remove your follower
-		# 	current_profile.followers.remove(other_profile)
-		# 	other_profile.following.remove(current_profile)
-		# 	return Response({"Remove Success" : "Successfuly removed your follower!!"},status=status.HTTP_200_OK)
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
@@ -251,11 +146,6 @@ def get_tokens_for_user(user):
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
-
-# def update_user(request, user_id):
-# 	try:
-# 		user = User.objects.get(id=user_id)
-# 		user.username = 
 
 def check_user_existence(user_id):
     # Utilisez la méthode exists() pour vérifier si un utilisateur avec cet ID existe
@@ -310,14 +200,7 @@ def intraCallback(request):
 		user.email=user_response_json['email'],
 		user.avatar=avatar_url,
 
-	# user = User.objects.create_user(
-	# 	id=user_response_json['id'],
-	# 	username=user_response_json['login'],
-	# 	first_name=user_response_json['first_name'],
-	# 	last_name=user_response_json['last_name'],
-	# 	email=user_response_json['email'],
-	# 	avatar=avatar_url,
-	# )
+
 
 	else:
 		user = User.objects.create_user(
@@ -354,18 +237,6 @@ def intraCallback(request):
 	return response
 
 	# return HttpResponse("User %s %s" % (user, "created now" if created else "found"))
-
-
-# class ProfilePatchView(APIView):
-#     permission_classes = [IsAuthenticated]
-#     serializer = UserSerializer
-#     def patch(self, request):
-#         users = User.objects.all()
-# 		serializer = self.serializer(users, many=True)
-# 		return Response(serializer.data)
-
-# def generate_random_digits(n=6):
-#     return "".join(map(str, random.sample(range(0, 10), n)))
 
 def generate_random_digits(n=6):
     return ''.join(random.choices(string.digits, k=n))
@@ -477,13 +348,3 @@ def verify(request):
 			return Response({'access_token': access_token, 'refresh_token': str(refresh)}, status=status.HTTP_200_OK)
 	return Response({'detail': 'Invalid verification code or credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
-
-@method_decorator(csrf_protect, name='dispatch')
-class ChatMessageHistory(APIView):
-    # Cette méthode gère les requêtes POST
-    def get(self, request, friend_id):
-        # Traitement de la requête POST ici
-        print(f'get history between {friend_id} & {request.user}')
-        return HttpResponse("Message Histoy soon !")
-	
