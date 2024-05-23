@@ -51,11 +51,11 @@ export default class extends AbstractView {
 				this.user.isConnected = true;
 
 				const resp_csrf = await this.user.request.post('/api/users/ma_vue_protegee/');
-				// if(resp_csrf.status == 403)
-				// {
-				// 	console.warn("CSRF attack")
-				// 	return true;
-				// }
+				if(resp_csrf.status == 403)
+				{
+					console.warn("CSRF attack")
+					return true;
+				}
 				this.user.router.navigateTo('/profile/', this.user);
 			}
 			
