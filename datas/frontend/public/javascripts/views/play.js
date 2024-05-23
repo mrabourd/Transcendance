@@ -26,62 +26,47 @@ export default class extends AbstractView {
         });
     }
 
-    addEvents () {
-        let canvas = document.getElementById('canvas');
-        let player_score = document.getElementById('player-score')
-        let computer_score = document.getElementById('computer-score')
-        
-        if (this.params.adversaire === "vs_computer"){
-            this._game = new pongComputer(canvas, player_score, computer_score);
-            // document.querySelector('#start-game').addEventListener('click',  this._game.computerMove);
-        }
-        else if (this.params.adversaire === "vs_player")
-        {
-            this._game = new pongPlayer(canvas, player_score, computer_score);
-            // console.log("pong current key down: ", this._game.currentKeysDown);
-            // document.addEventListener('keydown', this._game.secondPlayerMove);
-        }
-        else
-        {
-            console.log("vs user id: creer avec websocket")
-        }
-        
-        document.querySelector('#start-game').addEventListener('click',  this._game.start);
-        document.querySelector('#stop-game').addEventListener('click',  this._game.stop);
-        
-
-        document.addEventListener("keydown", (event) => {
-            if (!this._game.currentKeysDown.includes(event.key)) {
-                this._game.currentKeysDown.push(event.key);
-            }
-            this._game.movePaddles()
-          })
-          
-          document.addEventListener("keyup", (event) => {
-            this._game.currentKeysDown.splice(this._game.currentKeysDown.indexOf(event.key), 1)
-          
-            this._game.movePaddles()
-          })
-		// document.addEventListener('keydown', this._game.playerMoveKeyDown);
-        // if (this.params.adversaire === "vs_player"){
-        //     document.addEventListener('keyup', this._game.playerMoveKeyUp);
-        // }
-
-        // document.addEventListener('keydown', () => {
-		// 	if (controller[KeyboardEvent.code]) {
-		// 		controller[KeyboardEvent.code].pressed = true
-		// 	}
-		// });
-        
-		// document.addEventListener('keyup', () => {
-		// 	if (controller[KeyboardEvent.code]) {
-		// 		controller[KeyboardEvent.code].pressed = true
-		// 	}
-		// });
+	addEvents () {
+		let canvas = document.getElementById('canvas');
+		let player_score = document.getElementById('player-score');
+		let computer_score = document.getElementById('computer-score');
 		
-		// if (this.params.id === "vs_computer")
+		if (this.params.adversaire === "vs_computer"){
+			this._game = new pongComputer(canvas, player_score, computer_score);
+			// document.querySelector('#start-game').addEventListener('click',  this._game.computerMove);
+		}
+		else if (this.params.adversaire === "vs_player")
+		{
+			this._game = new pongPlayer(canvas, player_score, computer_score);
+			// console.log("pong current key down: ", this._game.currentKeysDown);
+			// document.addEventListener('keydown', this._game.secondPlayerMove);
+		}
+		else
+		{
+			console.log("vs user id: creer avec websocket")
+		}
+		
 
-		// https://stackoverflow.com/questions/57740422/i-cant-move-two-paddles-at-the-same-time-in-pong-game-i-am-making
+		document.querySelector('#start-game').addEventListener('click',  this._game.start);
+		document.querySelector('#stop-game').addEventListener('click',  this._game.stop);
+
+		// console.log("document.querySelector('#player-score').innerHTML: ", document.querySelector('#player-score').innerHTML)
+		// if (document.querySelector('#player-score').textContent == 3)
+		// 	this._game.displayWinner("player 1");
+
+		document.addEventListener("keydown", (event) => {
+			if (!this._game.currentKeysDown.includes(event.key)) {
+				this._game.currentKeysDown.push(event.key);
+			}
+			this._game.movePaddles();
+		})
+			
+		document.addEventListener("keyup", (event) => {
+			this._game.currentKeysDown.splice(this._game.currentKeysDown.indexOf(event.key), 1)
+			
+			this._game.movePaddles();
+		})
+
     }
 
 }

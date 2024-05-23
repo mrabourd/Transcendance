@@ -22,7 +22,7 @@ export default class extends AbstractPong {
 			}
 		}, false);
 		// PlayerOne&LeftSide
-		if (this.currentKeysDown.includes("s") /*azerty & qwerty*/ ) {
+		if (this.currentKeysDown.includes("s")) {
 			this.rightPaddleMoveUp();
 		} else if (
 			this.currentKeysDown.includes("w") 
@@ -31,9 +31,9 @@ export default class extends AbstractPong {
 		}
 		
 		// PlayerTwo&RightSide
-		if (this.currentKeysDown.includes('ArrowUp') /*UpperArrow*/ ) {
+		if (this.currentKeysDown.includes('ArrowUp')) {
 			this.leftPaddleMoveUp();
-		} else if (this.currentKeysDown.includes('ArrowDown') /*LowerArrow*/ ) {
+		} else if (this.currentKeysDown.includes('ArrowDown')) {
 			this.leftPaddleMoveDown();
 		}
 	}

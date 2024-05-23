@@ -39,6 +39,15 @@ export default class AbstractPong {
 		this.draw()
 		this.stop()
 	}
+	
+	// displayWinner = (winner) => {
+	// 	if (winner.textContent == 3){
+	// 		document.querySelector("#winner").classList.remove("d-none");
+	// 		document.querySelector("#winner").innerHTML = `The winner is: ${winner}!`
+	// 		this.stop();
+	// 	}
+		
+	// }
 
 	// paddleUpPlayer = () => {
 	// 	if(this.y < PLAYER_HEIGHT / 2){
@@ -123,10 +132,12 @@ export default class AbstractPong {
 			if (player == this._game.player) {
 				this._game.computer.score++;
 				this._computer_score.textContent = this._game.computer.score;
+				
 			}
 			else {
 				this._game.player.score++;
 				this._player_score.textContent = this._game.player.score;
+				
 			}
 		}
 		else {
@@ -153,9 +164,11 @@ export default class AbstractPong {
 	
 		if (this._game.ball.x > this._canvas.width - PLAYER_WIDTH) {
 			this.collide(this._game.computer);
+			
 		}
 		else if (this._game.ball.x < PLAYER_WIDTH) {
 			this.collide(this._game.player);
+			
 		}
 	
 		this._game.ball.x += this._game.ball.speed.x;
