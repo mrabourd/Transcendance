@@ -7,7 +7,7 @@ export default class {
         this.DOMProfileCard = null
     }
 
-    setTitle(title) {
+    async setTitle(title) {
         document.title = title;
     }
 
@@ -30,7 +30,7 @@ export default class {
     }
 
     async getTemplates() {
-
+        await this.user.RefreshLocalDatas()
         let profile_card_url = '/template/profile_card'
         let response = await fetch(profile_card_url);
         let html = await response.text();

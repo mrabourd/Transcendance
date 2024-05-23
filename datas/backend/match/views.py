@@ -41,7 +41,7 @@ class Invite(APIView):
                 user.invitation_sent = invitation
                 user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
                 user.save()
-                Notification.objects.create(type="private", message="coucou", sender=user, receiver=user_invited, link="link to the match")
+                #Notification.objects.create(type="private", message="coucou", sender=user, receiver=user_invited, link="link to the match")
                 
                 return HttpResponse("Invitation sent!")
             except IntegrityError:
@@ -59,24 +59,56 @@ class Invite(APIView):
 
         elif req_type == 'deny':
             # Vérifier si l'utilisateur cible a reçu une invitation
-            invitation = get_object_or_404(Invitation, id=id, receiver=user)
+            invitation_sender = user_invited
+            invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
             invitation.delete()
             user.SetStatus(User.USER_STATUS['ONLINE'])
+            invitation_sender.SetStatus(User.USER_STATUS['ONLINE'])
+            # Envoyer une notification / invitation refusee
+            ##### TO DO
+            notif_message = f'{user.username} has rejected {invitation_sender.username} invitation'
+            Notification.objects.create(
+                type="private",
+                message=notif_message,
+                sender=user,
+                receiver=invitation_sender,
+                link=None
+            )
             return HttpResponse("deny invitation!")
 
         elif req_type == 'accept':
             # Vérifier si l'utilisateur cible a reçu une invitation
             invitation_sender = user_invited
             print(f'invitation_sender ${invitation_sender} invitation_receiver = ${user}')
-            # verifier le status du demandeur (si = online >> "404 - la demamde a ete annulee")
+            
+            # Vérifier le statut du demandeur (s'il est en ligne, annuler la demande)
+            # S'il est en ligne, cela signifie que l'invitation a été annulée
+            if invitation_sender.status == User.USER_STATUS['ONLINE']:
+                return JsonResponse({'message': 'La demande a été annulée'}, status=404)
+    
+            invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
             # Creer une entree dans la table match (status = in_progress)
             # creer deux entree dans la table match_points (match_id, user_id)
-            # modifier le status des users (playing) 
-            # Enregistrer dans la table chat_msg le texte d'acceptation -- notif
-            # Envoyer le dernier msg en WS (CHAT U_ID : "User a accepte votre invitationle match va commencer dans xxx)
-            invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
-            user.SetStatus(User.USER_STATUS['PLAYING'])
+            # recuperer l'id du match pour le renvoyer
+            ##### TO DO
             match_id = 'XXX' 
+
+            user.SetStatus(User.USER_STATUS['PLAYING'])
+            invitation_sender.SetStatus(User.USER_STATUS['PLAYING'])
+
+            # Envoyer une notification / invitation acceptee + match_id + lien
+            notif_message = f'{user.username} has accepted {invitation_sender.username} invitation'
+            Notification.objects.create(
+                type="private",
+                message=notif_message,
+                sender=user,
+                receiver=invitation_sender,
+                link=f"/play/online/{match_id}"
+            )
+
+            # supprimer l'invitation 
+            invitation.delete()
+
             response_data = {'message': 'accept invitation!', 'match_id': match_id}
             return JsonResponse(response_data)
 

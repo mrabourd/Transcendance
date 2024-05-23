@@ -102,7 +102,8 @@ export default class User {
 
     RefreshLocalDatas = async () =>
     {
-
+        if (!this.datas)
+            return ;
         let response = await this.request.get('/api/users/profile/'+this.datas.id+'/')
         if (response.ok)
         {

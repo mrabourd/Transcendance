@@ -34,6 +34,7 @@ export default class Websockets {
 			return;
 		}
 		
+		console.log('WebSocket message:', data);
 		console.log('WebSocket message:', data.message);
 		const message = data.message;
 		// Call the setMessage function to add the new li element

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status, authentication
 # We import our serializer here
-from .serializers import UserSerializer, CustomTokenObtainPairSerializer, UpdateUserSerializer, UserSerializer42
+from .serializers import UserSerializer, CustomTokenObtainPairSerializer, UpdateUserSerializer
 from django.contrib.auth import get_user_model, authenticate, logout, login as django_login
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken, OutstandingToken
@@ -86,11 +86,11 @@ class CustomObtainTokenPairView(TokenObtainPairView):
 
         # Authentification de l'utilisateur
         user = self.authenticate_user(username, password)
-        if user and user.is_authenticated:
-            print('############ user is_authenticated ')
-        # Si l'utilisateur est authentifié
         if user is not None and user.is_authenticated:
+            print('request', request, *args, **kwargs)
+
             response = super().post(request, *args, **kwargs)
+            print('super() response', response)
             if response.status_code == 200:
                 # Mettre à jour le statut de l'utilisateur
                 user.SetStatus(User.USER_STATUS['ONLINE'])

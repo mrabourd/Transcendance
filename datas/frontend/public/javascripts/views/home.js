@@ -23,19 +23,20 @@ export default class extends AbstractView {
     }
 
     async fillHtml(DOM) {
-
         let nodeCopy;
         let test
         let response 
+
         const received_invitations = this.user.datas.received_invitations
-        if (!received_invitations)
-            return ;
+        if (received_invitations.length === 0)
+        
+            document.querySelector(`#app .invitations_received`).classList.add('d-none')
+        else
+        {
         received_invitations.forEach(async friend_id => {
             test = document.querySelector(`.profile_card[data-friend-id="${friend_id.sender}"]`);
             if (test)
-            {
                 nodeCopy = test.cloneNode(true)
-            }
             else
             {
                 response = await this.user.request.get('/api/users/profile/'+friend_id.sender+'/')
@@ -72,13 +73,38 @@ export default class extends AbstractView {
                     document.querySelector(`#app .invitations_received .profile_card[data-friend-id="${friend_id.sender}"]`).remove()
                 }
             });
-            
             document.querySelector(`#app .invitations_received ul`).append(nodeCopy);
-           
         })
+        }
+        const invitation_sent = this.user.datas.invitation_sent
+        console.log('invitation_sent',  this.user.datas)
+        if (invitation_sent == null)
+            document.querySelector(`#app .invitation_sent`).classList.add('d-none')
+        else
+        {
+            test = document.querySelector(`.profile_card[data-friend-id="${invitation_sent}"]`);
+            if (test)
+                nodeCopy = test.cloneNode(true)
+            else
+            {
+                response = await this.user.request.get('/api/users/profile/'+friend_id.sender+'/')
+                let friend = await response.json();
+                nodeCopy = await friends_utils.create_thumbnail(this.DOMProfileCard, this.user, friend)
+            }
+            let bt_cancel = '<a class="cancel btn btn-primary btn-sm" role="button">cancel</a>'
+            nodeCopy.querySelector(".dropdown").innerHTML = bt_cancel
+            bt_cancel = nodeCopy.querySelector(".dropdown .cancel")
+            bt_cancel.addEventListener('click', async (e) => {
+                e.preventDefault();
+                let response = await this.user.request.post(`/api/match/invite/cancel/${invitation_sent}/`)
+                if (response.status == 200)
+                    document.querySelector(`#app .invitation_sent .profile_card[data-friend-id="${invitation_sent}"]`).remove()
+            });
 
+            document.querySelector(`#app .invitation_sent ul`).append(nodeCopy);
+            
+        }
     }
-
 
     addEvents () {
         document.querySelector('#subscribe a').addEventListener('click',  async e => 
