@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import pongComputer from "../pongComputer.js";
 import pongPlayer from "../pongPlayer.js";
+import pongOnline from "../online.js";
 import AbstractPong from "../AbstractPong.js";
 
 export default class extends AbstractView {
@@ -43,16 +44,13 @@ export default class extends AbstractView {
 		}
 		else
 		{
+			this._game = new pongOnline(canvas, player_score, computer_score);
 			console.log("vs user id: creer avec websocket")
 		}
 		
 
 		document.querySelector('#start-game').addEventListener('click',  this._game.start);
 		document.querySelector('#stop-game').addEventListener('click',  this._game.stop);
-
-		// console.log("document.querySelector('#player-score').innerHTML: ", document.querySelector('#player-score').innerHTML)
-		// if (document.querySelector('#player-score').textContent == 3)
-		// 	this._game.displayWinner("player 1");
 
 		document.addEventListener("keydown", (event) => {
 			if (!this._game.currentKeysDown.includes(event.key)) {
