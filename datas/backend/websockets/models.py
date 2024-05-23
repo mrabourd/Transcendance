@@ -7,6 +7,12 @@ User = get_user_model()
 # 1. 👇 Add the following line
 class Notification(models.Model):
     message = models.CharField(max_length=100)
+    type = models.CharField(max_length=100, default='public')
+    sender = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="sender", null=True, blank=True)
+    receiver = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="receiver", null=True, blank=True)
+    link = models.CharField(max_length=100, null=True, blank=True)
+    
+    
 
 class ChatRoom(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
