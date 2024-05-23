@@ -8,60 +8,80 @@ from users.serializers import UserSerializer
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
 #from channels.auth import channel_session_user_from_http, channel_session_user
-
+from .models import ChatRoom
 User = get_user_model()
 
 from .models import Message, Notification
 
 class ChatConsumer(AsyncWebsocketConsumer):
-	
-	async def connect(self):
-		self.user = self.scope["user"]
-		if self.user.is_anonymous:
-			await self.close()
-		self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-		self.room_group_name = f"chat_{self.room_name}"
+    
+    async def connect(self):
+        self.user = self.scope["user"]
+        if self.user.is_anonymous:
+            await self.close()
+        self.friend_id = self.scope["url_route"]["kwargs"]["friend_id"]
+        print('>>>>>>>>>>>>>>>>>>>>>>>>>>', self.friend_id)
 
-		print(self.user)
-		# Join room group
-		await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        try:
+            self.other_user = await User.objects.aget(id=self.friend_id)
+        except User.DoesNotExist:
+            await self.close()
+        
+        self.room_name = f"room_{min(self.user.id, self.other_user.id)}_{max(self.user.id, self.other_user.id)}"
+        
+        self.room_group_name = f"chat_{self.room_name}"
 
-		await self.accept()
+        # Ensure the chat room exists or create it
+        room, created = await database_sync_to_async(ChatRoom.objects.get_or_create)(
+            name=self.room_name
+        )
+        if created:
+            await database_sync_to_async(room.users.add)(self.user)
+            await database_sync_to_async(room.users.add)(self.other_user)
 
-	#@channel_session_user
-	async def disconnect(self, close_code):
-		# Leave room group
-		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        print(self.user)
+        # Join room group
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
 
-	# Receive message from WebSocket
-	#@channel_session_user
-	async def receive(self, text_data):
-		text_data_json = json.loads(text_data)
-		message = text_data_json["message"]
+        await self.accept()
+        #@channel_session_user
 
-		# Send message to room group
-		await self.channel_layer.group_send(
-			self.room_group_name, {"type": "chat.message", "message": message, "user": self.user}
-		)
-		#new_notif = Notification(message=message)
-		#await self.create_notification(new_notif) """
-		# Save message to database
-		#await self.save_message(message)
+    async def disconnect(self, close_code):
+        # Leave room group
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+    # Receive message from WebSocket
+    #@channel_session_user
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message = text_data_json["message"]
+
+        # Send message to room group
+        await self.channel_layer.group_send(
+            self.room_group_name, {"type": "chat.message", "message": message, "user": self.user}
+        )
+        #new_notif = Notification(message=message)
+        #await self.create_notification(new_notif) """
+        # Save message to database
+        #await self.save_message(message)
 
 
-	# Receive message from room group
-	@database_sync_to_async
-	def save_message(self, message):
-		Message.objects.create(message=message, user=self.user)
-		return Message.objects.last()
+    # Receive message from room group
+    @database_sync_to_async
+    def save_message(self, message):
+        Message.objects.create(message=message, user=self.user)
+        return Message.objects.last()
 
-	async def chat_message(self, event):
-		message = event["message"]
-		user = event["user"]
-		save_message = await self.save_message(message)
-		
-		# Send message to WebSocket
-		await self.send(text_data=json.dumps({"message": message, "username": user.username, "user_id" : str(user.id), "avatar" : user.avatar, "created_at": save_message.created_at.strftime("%Y-%m-%d %H:%M:%S")}))
+    async def chat_message(self, event):
+        message = event["message"]
+        user = event["user"]
+        save_message = await self.save_message(message)
+        
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({"message": message, "username": user.username, "user_id" : str(user.id), "avatar" : user.avatar, "created_at": save_message.created_at.strftime("%Y-%m-%d %H:%M:%S")}))
 
 
 class GeneralNotificationConsumer(AsyncWebsocketConsumer):

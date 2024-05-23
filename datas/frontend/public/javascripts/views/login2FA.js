@@ -126,7 +126,6 @@ export default class extends AbstractView {
     }
 
 	verify2FA = async () => {
-		console.log("verify 2FA code")
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
 		let password = document.getElementById("password").value;
@@ -139,7 +138,6 @@ export default class extends AbstractView {
 		};
 		const verif_2FA = await this.user.request.post('/api/users/auth/verify2FA/', data);
 		if (verif_2FA.ok){
-			console.log("verif_2FA.ok)");
 			const jsonData = await verif_2FA.json();
 			if (jsonData.error)
 			{
@@ -150,14 +148,15 @@ export default class extends AbstractView {
 			}
 			else
 			{
-				console.log("ok")
-			
 				this.login();
 			}
 			
 			// return resp_2FA;
 		} else if (verif_2FA.status === 401) {
-			console.log("error 401")
+			let errDiv = document.getElementById("errorFeedback");
+			errDiv.classList.remove("d-none")
+			errDiv.innerHTML = "Bad verification code! Enter the code you received.";
+			document.getElementById("verificationcode").value = "";
 			const jsonData = await verif_2FA.json();
 			return jsonData.detail;
 		}

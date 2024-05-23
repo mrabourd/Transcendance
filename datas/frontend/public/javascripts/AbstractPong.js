@@ -1,3 +1,5 @@
+import AbstractView from "./views/AbstractView.js";
+
 const PLAYER_HEIGHT = 100;
 const PLAYER_WIDTH = 5;
 
@@ -38,6 +40,20 @@ export default class AbstractPong {
 		this.stop()
 	}
 
+	// paddleUpPlayer = () => {
+	// 	if(this.y < PLAYER_HEIGHT / 2){
+	// 		this.y = 0;
+	// 	}
+	// 	this.y -= 10;
+	// }
+
+	// paddleDownPlayer= () => {
+	// 	if (this.y + PLAYER_HEIGHT > this._canvas.height){
+	// 		this.y = this._canvas.height - PLAYER_HEIGHT;
+	// 	}
+	// 	this.y += 10;
+	// }
+	
 	start = (fps) => {
 		cancelAnimationFrame(this.ANIMATION.id);
 		this.ANIMATION.fps = 60
