@@ -20,7 +20,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if self.user.is_anonymous:
             await self.close()
         self.friend_id = self.scope["url_route"]["kwargs"]["friend_id"]
-        print('>>>>>>>>>>>>>>>>>>>>>>>>>>', self.friend_id)
 
         try:
             self.other_user = await User.objects.aget(id=self.friend_id)
@@ -28,24 +27,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.close()
         
         self.room_name = f"room_{min(self.user.id, self.other_user.id)}_{max(self.user.id, self.other_user.id)}"
-        
         self.room_group_name = f"chat_{self.room_name}"
 
         # Ensure the chat room exists or create it
-        room, created = await database_sync_to_async(ChatRoom.objects.get_or_create)(
+        self.chat_room, created = await database_sync_to_async(ChatRoom.objects.get_or_create)(
             name=self.room_name
         )
         if created:
-            await database_sync_to_async(room.users.add)(self.user)
-            await database_sync_to_async(room.users.add)(self.other_user)
+            await database_sync_to_async(self.chat_room.users.add)(self.user)
+            await database_sync_to_async(self.chat_room.users.add)(self.other_user)
 
-        print(self.user)
         # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
-
         await self.accept()
         #@channel_session_user
 
@@ -66,13 +62,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         #new_notif = Notification(message=message)
         #await self.create_notification(new_notif) """
         # Save message to database
-        #await self.save_message(message)
 
 
     # Receive message from room group
     @database_sync_to_async
     def save_message(self, message):
-        Message.objects.create(message=message, user=self.user)
+        print("save message : ", message)
+        Message.objects.create(message=message, user=self.user, chat_room=self.chat_room)
         return Message.objects.last()
 
     async def chat_message(self, event):

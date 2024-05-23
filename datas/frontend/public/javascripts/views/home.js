@@ -23,6 +23,8 @@ export default class extends AbstractView {
     async fillHtml(DOM) {
         this.user.RefreshLocalDatas()
     }
+
+
     addEvents () {
         document.querySelector('#subscribe a').addEventListener('click',  async e => 
         {
@@ -32,7 +34,5 @@ export default class extends AbstractView {
             let response = await this.user.request.post('/api/match/subscribe/', {})
             console.log('response : ', response)
         })
-        //console.log("Add Events")
     }
-    // fonction specifiques a la vue
 }

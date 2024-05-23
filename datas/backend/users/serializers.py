@@ -5,6 +5,7 @@ from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from django.core.validators import MinLengthValidator
 from users.models import User, Invitation
+from websockets.models import Message
 #from users.models import Profile
 # from .models import Followed
 
@@ -146,3 +147,9 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 		instance.save()
 
 		return instance
+
+class ChatMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ['id', 'chat_room', 'message', 'user', 'created_at']
+        read_only_fields = ['id', 'created_at']

@@ -48,26 +48,11 @@ class CustomTokenRefreshView(TokenRefreshView):
 	def get (self, request):
 		return Response('ok')
 
-
-@method_decorator(csrf_protect, name='dispatch')
-class MaVueProtegee(View):
-    # Cette méthode gère les requêtes POST
-    def post(self, request):
-        # Traitement de la requête POST ici
-        return HttpResponse("Requête POST protégée reçue avec succès.")
-
 class CustomLogoutView(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            #refresh_token = request.data
-            #print('refresh_token.refresh')
-            #print(refresh_token['refresh'])
-            #access_token = AccessToken(refresh_token['refresh'])
-            #user = access_token.payload.get('user_id')
-            # Assurez-vous que l'utilisateur existe et est authentifié
             if request.user and request.user.is_authenticated:
                 request.user.SetStatus(User.USER_STATUS['OFFLINE'])
-                #request.user.invitation_sent = None
                 request.user.save()
                 logout(request)
                 token = RefreshToken(request.data.get('refresh'))
@@ -119,6 +104,7 @@ class CustomObtainTokenPairView(TokenObtainPairView):
         else:
             return Response({"error": "Sorry, no account was found with the provided username and password"}, status=status.HTTP_401_UNAUTHORIZED)
 
+
 class UserRegistrationAPIView(APIView):
 	# Note: we have to specify the following policy to allow 
 	# anonymous users to call this endpoint
@@ -132,219 +118,14 @@ class UserRegistrationAPIView(APIView):
 		# which will abort the request and return user-friendly
 		# error messages if the validation fails
 		serializer.is_valid(raise_exception=True)
-
 		serializer.save()
 
 		# Let's update the response code to 201 to follow the standards
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
-def get_tokens_for_user(user):
-    refresh = RefreshToken.for_user(user)
-
-    return {
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
-    }
-
-def check_user_existence(user_id):
-    # Utilisez la méthode exists() pour vérifier si un utilisateur avec cet ID existe
-    user_exists = User.objects.filter(id=user_id).exists()
-
-    return user_exists
-
-@api_view(['GET', 'POST'])
-def intraCallback(request):
-	print("get in intra callback")
-	get_token_path = "https://api.intra.42.fr/oauth/token"
-	if request.method == 'POST':
-		
-		# Convertir la chaîne JSON en objet Python
-		body_data = json.loads(request.body.decode('utf-8'))
-		
-		data = {
-			'grant_type': 'authorization_code',
-			'client_id': os.environ.get("API42_CLIENT_ID"),
-			'client_secret': os.environ.get("API42_SECRET"),
-			'code': body_data.get('code'),
-			'redirect_uri': os.environ.get("API42_REDIRECT_URI"),
-		}
-
-	else:
-		return JsonResponse({'error': 'Method not allowed'}, status=405)
-	# print("Data", data)
-	r = requests.post(get_token_path, data=data)
-	if r.json().get('error'):
-		return  Response(r.json())
-	# print("r: ", r)
-	token = r.json()['access_token']
-	headers = {"Authorization": "Bearer %s" % token}
-	# print("headers: ", headers)
-
-	user_response = requests.get("https://api.intra.42.fr/v2/me", headers=headers)
-	user_response_json = user_response.json()
-
-	# print("user_response_json: ", user_response_json)
-	av_1 = user_response_json['image']
-	av_2 = av_1['versions']
-	avatar_url = av_2['small']
-	# print(f"avatar_url: [{avatar_url}]")
-
-	user_id = user_response_json['id']
-
-	if check_user_existence(user_id):
-		user = User.objects.get(id=user_id)
-		user.username=user_response_json['login'],
-		user.first_name=user_response_json['first_name'],
-		user.last_name=user_response_json['last_name'],
-		user.email=user_response_json['email'],
-		user.avatar=avatar_url,
-
-
-
-	else:
-		user = User.objects.create_user(
-			id=user_id,
-			username=user_response_json['login'],
-			first_name=user_response_json['first_name'],
-			last_name=user_response_json['last_name'],
-			email=user_response_json['email'],
-			avatar=avatar_url,
-		)
-
-
-
-	serializer = UserSerializer(user)
-
-
-	user_info = {}
-	token_info = get_tokens_for_user(user)  
-
-	user_info = {"refresh": token_info["refresh"],
-		"access": token_info["access"],
-		"user": serializer.data,
-		
-	}
-
-	# print("user info: ", user_info)
-	response = Response(user_info)
-	response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
-	response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
-	response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
-	response['Access-Control-Allow-Credentials'] = True
-
-	# Retourner la réponse JSON
-	return response
-
-	# return HttpResponse("User %s %s" % (user, "created now" if created else "found"))
-
-def generate_random_digits(n=6):
-    return ''.join(random.choices(string.digits, k=n))
-
-def sendEmailWithCode(user_profile, email):
-
-	send_mail(
-		'Verification Code',
-		f'Your verification code is: {user_profile.otp}',
-		'transcendancespies@gmail.com',
-		[email],
-		fail_silently=False,
-	)
-	print("mail sent to: ", email)
-	return {"success"}
-
-
-
-def validate_email_domain(email_address):
-	domain = email_address.split('@')[1]
-	try:
-		# Check MX records for the domain
-		mx_records = dns.resolver.resolve(domain, 'MX')
-		return True
-	except dns.resolver.NoAnswer:
-		return False
-	except dns.resolver.NXDOMAIN:
-		return False
-	except dns.exception.DNSException:
-		return False
-
-def emailCorrespondsToUser(user_profile, email):
-
-	if user_profile.email == email:
-		return True
-
-	print("the email doesn't correspond to the user")
-	return False
-
-@api_view(['POST'])
-def login2FA(request):
-	permission_classes = [AllowAny]
-	print("enter login2FA")
-	email = request.data.get('email')
-
-	if not validate_email_domain(email):
-		return Response({'detail': 'Domain of email not invalid'}, status=status.HTTP_404_NOT_FOUND)
-
-	username = request.data.get('username')
-	password = request.data.get('password')
-	user = authenticate(request, username=username, password=password)
-
-
-	if user is not None:
-		verification_code = generate_random_digits()
-		# User credentials are valid, proceed with code generation and email sending
-		user_profile = User.objects.get(id=user.id)
-
-		if not emailCorrespondsToUser(user_profile, email):
-			return Response({'detail': 'Invalid email address.'}, status=status.HTTP_400_BAD_REQUEST )
-
-		# Generate a 6-digit code and set the expiry time to 1 hour from now
-		user_profile.otp = verification_code
-		user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
-		print("expiring time entered: ", user_profile.otp_expiry_time)
-		user_profile.save()
-		# Send the code via email (use Django's send_mail function)
-
-		result = sendEmailWithCode(user_profile, email)
-		if "error" in result:
-			return Response({"error": result["error"]}, status=status.HTTP_400_BAD_REQUEST)
-
-		return Response({'detail': 'Verification code sent successfully.'}, status=status.HTTP_200_OK)
-
-	return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST )
-
-
-@api_view(['POST'])
-def verify(request):
-	email = request.data.get('email')
-	username = request.data.get('username')
-	password = request.data.get('password')
-	otp = request.data.get('verificationcode')
-	user = authenticate(request, username=username, password=password)
-
-	if user is not None:
-		user_profile = User.objects.get(id=user.id)
-
-		# Check if the verification code is valid and not expired
-		if (
-			user_profile.otp == otp and
-			user_profile.otp_expiry_time is not None and
-			user_profile.otp_expiry_time > timezone.now()
-		):
-			print("ok")
-			# Verification successful, generate access and refresh tokens
-			django_login(request, user)
-			# Implement your token generation logic here
-
-			# Use djangorestframework_simplejwt to generate tokens
-			refresh = RefreshToken.for_user(user)
-			access_token = str(refresh.access_token)
-
-			# Reset verification code and expiry time
-			user_profile.otp = ''
-			user_profile.otp_expiry_time = None
-			user_profile.save()
-
-			return Response({'access_token': access_token, 'refresh_token': str(refresh)}, status=status.HTTP_200_OK)
-	return Response({'detail': 'Invalid verification code or credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
-
+@method_decorator(csrf_protect, name='dispatch')
+class MaVueProtegee(View):
+    # Cette méthode gère les requêtes POST
+    def post(self, request):
+        # Traitement de la requête POST ici
+        return HttpResponse("Requête POST protégée reçue avec succès.")
