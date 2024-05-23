@@ -41,7 +41,7 @@ class Invite(APIView):
                 user.invitation_sent = invitation
                 user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
                 user.save()
-                Notification.objects.create(message="coucou")
+                Notification.objects.create(type="private", message="coucou", sender=user, receiver=user_invited, link="link to the match")
                 
                 return HttpResponse("Invitation sent!")
             except IntegrityError:
@@ -68,6 +68,12 @@ class Invite(APIView):
             # Vérifier si l'utilisateur cible a reçu une invitation
             invitation_sender = user_invited
             print(f'invitation_sender ${invitation_sender} invitation_receiver = ${user}')
+            # verifier le status du demandeur (si = online >> "404 - la demamde a ete annulee")
+            # Creer une entree dans la table match (status = in_progress)
+            # creer deux entree dans la table match_points (match_id, user_id)
+            # modifier le status des users (playing) 
+            # Enregistrer dans la table chat_msg le texte d'acceptation -- notif
+            # Envoyer le dernier msg en WS (CHAT U_ID : "User a accepte votre invitationle match va commencer dans xxx)
             invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
             user.SetStatus(User.USER_STATUS['PLAYING'])
             match_id = 'XXX' 

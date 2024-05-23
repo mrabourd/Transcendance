@@ -80,30 +80,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"message": message, "username": user.username, "user_id" : str(user.id), "avatar" : user.avatar, "created_at": save_message.created_at.strftime("%Y-%m-%d %H:%M:%S")}))
 
 
-class NotificationConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.user = self.scope["user"]
-        if self.user.is_anonymous:
-            await self.close()
-        #self.group_name = str(self.scope["user"].pk)  # Setting the group name as the pk of the user primary key as it is unique to each user. The group name is used to communicate with the user.
-        #async_to_sync(self.channel_layer.group_add)(self.group_name, self.channel_name)
-        self.group_name = 'public_room'
-        if isinstance(self.user, AnonymousUser):
-            await self.accept()
-            await self.send(text_data=json.dumps({"error": "token_not_valid"}))
-            await self.close()
-            return
-        await self.channel_layer.group_add(
-            self.group_name,
-            self.channel_name
-        )
-        await self.accept()
+class GeneralNotificationConsumer(AsyncWebsocketConsumer):
+	async def connect(self):
+		self.user = self.scope["user"]
+		if isinstance(self.user, AnonymousUser):
+			await self.accept()
+			await self.send(text_data=json.dumps({"error": "token_not_valid"}))
+			await self.close()
+			return
+		
+		await self.channel_layer.group_add("public_room", self.channel_name)
+		await self.channel_layer.group_add(f"{self.user.id}", self.channel_name)
 
-    async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(
-            self.group_name,
-            self.channel_name
-        )
+		await self.accept()
 
-    async def send_notification(self, event):
-        await self.send(text_data=json.dumps({ 'message': event['message'] }))
+	async def disconnect(self, close_code):
+		await self.channel_layer.group_discard(
+			"public_room", self.channel_name
+		)
+
+	async def send_notification(self, event):
+		await self.send(text_data=json.dumps({ 'message': event['message'] }))
+
+

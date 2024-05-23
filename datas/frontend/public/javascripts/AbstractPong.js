@@ -9,6 +9,7 @@ export default class AbstractPong {
 
 	constructor(canvas) {
 		this._canvas = canvas;
+		this.winner = false;
 		//this._player_score = player_score;
 		//this._computer_score = computer_score;
 
@@ -39,22 +40,39 @@ export default class AbstractPong {
 		this.draw()
 		this.stop()
 	}
+	
 
-	// paddleUpPlayer = () => {
-	// 	if(this.y < PLAYER_HEIGHT / 2){
-	// 		this.y = 0;
-	// 	}
-	// 	this.y -= 10;
-	// }
+	checkScore = () => {
+		let button = document.getElementById("stop-game");
+		button.addEventListener('click', this.stop())
+		// let clickEvent = new Event('click');
+		var clickEvent = new Event('click', {
+			'bubbles': true,  // L'événement peut remonter dans l'arborescence DOM
+			'cancelable': true  // L'événement peut être annulé
+		});
 
-	// paddleDownPlayer= () => {
-	// 	if (this.y + PLAYER_HEIGHT > this._canvas.height){
-	// 		this.y = this._canvas.height - PLAYER_HEIGHT;
-	// 	}
-	// 	this.y += 10;
-	// }
+		if (this._game && this._game.computer.score === 2) {
+			document.querySelector("#winner").classList.remove("d-none");
+			document.querySelector("#winner").innerHTML = "The winner is player 2";
+			button.dispatchEvent(clickEvent);
+			console.log("should stop");
+			this.setToCenter();
+			return true;
+		} else if (this._game && this._game.player.score === 2) {
+			document.querySelector("#winner").classList.remove("d-none");
+			document.querySelector("#winner").innerHTML = "The winner is player 1";
+			button.dispatchEvent(clickEvent);
+			console.log("should stop");
+			this.setToCenter();
+			return true;
+		}
+		return false;
+	}
+
 	
 	start = (fps) => {
+		console.log("start")
+		
 		cancelAnimationFrame(this.ANIMATION.id);
 		this.ANIMATION.fps = 60
 		this.ANIMATION.fpsInterval = 1000 / this.ANIMATION.fps;
@@ -76,13 +94,14 @@ export default class AbstractPong {
 		this.ANIMATION.sinceStart = this.ANIMATION.now - this.ANIMATION.startTime;
 		this.ANIMATION.currentFPS = (Math.round(1000 / (this.ANIMATION.sinceStart / ++this.ANIMATION.frameCount) * 100) / 100).toFixed(2);
 		if (this.ANIMATION.elapsed > this.ANIMATION.fpsInterval) {
-		this.doOneFrame()  // whole game, right here.
-		this.ANIMATION.then = this.ANIMATION.now - (this.ANIMATION.elapsed % this.ANIMATION.fpsInterval);  // After everything.
+			this.doOneFrame()  // whole game, right here.
+			this.ANIMATION.then = this.ANIMATION.now - (this.ANIMATION.elapsed % this.ANIMATION.fpsInterval);  // After everything.
 		}
 		this.ANIMATION.id = requestAnimationFrame(() => this.loop());
 	}
 
 	draw = () => {
+		console.log("draw")
 		let context = this._canvas.getContext('2d');
 	
 		context.fillStyle = 'black';
@@ -118,6 +137,7 @@ export default class AbstractPong {
 	}
 	
 	collide(player) {
+		console.log("collide");
 		if (this._game.ball.y < player.y || this._game.ball.y > player.y + PLAYER_HEIGHT) {
 			this.setToCenter();
 			if (player == this._game.player) {
@@ -127,13 +147,14 @@ export default class AbstractPong {
 			else {
 				this._game.player.score++;
 				this._player_score.textContent = this._game.player.score;
+
 			}
 		}
 		else {
 			this._game.ball.speed.x *= -1.2;
 			this.ChangeDirection(player.y);
 		}
-	
+		this.winner = this.checkScore();
 	}
 	
 	ChangeDirection (playerPosition) {
@@ -153,9 +174,11 @@ export default class AbstractPong {
 	
 		if (this._game.ball.x > this._canvas.width - PLAYER_WIDTH) {
 			this.collide(this._game.computer);
+			
 		}
 		else if (this._game.ball.x < PLAYER_WIDTH) {
 			this.collide(this._game.player);
+			
 		}
 	
 		this._game.ball.x += this._game.ball.speed.x;
@@ -167,18 +190,20 @@ export default class AbstractPong {
 	// }
 
 	stop = () => {
-		cancelAnimationFrame(this.ANIMATION.id );
+		console.log("please STOP")
+		cancelAnimationFrame(this.ANIMATION.id);
 	
-		this.setToCenter;
+		this.setToCenter();
+		return;
 	
-		this._game.ball.speed.y = 2;
+		// this._game.ball.speed.y = 2;
 	
-		this._game.computer.score = 0;
-		this._game.computer.player = 0;
+		// this._game.computer.score = 0;
+		// this._game.computer.player = 0;
 	
-		this._computer_score.textContent = this._game.computer.score;
-		this._player_score.textContent = this._game.player.score;
+		// this._computer_scorsContent = this._game.player.score;
 	
-		this.draw();
+		// this.draw();
+
 	}
 }

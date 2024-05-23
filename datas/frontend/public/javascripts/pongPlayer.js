@@ -2,12 +2,6 @@ import AbstractPong from "./AbstractPong.js";
 
 const PLAYER_HEIGHT = 100;
 
-// const controller = {
-// 	38: {pressed: false, func: this._game.player.paddleUpPlayer},
-// 	40: {pressed: false, func: this._game.paddleDownPlayer},
-// 	87: {pressed: false, func: this._game.computer.movePaddleUp},
-// 	83: {pressed: false, func: this._game.computer.movePaddleDown},
-// }
 export default class extends AbstractPong {
 	constructor(params) {
 		super(params);
@@ -22,7 +16,7 @@ export default class extends AbstractPong {
 			}
 		}, false);
 		// PlayerOne&LeftSide
-		if (this.currentKeysDown.includes("s") /*azerty & qwerty*/ ) {
+		if (this.currentKeysDown.includes("s")) {
 			this.rightPaddleMoveUp();
 		} else if (
 			this.currentKeysDown.includes("w") 
@@ -31,9 +25,9 @@ export default class extends AbstractPong {
 		}
 		
 		// PlayerTwo&RightSide
-		if (this.currentKeysDown.includes('ArrowUp') /*UpperArrow*/ ) {
+		if (this.currentKeysDown.includes('ArrowUp')) {
 			this.leftPaddleMoveUp();
-		} else if (this.currentKeysDown.includes('ArrowDown') /*LowerArrow*/ ) {
+		} else if (this.currentKeysDown.includes('ArrowDown')) {
 			this.leftPaddleMoveDown();
 		}
 	}

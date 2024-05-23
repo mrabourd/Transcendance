@@ -1,9 +1,11 @@
 from django.urls import path
-from .consumer import ChatConsumer, NotificationConsumer
+from .consumer import ChatConsumer, GeneralNotificationConsumer
+from .pongConsumer import PongConsumer
 import uuid
 
 
 urlpatterns = [
+	path('ws/notify/', GeneralNotificationConsumer.as_asgi()),
     path('ws/msg/<str:friend_id>/', ChatConsumer.as_asgi()),
-	path('ws/notify/', NotificationConsumer.as_asgi()),
+    path('ws/pong/<uuid:match_id>/', PongConsumer.as_asgi()),
 ]
