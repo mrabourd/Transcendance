@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser, User
 from django.core.validators import MinLengthValidator
 import uuid
 from django.conf import settings
-from websockets.models import Notification
+# from websockets.models import Notification
 
 class User(AbstractUser):
     # USER_STATUS cf. front contstants.js
@@ -49,14 +49,14 @@ class User(AbstractUser):
         print(f'{self} status = {status} ')
         self.status = status
         self.save()
-        Notification.objects.create(
-            type="public",
-            code="ST{status}",
-            message="",
-            sender=self.id,
-            receiver="all",
-            link=None
-        )
+        # Notification.objects.create(
+        #     type="public",
+        #     code="ST{status}",
+        #     message="",
+        #     sender=self.id,
+        #     receiver="all",
+        #     link=None
+        # )
 
 class Invitation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

@@ -16,29 +16,29 @@ export default class extends AbstractPong {
 		}, false);
 
 		if (this.currentKeysDown.includes('ArrowUp')) {
-			this.leftPaddleMoveUp();
+			this.rightPaddleMoveUp();
 		} else if (this.currentKeysDown.includes('ArrowDown')) {
-			this.leftPaddleMoveDown();
+			this.rightPaddleMoveDown();
 		}
 	}
 	
-	leftPaddleMoveUp() {
-		if(this._game.player.y < PLAYER_HEIGHT / 2){
-			this._game.player.y = 0;
+	rightPaddleMoveUp() {
+		if(this._game.playerright.y < PLAYER_HEIGHT / 2){
+			this._game.playerright.y = 0;
 		}
-		this._game.player.y -= 10;
+		this._game.playerright.y -= 10;
 	}
 	
-	leftPaddleMoveDown() {
-		if (this._game.player.y + PLAYER_HEIGHT > this._canvas.height){
-			this._game.player.y = this._canvas.height - PLAYER_HEIGHT;
+	rightPaddleMoveDown() {
+		if (this._game.playerright.y + PLAYER_HEIGHT > this._canvas.height){
+			this._game.playerright.y = this._canvas.height - PLAYER_HEIGHT;
 		}
-		this._game.player.y += 10;
+		this._game.playerright.y += 10;
 	}
 
-    computerMove() {
+    playerLeftMove() {
         // console.log("this._game.ball.speed.y:",this._game.ball.speed.y);
-        this._game.computer.y += this._game.ball.speed.y * 0.85;
+        this._game.playerleft.y += this._game.ball.speed.y * 0.85;
     }
 
     // playerMoveKeyDown = (event) => {

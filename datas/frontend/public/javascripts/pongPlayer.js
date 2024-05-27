@@ -17,47 +17,63 @@ export default class extends AbstractPong {
 		}, false);
 		// PlayerOne&LeftSide
 		if (this.currentKeysDown.includes("s")) {
-			this.rightPaddleMoveUp();
+			this.leftPaddleMoveUp();
 		} else if (
 			this.currentKeysDown.includes("w") 
 		) {
-			this.rightPaddleMoveDown();
-		}
-		
-		// PlayerTwo&RightSide
-		if (this.currentKeysDown.includes('ArrowUp')) {
-			this.leftPaddleMoveUp();
-		} else if (this.currentKeysDown.includes('ArrowDown')) {
 			this.leftPaddleMoveDown();
 		}
-	}
-	
-	leftPaddleMoveUp() {
-		if(this._game.computer.y < PLAYER_HEIGHT / 2){
-			this._game.computer.y = 0;
+		
+		// PlayerTwo&leftSide
+		if (this.currentKeysDown.includes('ArrowUp')) {
+			this.rightPaddleMoveUp();
+		} else if (this.currentKeysDown.includes('ArrowDown')) {
+			this.rightPaddleMoveDown();
 		}
-		this._game.computer.y -= 10;
-	}
-	
-	leftPaddleMoveDown() {
-		if (this._game.computer.y + PLAYER_HEIGHT > this._canvas.height){
-			this._game.computer.y = this._canvas.height - PLAYER_HEIGHT;
-		}
-		this._game.computer.y += 10;
 	}
 	
 	rightPaddleMoveUp() {
-		if (this._game.player.y + PLAYER_HEIGHT > this._canvas.height){
-			this._game.player.y = this._canvas.height - PLAYER_HEIGHT;
+		if(this._game.playerright.y < PLAYER_HEIGHT / 2){
+			this._game.playerright.y = 0;
 		}
-		this._game.player.y += 10;
+		this._game.playerright.y -= 10;
+		this.setPlayerRightValues(this._game.playerright.y);
+		console.log("PLAYER_HEIGHT / 2: ", PLAYER_HEIGHT / 2);
+		console.log("this._game.playerright.y: ", this._game.playerright.y);
+		console.log("this._game.playerleft.y: ", this._game.playerleft.y);
 	}
 	
 	rightPaddleMoveDown() {
-		if (this._game.player.y + PLAYER_HEIGHT > this._canvas.height){
-			this._game.player.y = this._canvas.height - PLAYER_HEIGHT;
+		if (this._game.playerright.y + PLAYER_HEIGHT > this._canvas.height){
+			this._game.playerright.y = this._canvas.height - PLAYER_HEIGHT;
 		}
-		this._game.player.y -= 10;
+		this._game.playerright.y += 10;
+		this.setPlayerRightValues(this._game.playerright.y);
+		console.log("this._game.playerright.y + PLAYER_HEIGHT: ", this._game.playerright.y + PLAYER_HEIGHT)
+		console.log("this._game.ball.x: ", this._game.ball.x);
+		console.log("this._game.playerright.y: ", this._game.playerright.y);
+		console.log("this._game.playerleft.y: ", this._game.playerleft.y);
+	}
+	
+	leftPaddleMoveUp() {
+		if (this._game.playerleft.y + PLAYER_HEIGHT > this._canvas.height){
+			this._game.playerleft.y = this._canvas.height - PLAYER_HEIGHT;
+		}
+		this._game.playerleft.y += 10;
+		this.setPlayerLeftValues(this._game.playerleft.y);
+		console.log("this._game.playerleft.y: ", this._game.playerleft.y);
+		console.log("this._game.ball.x: ", this._game.ball.x);
+		console.log("this._game.playerright.y: ", this._game.playerright.y);
+	}
+	
+	leftPaddleMoveDown() {
+		if (this._game.playerleft.y + PLAYER_HEIGHT > this._canvas.height){
+			this._game.playerleft.y = this._canvas.height - PLAYER_HEIGHT;
+		}
+		this._game.playerleft.y -= 10;
+		this.setPlayerLeftValues(this._game.playerleft.y);
+		console.log("this._game.playerleft.y: ", this._game.playerleft.y);
+		console.log("this._game.ball.x: ", this._game.ball.x);
 	}
 
 	// playerMoveKeyDown = (event) => {
@@ -119,7 +135,7 @@ export default class extends AbstractPong {
 	// }
 
 
-	computerMove() {
+	playerLeftMove() {
 		// console.log("computer not playing this time");
         // this._game.computer.y += this._game.ball.speed.y * 0.85;
     }
