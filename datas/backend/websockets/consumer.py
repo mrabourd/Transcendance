@@ -88,7 +88,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.user = self.scope["user"]
-		print(self.scope['headers'].cookie)
+		#print(self.scope['headers'].cookie)
 		#self.refresh = self.scope["JWTtoken"]["refresh"]
 		if isinstance(self.user, AnonymousUser):
 			await self.accept()
@@ -105,6 +105,7 @@ class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 		try:
 			await self.channel_layer.group_discard("public_room", self.channel_name)
 			await self.channel_layer.group_discard(f"{self.user.id}", self.channel_name)
+			'''
 			# Crée une instance de la requête pour utiliser dans la vue
 			factory = APIRequestFactory()
 			request = factory.post('/logout/', {'refresh': 'your_refresh_token_here'})
@@ -121,7 +122,7 @@ class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 				print("User logged out successfully.")
 			else:
 				print("Error logging out user:", response.data)
-
+			'''
 		except Exception as e:
 			print("Error:", str(e))
 
