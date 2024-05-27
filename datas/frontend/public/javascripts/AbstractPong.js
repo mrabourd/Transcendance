@@ -14,15 +14,15 @@ export default class AbstractPong {
 		//this._computer_score = computer_score;
 
 		//let canvas = document.getElementById('canvas');
-		this._player_score= document.getElementById('player-score')
-		this._computer_score  = document.getElementById('computer-score')
+		// this._playerleft_score = document.getElementById('playerleft-score')
+		// this._playerright_score  = document.getElementById('playerright-score')
 
 		this._game = {
-			player: {
+			playerleft: {
 				y: this._canvas.height / 2 - PLAYER_HEIGHT / 2,
 				score: 0
 			},
-			computer: {
+			playerright: {
 				y: this._canvas.height / 2 - PLAYER_HEIGHT / 2,
 				score: 0
 			},
@@ -36,34 +36,42 @@ export default class AbstractPong {
 				}
 			}
 		}
+		this.setPlayerLeftValues(180) 
+
 		this.ANIMATION = {};
-		this.draw()
-		this.stop()
+		
+		this.draw();
+		// this.pause();
+		// this.stop();
+	}
+
+	setPlayerLeftValues(y) {
+		this._game.playerleft.y = y;
+	}
+
+	setPlayerRightValues(y) {
+		this._game.playerright.y = y;
+	}
+
+	getPlayerLeftValues() {
+		return this._game.playerleft.y;
 	}
 	
+	getPlayerRightValues() {
+		return this._game.playerright.y;
+	}
 
 	checkScore = () => {
-		let button = document.getElementById("stop-game");
-		button.addEventListener('click', this.stop())
-		// let clickEvent = new Event('click');
-		var clickEvent = new Event('click', {
-			'bubbles': true,  // L'événement peut remonter dans l'arborescence DOM
-			'cancelable': true  // L'événement peut être annulé
-		});
-
-		if (this._game && this._game.computer.score === 2) {
+		document.querySelector("#winner").classList.add("h2");
+		if (this._game && this._game.playerright.score === 2) {
 			document.querySelector("#winner").classList.remove("d-none");
-			document.querySelector("#winner").innerHTML = "The winner is player 2";
-			button.dispatchEvent(clickEvent);
-			console.log("should stop");
-			this.setToCenter();
+			document.querySelector("#winner").innerHTML = "The winner is player 2!";
+			this.stop();
 			return true;
-		} else if (this._game && this._game.player.score === 2) {
+		} else if (this._game && this._game.playerleft.score === 2) {
 			document.querySelector("#winner").classList.remove("d-none");
-			document.querySelector("#winner").innerHTML = "The winner is player 1";
-			button.dispatchEvent(clickEvent);
-			console.log("should stop");
-			this.setToCenter();
+			document.querySelector("#winner").innerHTML = "The winner is player 1!";
+			this.stop();
 			return true;
 		}
 		return false;
@@ -72,6 +80,11 @@ export default class AbstractPong {
 	
 	start = (fps) => {
 		console.log("start")
+		document.querySelector('#start-game').innerHTML = "Pause game";
+		this._game.playerleft.score = 0;
+		this._game.playerright.score = 0;
+		this._playerleft_score = document.getElementById('playerleft-score')
+		this._playerright_score  = document.getElementById('playerright-score')
 		
 		cancelAnimationFrame(this.ANIMATION.id);
 		this.ANIMATION.fps = 60
@@ -80,11 +93,12 @@ export default class AbstractPong {
 		this.ANIMATION.startTime = this.ANIMATION.then;
 		this.ANIMATION.frameCount = 0;
 		this.loop();
+
 	}
 	
 	doOneFrame = () => {
 		this.draw();
-		this.computerMove();
+		this.playerLeftMove();
 		this.ballMove();
 	}
 
@@ -97,11 +111,15 @@ export default class AbstractPong {
 			this.doOneFrame()  // whole game, right here.
 			this.ANIMATION.then = this.ANIMATION.now - (this.ANIMATION.elapsed % this.ANIMATION.fpsInterval);  // After everything.
 		}
+		this.winner = this.checkScore();
+		if (this.winner == true){
+			this.stop();
+			return;
+		}
 		this.ANIMATION.id = requestAnimationFrame(() => this.loop());
 	}
 
 	draw = () => {
-		console.log("draw")
 		let context = this._canvas.getContext('2d');
 	
 		context.fillStyle = 'black';
@@ -114,9 +132,9 @@ export default class AbstractPong {
 		context.stroke();
 	
 		context.fillStyle = 'white';
-		context.fillRect(0, this._game.player.y, PLAYER_WIDTH, PLAYER_HEIGHT);
+		context.fillRect(0, this._game.playerleft.y, PLAYER_WIDTH, PLAYER_HEIGHT);
 		context.fillRect(this._canvas.width - PLAYER_WIDTH,
-			this._game.computer.y, PLAYER_WIDTH, PLAYER_HEIGHT);
+			this._game.playerright.y, PLAYER_WIDTH, PLAYER_HEIGHT);
 	
 		context.beginPath();
 		context.fillStyle = 'white';
@@ -130,23 +148,24 @@ export default class AbstractPong {
 	setToCenter(){
 		this._game.ball.x = this._canvas.width / 2;
 		this._game.ball.y = this._canvas.height / 2;
-		this._game.player.y = this._canvas.height / 2 - PLAYER_HEIGHT / 2;
-		this._game.computer.y = this._canvas.height / 2 - PLAYER_HEIGHT / 2;
+		this._game.playerleft.y = this._canvas.height / 2 - PLAYER_HEIGHT / 2;
+		this._game.playerright.y = this._canvas.height / 2 - PLAYER_HEIGHT / 2;
 	
 		this._game.ball.speed.x = 2;
 	}
 	
 	collide(player) {
-		console.log("collide");
+		this._game.playerleft.y = this.getPlayerLeftValues();
+		this._game.playerright.y = this.getPlayerRightValues();
 		if (this._game.ball.y < player.y || this._game.ball.y > player.y + PLAYER_HEIGHT) {
 			this.setToCenter();
-			if (player == this._game.player) {
-				this._game.computer.score++;
-				this._computer_score.textContent = this._game.computer.score;
+			if (player == this._game.playerleft) {
+				this._game.playerright.score++;
+				this._playerright_score.textContent = this._game.playerright.score;
 			}
 			else {
-				this._game.player.score++;
-				this._player_score.textContent = this._game.player.score;
+				this._game.playerleft.score++;
+				this._playerleft_score.textContent = this._game.playerleft.score;
 
 			}
 		}
@@ -154,7 +173,7 @@ export default class AbstractPong {
 			this._game.ball.speed.x *= -1.2;
 			this.ChangeDirection(player.y);
 		}
-		this.winner = this.checkScore();
+		
 	}
 	
 	ChangeDirection (playerPosition) {
@@ -168,42 +187,59 @@ export default class AbstractPong {
 	
 	
 	ballMove = () => {
+		this._game.playerleft.y = this.getPlayerLeftValues();
+		this._game.playerright.y = this.getPlayerRightValues();
 		if (this._game.ball.y > this._canvas.height || this._game.ball.y < 0) {
 			this._game.ball.speed.y *= -1;
 		}
 	
 		if (this._game.ball.x > this._canvas.width - PLAYER_WIDTH) {
-			this.collide(this._game.computer);
+			this.collide(this._game.playerright);
 			
 		}
 		else if (this._game.ball.x < PLAYER_WIDTH) {
-			this.collide(this._game.player);
-			
+			this.collide(this._game.playerleft);
 		}
 	
 		this._game.ball.x += this._game.ball.speed.x;
 		this._game.ball.y += this._game.ball.speed.y;
 	}
+
+	pause = () => {
+		console.log("pause");
+		if (document.querySelector('#start-game').innerHTML == "Pause game"){
+			document.querySelector('#start-game').innerHTML = "Start game";
+		}
+		cancelAnimationFrame(this.ANIMATION.id);
 	
-	// computerMove() {
-	//     this._game.computer.y += this._game.ball.speed.y * 0.85;
-	// }
+	
+		this._game.ball.speed.y = 2;
+	
+	
+		// this._playerright_scorsContent = this._game.playerleft.score;
+	
+		this.draw();
+
+	}
 
 	stop = () => {
-		console.log("please STOP")
+		console.log("stop");
+		document.querySelector('#start-game').innerHTML = "Start game";
+		document.getElementById('playerleft-score').innerHTML = 0;
+		document.getElementById('playerright-score').innerHTML = 0;
 		cancelAnimationFrame(this.ANIMATION.id);
 	
 		this.setToCenter();
-		return;
+			
+		this._game.ball.speed.y = 2;
 	
-		// this._game.ball.speed.y = 2;
+		this._game.playerright.score = 0;
+		this._game.playerleft.score = 0;
 	
-		// this._game.computer.score = 0;
-		// this._game.computer.player = 0;
+		// this._playerright_scorsContent = this._game.playerleft.score;
 	
-		// this._computer_scorsContent = this._game.player.score;
-	
-		// this.draw();
+		this.draw();
 
 	}
+
 }

@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator
 import uuid
 from django.conf import settings
+# from websockets.models import Notification
 
 class User(AbstractUser):
     # USER_STATUS cf. front contstants.js

@@ -29,21 +29,29 @@ export default class extends AbstractView {
 
 	addEvents () {
 		let canvas = document.getElementById('canvas');
-		let player_score = document.getElementById('player-score');
-		let computer_score = document.getElementById('computer-score');
+		let playerleft_score = document.getElementById('player-score');
+		let playerright_score = document.getElementById('computer-score');
 
+		// function resizeCanvas() {
+		// 	canvas.width = window.innerWidth;
+		// 	canvas.height = window.innerHeight;
+		// }
+			
+		// window.addEventListener("resize", resizeCanvas);
+
+		document.querySelector('#start-game').innerHTML = "Start game";
+		document.querySelector('#stop-game').innerHTML = "Stop game";
 
 		if (this.params.adversaire === "vs_computer"){
-			this._game = new pongComputer(canvas, player_score, computer_score);
+			this._game = new pongComputer(canvas, playerleft_score, playerright_score);
 		}
 		else if (this.params.adversaire === "vs_player")
 		{
-			console.log("ici")
-			this._game = new pongPlayer(canvas, player_score, computer_score);
+			this._game = new pongPlayer(canvas, playerleft_score, playerright_score);
 		}
 		else
 		{
-			this._game = new pongOnline(canvas, player_score, computer_score);
+			this._game = new pongOnline(canvas, playerleft_score, playerright_score);
 			console.log("vs user id: creer avec websocket")
 		}
 
@@ -60,8 +68,18 @@ export default class extends AbstractView {
 			
 			this._game.movePaddles();
 		})
-		
-		document.querySelector('#start-game').addEventListener('click', this._game.start);
+		document.querySelector('#start-game').addEventListener('click',(e) =>
+		{
+			if (e.target.innerHTML =="Pause game") {
+				this._game.pause();
+				e.target.innerHTML = "Start game";
+			}
+			else{
+				this._game.start();
+				e.target.innerHTML = "Pause game";
+			}
+		});
+
 		document.querySelector('#stop-game').addEventListener('click', this._game.stop);
 		
     }
