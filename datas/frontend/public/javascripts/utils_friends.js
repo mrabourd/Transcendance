@@ -3,8 +3,7 @@ import {USER_STATUS} from "./constants.js";
 
 export function is_invited(user,friend_id )
 {
-    console.log('is_invited', user.datas.invitation_sent, friend_id )
-    if (user.datas.invitation_sent && user.datas.invitation_sent === friend_id) {
+    if (user.datas.invitation_sent && user.datas.invitation_sent == friend_id) {
         return true
     }
     return false
@@ -184,10 +183,10 @@ export async function add_invite_event(user, profile_card, profile_id)
 }
 
 /// STATUS
-export async function update_status_text(user, profile_card)
+export async function update_status_text(profile_card)
 {
     let friend_status = profile_card.getAttribute('data-friend-status');
-    let dom = profile_card.querySelector('.status');
+    let dom = profile_card.querySelector('.status span');
     if (!dom)
         return;
     let text, color
@@ -213,21 +212,6 @@ export async function update_status_text(user, profile_card)
     dom.innerHTML = text
     dom.removeAttribute('class')
     dom.classList.add(color)
-}
-
-export async function update_invite(user, friend_id) {
-    let dom;
-    // let check = is_waiting(user, friend_id);
-    let check = false;
-    let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
-
-    profile_cards.forEach(profile_card => {
-        dom = profile_card.querySelector('.play');
-        if (dom){
-            dom.innerHTML = (check) ? 'invite to play' : 'invited';
-        }
-    });
-    // change my status to waiting...
 }
 
 export async function create_thumbnail(nodeToCopy, user, friend) {
@@ -257,7 +241,7 @@ export function update_profile_cards_text(user)
         let profile_id = profile_card.getAttribute('data-friend-id');
         update_block_text(user, profile_card, profile_id)
         update_follow_text(user, profile_card, profile_id)
-        update_status_text(user, profile_card)
+        update_status_text(profile_card)
         update_invite_text(user, profile_card, profile_id)
     });
 }
@@ -267,7 +251,7 @@ export function update_profile_cards(user, profile_card)
     let profile_id = profile_card.getAttribute('data-friend-id');
     update_block_text(user, profile_card, profile_id)
     update_follow_text(user, profile_card, profile_id)
-    update_status_text(user, profile_card)
+    update_status_text(profile_card)
     update_invite_text(user, profile_card, profile_id)
     
     add_follow_event(user, profile_card, profile_id)

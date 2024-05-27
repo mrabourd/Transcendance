@@ -38,18 +38,18 @@ class Invite(APIView):
             try:
                 invitation = Invitation.objects.create(sender=user, receiver=user_invited)
                 user.invitation_sent = invitation
-                user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
                 user.save()
-
+    
                 notif_message = f'{user.username} has invited {user_invited.username} to play'
                 Notification.objects.create(
-                    type="private",
+                    type="public",
                     code="xxx",
                     message=notif_message,
                     sender=user,
                     receiver=user_invited,
                     link=None
                 )
+                user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
                 return HttpResponse("Invitation sent!")
             except IntegrityError:
                 return HttpResponse("An error occurred while sending the invitation.", status=500)

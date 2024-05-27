@@ -77,7 +77,6 @@ export default class extends AbstractView {
         })
         }
         const invitation_sent = this.user.datas.invitation_sent
-        console.log('invitation_sent',  this.user.datas)
         if (invitation_sent == null)
             document.querySelector(`#app .invitation_sent`).classList.add('d-none')
         else

@@ -1,9 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator
 import uuid
 from django.conf import settings
-from websockets.models import Notification
 
 class User(AbstractUser):
     # USER_STATUS cf. front contstants.js
@@ -49,12 +48,13 @@ class User(AbstractUser):
         print(f'{self} status = {status} ')
         self.status = status
         self.save()
+        from websockets.models import Notification
         Notification.objects.create(
             type="public",
-            code="ST{status}",
-            message="",
-            sender=self.id,
-            receiver="all",
+            code=f"STA",
+            message=status,
+            sender=self,
+            receiver=self,
             link=None
         )
 
