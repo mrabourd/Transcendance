@@ -3,6 +3,7 @@ import AbstractView from "./AbstractView.js";
 import { send_message } from "../utils_chat.js";
 
 function	createChatMessage(data, user_id) {
+    document.querySelector("#chat-hour-me").innerHTML = "08:56";
 	let side = 'left';
 	const messageElement = document.createElement('div');
 	messageElement.innerText = data.message;
@@ -19,7 +20,7 @@ function	createChatMessage(data, user_id) {
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("home");
+        this.setTitle("Chat");
 
     }
     async getHtml(DOM) {
@@ -52,6 +53,13 @@ export default class extends AbstractView {
 		if (this.user.datas.id == friend_id) {
 			return false
 		}
+
+        let response = await this.user.request.get('/api/users/profile/'+friend_id+'/')
+        let friend = await response.json();
+        let friend_username = friend.username;
+
+        document.getElementById("chat-name-me").innerHTML = this.user.datas.username;
+        document.getElementById("chat-name-friend").innerHTML = friend_username;
 
 		console.log(this.user.datas.username + ' is connected to the chatroom.');
 		const user = this.user;
