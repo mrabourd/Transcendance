@@ -3,7 +3,10 @@ import AbstractView from "./AbstractView.js";
 import { send_message } from "../utils_chat.js";
 
 function	createChatMessage(data, user_id) {
-    document.querySelector("#chat-hour-me").innerHTML = "08:56";
+	const date = new Date();
+	const hour = date.getHours();
+	const min = date.getMinutes();
+	document.querySelector("#chat-hour-me").innerHTML = hour+":"+min;
 	let side = 'left';
 	const messageElement = document.createElement('div');
 	messageElement.innerText = data.message;
@@ -13,7 +16,7 @@ function	createChatMessage(data, user_id) {
 	}
 	messageElement.classList.add(`chat-message-${side}`);
 	document.querySelector(`#chat-text-${side}`).append(messageElement);
-	
+
 
 }
 
@@ -45,8 +48,6 @@ export default class extends AbstractView {
 
 	async addEvents() {
 
-		
-
 		let friend_id = this.params.friend_id;
     //console.log('datas',user.datas)
 		console.log("send_message", this.user.datas.id)
@@ -54,17 +55,10 @@ export default class extends AbstractView {
 			return false
 		}
 
-        let response = await this.user.request.get('/api/users/profile/'+friend_id+'/')
-        let friend = await response.json();
-        let friend_username = friend.username;
-
-        document.getElementById("chat-name-me").innerHTML = this.user.datas.username;
-        document.getElementById("chat-name-friend").innerHTML = friend_username;
-
 		console.log(this.user.datas.username + ' is connected to the chatroom.');
 		const user = this.user;
 		const chatSocket = new WebSocket(
-			'wss://localhost:8443/ws/msg/'+ friend_id +'/?token=' + this.user.request.getJWTtoken()["access"]
+			'wss://localhost:8443/ws/msg/'+ friend_id +'/?token=' + user.request.getJWTtoken()["access"]
 		);
 
 		// on socket open
@@ -72,6 +66,14 @@ export default class extends AbstractView {
 			console.log('Socket between ' + user.datas.id + ' and ' + friend_id + ' successfully connected.');
 		};
 
+		let response = await user.request.get('/api/users/profile/'+friend_id+'/')
+        let friend = await response.json();
+        let friend_username = friend.username;
+
+
+        document.getElementById("chat-name-me").innerHTML = this.user.datas.username;
+        document.getElementById("chat-name-friend").innerHTML = friend_username;
+		
 		// on socket close
 		chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
