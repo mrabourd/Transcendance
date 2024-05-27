@@ -15,7 +15,7 @@ def notification_created(sender, instance, created, **kwargs):
 				"code": instance.code,
 				"message": instance.message,
 				"link": instance.link,
-				"sender": instance.sender.username				
+				"sender": instance.sender.id if instance.sender else None
 			}
 		)
 	elif created and instance.type == 'private':
@@ -27,6 +27,6 @@ def notification_created(sender, instance, created, **kwargs):
 				"code": instance.code,
 				"message": instance.message,
 				"link": instance.link,
-				"sender": instance.sender.username
+				"sender": instance.sender.id if instance.sender else None
 			}
 		)
