@@ -14,8 +14,8 @@ export default class AbstractPong {
 		//this._computer_score = computer_score;
 
 		//let canvas = document.getElementById('canvas');
-		this._playerleft_score = document.getElementById('playerleft-score')
-		this._playerright_score  = document.getElementById('playerright-score')
+		// this._playerleft_score = document.getElementById('playerleft-score')
+		// this._playerright_score  = document.getElementById('playerright-score')
 
 		this._game = {
 			playerleft: {
@@ -39,18 +39,18 @@ export default class AbstractPong {
 		this.setPlayerLeftValues(180) 
 
 		this.ANIMATION = {};
+		
 		this.draw();
-		this.restart();
+		// this.pause();
+		// this.stop();
 	}
 
 	setPlayerLeftValues(y) {
 		this._game.playerleft.y = y;
-		// this._game.playerleft.score = playerleft.score;
 	}
 
 	setPlayerRightValues(y) {
 		this._game.playerright.y = y;
-		// this._game.playerright.score = playerright.score;
 	}
 
 	getPlayerLeftValues() {
@@ -62,30 +62,16 @@ export default class AbstractPong {
 	}
 
 	checkScore = () => {
-		let button = document.getElementById("stop-game");
-		// let clickEvent = new Event('click');
-		var clickEvent = new Event('click', {
-			'bubbles': true,  // L'événement peut remonter dans l'arborescence DOM
-			'cancelable': true  // L'événement peut être annulé
-		});
 		
-		if (this._game && this._game.playerright.score === 2) {
-			// button.addEventListener('click', this.stop())
+		if (this._game && this._game.playerright.score === 5) {
 			document.querySelector("#winner").classList.remove("d-none");
 			document.querySelector("#winner").innerHTML = "The winner is player 2";
-			button.dispatchEvent(clickEvent);
 			this.stop();
-			console.log("should stop");
-			// this.setToCenter();
 			return true;
-		} else if (this._game && this._game.playerleft.score === 2) {
-			// button.addEventListener('click', this.stop())
+		} else if (this._game && this._game.playerleft.score === 5) {
 			document.querySelector("#winner").classList.remove("d-none");
 			document.querySelector("#winner").innerHTML = "The winner is player 1";
-			button.dispatchEvent(clickEvent);
-			console.log("should stop");
 			this.stop();
-			// this.setToCenter();
 			return true;
 		}
 		return false;
@@ -94,6 +80,11 @@ export default class AbstractPong {
 	
 	start = (fps) => {
 		console.log("start")
+		document.querySelector('#start-game').innerHTML = "Pause game";
+		this._game.playerleft.score = 0;
+		this._game.playerright.score = 0;
+		this._playerleft_score = document.getElementById('playerleft-score')
+		this._playerright_score  = document.getElementById('playerright-score')
 		
 		cancelAnimationFrame(this.ANIMATION.id);
 		this.ANIMATION.fps = 60
@@ -102,6 +93,7 @@ export default class AbstractPong {
 		this.ANIMATION.startTime = this.ANIMATION.then;
 		this.ANIMATION.frameCount = 0;
 		this.loop();
+
 	}
 	
 	doOneFrame = () => {
@@ -119,11 +111,15 @@ export default class AbstractPong {
 			this.doOneFrame()  // whole game, right here.
 			this.ANIMATION.then = this.ANIMATION.now - (this.ANIMATION.elapsed % this.ANIMATION.fpsInterval);  // After everything.
 		}
+		this.winner = this.checkScore();
+		if (this.winner == true){
+			this.stop();
+			return;
+		}
 		this.ANIMATION.id = requestAnimationFrame(() => this.loop());
 	}
 
 	draw = () => {
-		console.log("draw")
 		let context = this._canvas.getContext('2d');
 	
 		context.fillStyle = 'black';
@@ -159,7 +155,6 @@ export default class AbstractPong {
 	}
 	
 	collide(player) {
-		console.log("collide");
 		this._game.playerleft.y = this.getPlayerLeftValues();
 		this._game.playerright.y = this.getPlayerRightValues();
 		if (this._game.ball.y < player.y || this._game.ball.y > player.y + PLAYER_HEIGHT) {
@@ -178,7 +173,7 @@ export default class AbstractPong {
 			this._game.ball.speed.x *= -1.2;
 			this.ChangeDirection(player.y);
 		}
-		this.winner = this.checkScore();
+		
 	}
 	
 	ChangeDirection (playerPosition) {
@@ -209,45 +204,42 @@ export default class AbstractPong {
 		this._game.ball.x += this._game.ball.speed.x;
 		this._game.ball.y += this._game.ball.speed.y;
 	}
-	
-	// computerMove() {
-	//     this._game.computer.y += this._game.ball.speed.y * 0.85;
-	// }
 
-	restart = () => {
-		console.log("please restart")
+	pause = () => {
+		console.log("pause");
+		if (document.querySelector('#start-game').innerHTML == "Pause game"){
+			document.querySelector('#start-game').innerHTML = "Start game";
+		}
 		cancelAnimationFrame(this.ANIMATION.id);
 	
-		this.setToCenter();
-		// return;
 	
 		this._game.ball.speed.y = 2;
 	
-		this._game.playerright.score = 0;
-		this._game.playerleft.score = 0;
 	
-		this._playerright_scorsContent = this._game.playerleft.score;
+		// this._playerright_scorsContent = this._game.playerleft.score;
 	
 		this.draw();
 
 	}
 
 	stop = () => {
-		console.log("please STOP")
-		// cancelAnimationFrame(this.ANIMATION.id);
+		console.log("stop");
+		document.querySelector('#start-game').innerHTML = "Start game";
+		document.getElementById('playerleft-score').innerHTML = 0;
+		document.getElementById('playerright-score').innerHTML = 0;
+		cancelAnimationFrame(this.ANIMATION.id);
 	
-		this._game.ball.x = this._canvas.width / 2;
-		this._game.ball.y = this._canvas.height / 2;
-		return;
+		this.setToCenter();
+			
+		this._game.ball.speed.y = 2;
 	
-		// this._game.ball.speed.y = 2;
-	
-		// this._game.playerright.score = 0;
-		// this._game.playerleft.score = 0;
+		this._game.playerright.score = 0;
+		this._game.playerleft.score = 0;
 	
 		// this._playerright_scorsContent = this._game.playerleft.score;
 	
-		// this.draw();
+		this.draw();
 
 	}
+
 }
