@@ -32,6 +32,13 @@ export default class extends AbstractView {
 		let playerleft_score = document.getElementById('player-score');
 		let playerright_score = document.getElementById('computer-score');
 
+		// function resizeCanvas() {
+		// 	canvas.width = window.innerWidth;
+		// 	canvas.height = window.innerHeight;
+		// }
+			
+		// window.addEventListener("resize", resizeCanvas);
+
 		document.querySelector('#start-game').innerHTML = "Start game";
 		document.querySelector('#stop-game').innerHTML = "Stop game";
 

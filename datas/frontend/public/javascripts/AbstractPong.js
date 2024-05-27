@@ -62,15 +62,15 @@ export default class AbstractPong {
 	}
 
 	checkScore = () => {
-		
-		if (this._game && this._game.playerright.score === 5) {
+		document.querySelector("#winner").classList.add("h2");
+		if (this._game && this._game.playerright.score === 2) {
 			document.querySelector("#winner").classList.remove("d-none");
-			document.querySelector("#winner").innerHTML = "The winner is player 2";
+			document.querySelector("#winner").innerHTML = "The winner is player 2!";
 			this.stop();
 			return true;
-		} else if (this._game && this._game.playerleft.score === 5) {
+		} else if (this._game && this._game.playerleft.score === 2) {
 			document.querySelector("#winner").classList.remove("d-none");
-			document.querySelector("#winner").innerHTML = "The winner is player 1";
+			document.querySelector("#winner").innerHTML = "The winner is player 1!";
 			this.stop();
 			return true;
 		}
