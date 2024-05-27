@@ -39,7 +39,6 @@ export default class {
         this.DOMProfileCard = doc.querySelector('.profile_card');
     }
 
-
     printHeader()
     {
         header.print(this.user)

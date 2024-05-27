@@ -34,6 +34,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             name=self.room_name
         )
         if created:
+            print("########## ${self.chat_room} created !!!!!")
             await database_sync_to_async(self.chat_room.users.add)(self.user)
             await database_sync_to_async(self.chat_room.users.add)(self.other_user)
 
@@ -99,6 +100,17 @@ class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 		)
 
 	async def send_notification(self, event):
-		await self.send(text_data=json.dumps({ 'message': event['message'] }))
+		await self.send(text_data=json.dumps({ 
+               'code': event['code'],
+               'message': event['message'],
+               'link': event['link'],
+               'sender': event['sender']
+            }))
 
-
+'''
+"type": "send_notification",
+"code": instance.code,
+"message": instance.message,
+"link": instance.link,
+"sender": instance.sender.username
+'''

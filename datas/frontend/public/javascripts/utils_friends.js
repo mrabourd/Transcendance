@@ -201,8 +201,12 @@ export async function update_status_text(user, profile_card)
             text = 'online'
             color = 'text-success'
             break
-        default:
+        case USER_STATUS['PLAYING'] :
             text = 'playing ...'
+            color = 'text-primary'
+            break
+        default:
+            text = 'waiting to play ...'
             color = 'text-primary'
             break
     }

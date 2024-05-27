@@ -12,7 +12,10 @@ def notification_created(sender, instance, created, **kwargs):
 			'public_room',
 			{
 				"type": "send_notification",
-				"message": instance.message
+				"code": instance.code,
+				"message": instance.message,
+				"link": instance.link,
+				"sender": instance.sender.username				
 			}
 		)
 	elif created and instance.type == 'private':
@@ -21,6 +24,7 @@ def notification_created(sender, instance, created, **kwargs):
 			f"{instance.receiver.id}",
 			{
 				"type": "send_notification",
+				"code": instance.code,
 				"message": instance.message,
 				"link": instance.link,
 				"sender": instance.sender.username

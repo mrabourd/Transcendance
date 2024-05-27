@@ -21,13 +21,12 @@ class Subscribe(APIView):
     def post(self, request):
         # Traitement de la requête POST ici
         print(f'user id = {request.user.id}')
-        request.user.SetStatus(2)
+        request.user.SetStatus(User.USER_STATUS['WAITING_PLAYER'])
         return HttpResponse("Subscribe !")
 
 @method_decorator(csrf_protect, name='dispatch')
 class Invite(APIView):
     permission_classes = [IsAuthenticated]
-
     def post(self, request, req_type, id):
         user = request.user  # L'utilisateur faisant la demande
         user_invited = get_object_or_404(User, id=id)  # L'utilisateur cible de l'action
@@ -41,8 +40,16 @@ class Invite(APIView):
                 user.invitation_sent = invitation
                 user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
                 user.save()
-                #Notification.objects.create(type="private", message="coucou", sender=user, receiver=user_invited, link="link to the match")
-                
+
+                notif_message = f'{user.username} has invited {user_invited.username} to play'
+                Notification.objects.create(
+                    type="private",
+                    code="xxx",
+                    message=notif_message,
+                    sender=user,
+                    receiver=user_invited,
+                    link=None
+                )
                 return HttpResponse("Invitation sent!")
             except IntegrityError:
                 return HttpResponse("An error occurred while sending the invitation.", status=500)
@@ -54,14 +61,21 @@ class Invite(APIView):
             user.SetStatus(User.USER_STATUS['ONLINE'])
             user.save()
             user.invitation_sent.delete()
-
+            notif_message = f'{user.username} has cancelled his invitation'
+            Notification.objects.create(
+                type="private",
+                code="xxx",
+                message=notif_message,
+                sender=user,
+                receiver=user_invited,
+                link=None
+            )
             return HttpResponse("Cancel invitation!")
 
         elif req_type == 'deny':
             # Vérifier si l'utilisateur cible a reçu une invitation
             invitation_sender = user_invited
             invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
-            invitation.delete()
             user.SetStatus(User.USER_STATUS['ONLINE'])
             invitation_sender.SetStatus(User.USER_STATUS['ONLINE'])
             # Envoyer une notification / invitation refusee
@@ -69,11 +83,13 @@ class Invite(APIView):
             notif_message = f'{user.username} has rejected {invitation_sender.username} invitation'
             Notification.objects.create(
                 type="private",
+                code="xxx",
                 message=notif_message,
                 sender=user,
                 receiver=invitation_sender,
                 link=None
             )
+            invitation.delete()
             return HttpResponse("deny invitation!")
 
         elif req_type == 'accept':
@@ -85,7 +101,7 @@ class Invite(APIView):
             # S'il est en ligne, cela signifie que l'invitation a été annulée
             if invitation_sender.status == User.USER_STATUS['ONLINE']:
                 return JsonResponse({'message': 'La demande a été annulée'}, status=404)
-    
+
             invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
             # Creer une entree dans la table match (status = in_progress)
             # creer deux entree dans la table match_points (match_id, user_id)
@@ -100,6 +116,7 @@ class Invite(APIView):
             notif_message = f'{user.username} has accepted {invitation_sender.username} invitation'
             Notification.objects.create(
                 type="private",
+                code="xxx",
                 message=notif_message,
                 sender=user,
                 receiver=invitation_sender,
