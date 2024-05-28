@@ -2,10 +2,12 @@ import AbstractPong from "./AbstractPong.js";
 
 const PLAYER_HEIGHT = 100;
 
-export default class extends AbstractPong {
+export default class pongOnline extends AbstractPong {
 	constructor(params) {
 		super(params);
 		this.currentKeysDown = [];
+		this.winner = false;
+		this.websocket = new WebSocket('ws://localhost:8443/ws/pong/');
     }
 	
 	  
@@ -65,5 +67,13 @@ export default class extends AbstractPong {
 		// console.log("computer not playing this time");
         // this._game.computer.y += this._game.ball.speed.y * 0.85;
     }
+
+	function sendMove(player, direction) {
+		socket.send(JSON.stringify({
+			'type': 'move',
+			'player': player,
+			'direction': direction
+		}));
+	}
     
 }

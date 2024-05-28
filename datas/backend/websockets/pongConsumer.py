@@ -13,32 +13,38 @@ User = get_user_model()
 
 
 class PongConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.user = self.scope["user"]
-        if isinstance(self.user, AnonymousUser):
-            await self.accept()
-            await self.send(text_data=json.dumps({"error": "token_not_valid"}))
-            await self.close()
-            return
-        
-        # match_id a recuperer dans l'url
-        await self.channel_layer.group_add("match_id", self.channel_name)
-        
-        # fonction pour recup les users associes au mtch_id dans db (dans match point)
-            # verif si les deux users sont la
-        await self.accept()
-
-    async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(
-            "match_id", self.channel_name
-        )
-
-    async def send_notification(self, event):
-        await self.send(text_data=json.dumps({ 'message': event['message'] }))
+	
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.game = None
 
 
+	async def connect(self):
+		self.user = self.scope["user"]
+		if isinstance(self.user, AnonymousUser):
+			await self.accept()
+			await self.send(text_data=json.dumps({"error": "token_not_valid"}))
+			await self.close()
+			return
+		
+		# match_id a recuperer dans l'url
+		await self.channel_layer.group_add("match_id", self.channel_name)
+		
+		# fonction pour recup les users associes au mtch_id dans db (dans match point)
+			# verif si les deux users sont la
+		await self.accept()
 
-# INSPI:
-# https://github1s.com/MatPizzolo/ft_transcendence/blob/main/backend/server/ws_api/consumers/gameconsumer2.py
+	async def disconnect(self, close_code):
+		await self.channel_layer.group_discard(
+			"match_id", self.channel_name
+		)
 
-# Creer PONG en ython dans un autre fichier.
+	async def send_notification(self, event):
+		await self.send(text_data=json.dumps({ 'message': event['message'] }))
+
+
+
+	# INSPI:
+	# https://github1s.com/MatPizzolo/ft_transcendence/blob/main/backend/server/ws_api/consumers/gameconsumer2.py
+
+	# Creer PONG en ython dans un autre fichier.

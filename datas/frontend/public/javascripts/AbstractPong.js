@@ -98,7 +98,7 @@ export default class AbstractPong {
 	
 	doOneFrame = () => {
 		this.draw();
-		this.playerLeftMove();
+		//this.playerLeftMove();
 		this.ballMove();
 	}
 
