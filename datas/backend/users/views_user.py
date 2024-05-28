@@ -67,10 +67,10 @@ class UserDetail(APIView):
         response_data = serializer.data
         
         response = JsonResponse(response_data, safe=False)
-        response['X-CSRFToken'] = get_token(request)
-        response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
-        response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
-        response['Access-Control-Allow-Credentials'] = 'true'
+        #response['X-CSRFToken'] = get_token(request)
+        #response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
+        #response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
+        #response['Access-Control-Allow-Credentials'] = 'true'
         return response
 
     def put(self, request, id, format=None):
