@@ -1,4 +1,6 @@
 import AbstractView from "./AbstractView.js";
+import * as utils from "../utils_form.js";
+import * as router from "../router.js";
 
 export default class extends AbstractView {
     constructor(params) {
@@ -26,22 +28,42 @@ export default class extends AbstractView {
     }
 
     addEvents () {
-        console.log("Add Event Tournament")
         document.querySelector('#app p.lead span.btn-create-tournament').addEventListener('click', async (event) =>  {
             event.preventDefault();
-            this.createTournament();
+            this.createMatchmaking();
         })
     }
 
-    createTournament = () => { 
-        console.log("now you can create tournament")
+    createTournament = async () => {
+        let errDiv = document.querySelector("#errorFeedback");
+        
+        let nametournament = document.querySelector('#app input#name-tournament').value;
+        if (nametournament == ""){
+            errDiv.classList.remove("d-none")
+            errDiv.innerHTML = 'An error occured ! Please check fields below ...';
+        }
+        else
+            errDiv.classList.add("d-none");
+            
+        console.log("name of the tournament: ", nametournament);
+        // checker que les champs sont bien remplis
+
+        let action = "create";
+        let response = await this.user.request.post(`/api/match/tournament/${action}/${nametournament}/`)
+        if (response.status == 200)
+        {
+            let JSONresponse = await response.json();
+            router.navigateTo('/play/online/' + JSONresponse.tournament_name, this.user);
+        }
+    }
+
+    createMatchmaking = () => { 
         document.getElementById("createTournament").classList.remove("d-none")
         document.querySelector('#app input#player1').value = this.user.datas.username;
-
-        document.getElementById("matchmaking").addEventListener('click', async (event) =>  {
+        document.querySelector('#app div.col-12 button#matchmaking').addEventListener('click', async (event) =>  {
             event.preventDefault();
-            console.log("do the tournament NOW!")
-            
-        });
+            this.createTournament();
+        })
+        
     }
 }

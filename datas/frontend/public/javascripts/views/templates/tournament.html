@@ -19,40 +19,48 @@
             <p class="lead">
               <span class="btn btn-primary btn-lg btn-create-tournament" role="button">Create tournament</span>
             </p>
-            <div id="createTournament">  
-                <div class="col-md-6">
-                    <label for="player1" class="form-label">Player 1:</label>
-                    <input type="text" class="form-control" id="player1" aria-describedby="player1Feedback" required>
-                    <div id="player1Feedback" class="invalid-feedback">
-                      feedback
-                    </div>
-                  </div>
-                    <div class="col-md-6">
-                      <label for="player2" class="form-label">Player 2:</label>
-                      <input type="text" class="form-control" id="player2" aria-describedby="player2Feedback" required>
-                      <div id="player2Feedback" class="invalid-feedback">
-                        feedback
-                      </div>
-                  </div>
-            
-                  <div class="col-md-6">
-                    <label for="player3" class="form-label">Player 3:</label>
-                    <input type="text" class="form-control" id="player3" aria-describedby="player3Feedback" required>
-                    <div id="player3Feedback" class="invalid-feedback">
-                      feedback
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <label for="player4" class="form-label">Player 4:</label>
-                    <input type="text" class="form-control" id="player4" aria-describedby="player4Feedback" required>
-                    <div id="player4Feedback" class="invalid-feedback">
-                      feedback
-                    </div>
-                  </div>
-                  
-                  <div class="col-12">
-                    <button class="btn btn-primary" type="submit" id="matchmaking">Matchmaking</button>
-                  </div>
+            <div id="createTournament" class="form-tournament">  
+                <div id="errorFeedback" class="alert alert-danger d-none"></div>
+				<div class="col-md-6 row justify-content-center">
+					<label for="name-tournament" class="form-label row justify-content-center">Tournament name:</label>
+					<input type="text" class="form-control row justify-content-center" id="name-tournament" aria-describedby="name-tournamentFeedback" required>
+					<div id="name-tournamentFeedback" class="invalid-feedback">
+					feedback
+					</div>
+				</div>
+				<div class="col-md-6">
+					<label for="player1" class="form-label">Player 1:</label>
+					<input type="text" class="form-control" id="player1" aria-describedby="player1Feedback" required>
+					<div id="player1Feedback" class="invalid-feedback">
+					feedback
+					</div>
+				</div>
+					<div class="col-md-6">
+					<label for="player2" class="form-label">Player 2:</label>
+					<input type="text" class="form-control" id="player2" aria-describedby="player2Feedback" required>
+					<div id="player2Feedback" class="invalid-feedback">
+						feedback
+					</div>
+				</div>
+			
+				<div class="col-md-6">
+					<label for="player3" class="form-label">Player 3:</label>
+					<input type="text" class="form-control" id="player3" aria-describedby="player3Feedback" required>
+					<div id="player3Feedback" class="invalid-feedback">
+					feedback
+					</div>
+				</div>
+				<div class="col-md-6">
+					<label for="player4" class="form-label">Player 4:</label>
+					<input type="text" class="form-control" id="player4" aria-describedby="player4Feedback" required>
+					<div id="player4Feedback" class="invalid-feedback">
+					feedback
+					</div>
+				</div>
+				
+				<div class="col-12">
+					<button class="btn btn-primary" type="submit" id="matchmaking">Matchmaking</button>
+				</div>
           </div>
     </div>
     </div>
