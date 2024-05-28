@@ -54,6 +54,8 @@ export default class extends AbstractView {
 		}
 		else {
 			console.log("tournament");
+			// create match for tournament with the right names of players
+			// this._game = new pongPlayer(canvas, playerleft_score, playerright_score);
 		}
 
 		

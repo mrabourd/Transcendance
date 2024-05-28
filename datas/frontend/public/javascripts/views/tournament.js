@@ -35,24 +35,57 @@ export default class extends AbstractView {
         })
     }
 
-    matchmaking = async () => {
-        let p1 = document.querySelector('#app input#player1').value;
-        let p2 = document.querySelector('#app input#player2').value;
-        let p3 = document.querySelector('#app input#player3').value;
-        let p4 = document.querySelector('#app input#player4').value;
-        
-        let players = [p1, p2, p3, p4];
-        var picks = [];
+    displayPlayers = async (picks, nametournament) => {
+        console.log("nametournament: ", nametournament);
+        document.querySelector('#app table.table').classList.remove("d-none");
 
-        // pickpool = players.slice(0);
-        for (var i = 0; i < 2 ; i++) {
-            let random = Math.floor(Math.random() * 2);
-            console.log("random: ", random);
-            picks.push(players[random]);
+        document.querySelector('#app td.player1-match').innerHTML = picks[0];
+        document.querySelector('#app td.player2-match').innerHTML = picks[1];
+        document.querySelector('#app td.player3-match').innerHTML = picks[2];
+        document.querySelector('#app td.player4-match').innerHTML = picks[3];
+     
+
+        document.querySelector('#app #match1-button').addEventListener('click', async (event) =>  {
+            event.preventDefault();
+            router.navigateTo('/play/' + nametournament);
+        })
+        // document.querySelector('#app #match1-button').link = ;
+        // document.querySelector('#app #match2-button').link = ;
+    }
+
+    matchmaking = async (players) => {
+        let errDiv = document.querySelector("#errorFeedback");
+        let picks = [];
+
+        if (players[0] == "" || players[1] == ""
+            || players[2] == "" || players[3] == ""){
+            errDiv.classList.remove("d-none")
+            errDiv.innerHTML = 'You must fill all the inputs!';
         }
-        
-        document.querySelector('#app td.player1-match').value = picks[0];
-        document.querySelector('#app td.player2-match').value = picks[1];
+
+        else {
+            
+            let used = undefined;
+
+            for (let i = 0; i < 2 ; i++) {
+                let random = Math.floor(Math.random() * 3);
+
+                if (players[random] == used){
+                    random++;
+                }
+                picks.push(players[random]);
+                used = players[random];
+            }
+            for (let i = 0; i < 4 ; i++){
+                if (players[i] == picks[0] || players[i] == picks[1])
+                    continue;
+                else
+                    picks.push(players[i]);
+            }
+
+        }
+
+        return picks;
     }
 
     createTable = async () => {
@@ -70,13 +103,20 @@ export default class extends AbstractView {
         // checker que les champs sont bien remplis
 
         let action = "create";
+        let picks = [];
         let response = await this.user.request.post(`/api/match/tournament/${action}/${nametournament}/`)
         if (response.status == 200)
         {
             let JSONresponse = await response.json();
             console.log("response: ", JSONresponse);
-            this.matchmaking();
-            document.querySelector('#app table.table').classList.remove("d-none");
+            let p1 = document.querySelector('#app input#player1').value;
+            let p2 = document.querySelector('#app input#player2').value;
+            let p3 = document.querySelector('#app input#player3').value;
+            let p4 = document.querySelector('#app input#player4').value;
+            let players = [p1, p2, p3, p4];
+            picks = await this.matchmaking(players);
+
+            this.displayPlayers(picks, nametournament);
 
         }
     }
