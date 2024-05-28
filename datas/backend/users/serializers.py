@@ -50,8 +50,7 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
     def to_representation(self, instance):
-        print(">>>>>>>>>>>>>>>>>>>> INIVTAION <<<<<<<<<<<<<<<<<<<<<<<")
-        print("instance", instance)
+
         representation = super().to_representation(instance)
         try:
             representation['invitation_sent'] = instance.sent_invitation.receiver.id

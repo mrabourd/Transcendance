@@ -7,10 +7,34 @@ export default class pongOnline extends AbstractPong {
 		super(params);
 		this.currentKeysDown = [];
 		this.winner = false;
-		this.websocket = new WebSocket('ws://localhost:8443/ws/pong/');
+		this.websocket = new WebSocket('wss://localhost:8443/ws/pong/');
+
+		this.websocket.onopen = function(e) {
+			console.log('Socket successfully connected.');
+		};
+
+		this.websocket.onmessage = function(e) {
+			const data = JSON.parse(e.data);
+			if (data.type === 'move') {
+				if (data.player === 'player2') {
+					if (data.direction === 'up') {
+						this.rightPaddleMoveUp();
+					} else if (data.direction === 'down') {
+						this.rightPaddleMoveDown();
+					}
+				} else if (data.player === 'player1') {
+					if (data.direction === 'up') {
+						this.leftPaddleMoveUp();
+					} else if (data.direction === 'down') {
+						this.leftPaddleMoveDown();
+					}
+				}
+			}
+		}
+
     }
 	
-	  
+	
 	movePaddles() {
 		window.addEventListener("keydown", function(e) {
 			if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
@@ -68,8 +92,8 @@ export default class pongOnline extends AbstractPong {
         // this._game.computer.y += this._game.ball.speed.y * 0.85;
     }
 
-	function sendMove(player, direction) {
-		socket.send(JSON.stringify({
+	sendMove(player, direction) {
+		this.websocket.send(JSON.stringify({
 			'type': 'move',
 			'player': player,
 			'direction': direction
