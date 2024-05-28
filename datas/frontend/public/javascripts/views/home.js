@@ -53,15 +53,15 @@ export default class extends AbstractView {
                 e.preventDefault();
                 let response 
                 try {
-                response = await this.user.request.post(`/api/match/invite/accept/${friend_id.sender}/`)
-                if (response.status === 200)
-                {
-                    let JSONresponse = await response.json();
-                    router.navigateTo('/play/online/' + JSONresponse.match_id, this.user);
+                    response = await this.user.request.post(`/api/match/invite/accept/${friend_id.sender}/`)
+                    if (response.status === 200)
+                    {
+                        let JSONresponse = await response.json();
+                        router.navigateTo('/play/online/' + JSONresponse.match_id, this.user);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
                 }
-            } catch (error) {
-                console.error('Error:', error);
-            }
             });
 
         

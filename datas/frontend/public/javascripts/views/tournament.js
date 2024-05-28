@@ -25,16 +25,37 @@ export default class extends AbstractView {
             console.warn('Something went wrong.', err);
         });
         document.getElementById("createTournament").classList.add("d-none");
+        document.querySelector('#app table.table').classList.add("d-none");
     }
 
     addEvents () {
         document.querySelector('#app p.lead span.btn-create-tournament').addEventListener('click', async (event) =>  {
             event.preventDefault();
-            this.createMatchmaking();
+            this.enterNames();
         })
     }
 
-    createTournament = async () => {
+    matchmaking = async () => {
+        let p1 = document.querySelector('#app input#player1').value;
+        let p2 = document.querySelector('#app input#player2').value;
+        let p3 = document.querySelector('#app input#player3').value;
+        let p4 = document.querySelector('#app input#player4').value;
+        
+        let players = [p1, p2, p3, p4];
+        var picks = [];
+
+        // pickpool = players.slice(0);
+        for (var i = 0; i < 2 ; i++) {
+            let random = Math.floor(Math.random() * 2);
+            console.log("random: ", random);
+            picks.push(players[random]);
+        }
+        
+        document.querySelector('#app td.player1-match').value = picks[0];
+        document.querySelector('#app td.player2-match').value = picks[1];
+    }
+
+    createTable = async () => {
         let errDiv = document.querySelector("#errorFeedback");
         
         let nametournament = document.querySelector('#app input#name-tournament').value;
@@ -53,16 +74,19 @@ export default class extends AbstractView {
         if (response.status == 200)
         {
             let JSONresponse = await response.json();
-            router.navigateTo('/play/online/' + JSONresponse.tournament_name, this.user);
+            console.log("response: ", JSONresponse);
+            this.matchmaking();
+            document.querySelector('#app table.table').classList.remove("d-none");
+
         }
     }
 
-    createMatchmaking = () => { 
+    enterNames = () => { 
         document.getElementById("createTournament").classList.remove("d-none")
         document.querySelector('#app input#player1').value = this.user.datas.username;
         document.querySelector('#app div.col-12 button#matchmaking').addEventListener('click', async (event) =>  {
             event.preventDefault();
-            this.createTournament();
+            this.createTable();
         })
         
     }

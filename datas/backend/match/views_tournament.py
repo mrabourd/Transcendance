@@ -11,16 +11,18 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from websockets.models import Notification
+from .models import Tournament
 # Create your views here.
 from users.models import User  # Import your User model
 User = get_user_model()
 
-@method_decorator(csrf_protect, name='dispatch')
-class Tournament(APIView):
+# @method_decorator(csrf_protect, name='dispatch')
+class TournamentView(APIView):
     permission_classes = [IsAuthenticated]
+
     def post(self, request, req_type, name):
         user = request.user
-        tournament_name = 'name'
+        tournament_name = name
 
         if req_type == 'create':
             # Vérifier si l'utilisateur cible a reçu une invitation
@@ -30,12 +32,11 @@ class Tournament(APIView):
             # Vérifier le statut du demandeur (s'il est en ligne, annuler la demande)
             # S'il est en ligne, cela signifie que l'invitation a été annulée
 
-            tournament = get_object_or_404(Tournament, name=tournament_name)
+            tournament = Tournament.objects.create(name=tournament_name, user=user, status=2)
             # Creer une entree dans la table match (status = in_progress)
             # creer deux entree dans la table match_points (match_id, user_id)
             # recuperer l'id du match pour le renvoyer
             ##### TO DO
-            tournament_id = 'XXX' 
 
             # Envoyer une notification / invitation acceptee + match_id + lien
 
