@@ -80,6 +80,8 @@ export default class AbstractPong {
 	
 	start = (fps) => {
 		console.log("start")
+		document.querySelector("#winner").classList.add("d-none");
+		console.log("hide winner");
 		document.querySelector('#start-game').innerHTML = "Pause game";
 		this._game.playerleft.score = 0;
 		this._game.playerright.score = 0;

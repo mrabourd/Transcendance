@@ -17,21 +17,83 @@
             <hr class="my-4">
             <p>Also, you can reach an existing tournament if you click on join tournament.</p>
             <p class="lead">
-              <a class="btn btn-primary btn-lg" id="tournament" href="#" role="button">Create tournament</a>
+              <span class="btn btn-primary btn-lg btn-create-tournament" role="button">Create tournament</span>
             </p>
-            <div id="createTournament">  
-                <div>
-    
-                    <label for="numberPeople" class="form-label">Your code:</label>
-                    <input type="numberPeople" class="form-control" id="numberPeople" value="" aria-describedby="numberPeopleFeedback" required>
-                    <div id="numberPeopleFeedback" class="invalid-feedback">
-                </div>
-                    <div class="col-12">
-                        <button class="btn btn-primary" type="submit" id="numberPeople">Login!</button>
-                    </div>
-            </div>
+            <div id="createTournament" class="form-tournament">  
+                <div id="errorFeedback" class="alert alert-danger d-none"></div>
+				<div class="col-md-6">
+					<label for="name-tournament" class="form-label row justify-content-center">Tournament name:</label>
+					<input type="text" class="form-control" id="name-tournament" aria-describedby="name-tournamentFeedback" required>
+					<div id="name-tournamentFeedback" class="invalid-feedback">
+					feedback
+					</div>
+				</div>
+				<div class="col-md-6">
+					<label for="player1" class="form-label">Player 1:</label>
+					<input type="text" class="form-control" id="player1" aria-describedby="player1Feedback" required>
+					<div id="player1Feedback" class="invalid-feedback">
+					feedback
+					</div>
+				</div>
+					<div class="col-md-6">
+					<label for="player2" class="form-label">Player 2:</label>
+					<input type="text" class="form-control" id="player2" aria-describedby="player2Feedback" required>
+					<div id="player2Feedback" class="invalid-feedback">
+						feedback
+					</div>
+				</div>
+			
+				<div class="col-md-6">
+					<label for="player3" class="form-label">Player 3:</label>
+					<input type="text" class="form-control" id="player3" aria-describedby="player3Feedback" required>
+					<div id="player3Feedback" class="invalid-feedback">
+					feedback
+					</div>
+				</div>
+				<div class="col-md-6">
+					<label for="player4" class="form-label">Player 4:</label>
+					<input type="text" class="form-control" id="player4" aria-describedby="player4Feedback" required>
+					<div id="player4Feedback" class="invalid-feedback">
+					feedback
+					</div>
+				</div>
+				
+				<div class="col-12">
+					<button class="btn btn-primary" type="submit" id="matchmaking">Matchmaking</button>
+				</div>
           </div>
-    </div>
+
+			<table id="pool" class="table">
+				<thead>
+					<tr>
+					<th scope="col"></th>
+					<th scope="col">Player</th>
+					<th scope="col">Player</th>
+					<th scope="col">Play!</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+					<th scope="row">1</th>
+					<td class="player1-match"></td>
+					<td class="player2-match"></td>
+					<td class="match1"></td>
+					</tr>
+					<tr>
+					<th scope="row">2</th>
+					<td class="player3-match"></td>
+					<td class="player4-match"></td>
+					<td class="match2"></td>
+					</tr>
+					<tr>
+					<th scope="row">3</th>
+					<td class="playerundefined-match">To be determined</td>
+					<td class="playerundefined-match">To be determined</td>
+					<td>Not available</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
     </div>
 </main>
 </body>

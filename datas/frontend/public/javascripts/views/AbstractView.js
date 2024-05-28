@@ -30,8 +30,8 @@ export default class {
     }
 
     async getTemplates() {
-        await this.user.RefreshLocalDatas()
-        let profile_card_url = '/template/profile_card'
+        await this.user.RefreshLocalDatas();
+        let profile_card_url = '/template/profile_card';
         let response = await fetch(profile_card_url);
         let html = await response.text();
         let parser = new DOMParser();
@@ -41,11 +41,11 @@ export default class {
 
     printHeader()
     {
-        header.print(this.user)
+        header.print(this.user);
     }
     async printAside()
     {
-        await aside.print(this.user)
+        await aside.print(this.user);
     }
 }
 

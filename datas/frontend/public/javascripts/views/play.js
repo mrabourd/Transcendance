@@ -45,14 +45,15 @@ export default class extends AbstractView {
 		if (this.params.adversaire === "vs_computer"){
 			this._game = new pongComputer(canvas, playerleft_score, playerright_score);
 		}
-		else if (this.params.adversaire === "vs_player")
-		{
+		else if (this.params.adversaire === "vs_player"){
 			this._game = new pongPlayer(canvas, playerleft_score, playerright_score);
 		}
-		else
-		{
+		else if (this.params.adversaire === "online"){
 			this._game = new pongOnline(canvas, playerleft_score, playerright_score);
-			console.log("vs user id: creer avec websocket")
+			console.log("vs user id: creer avec websocket");
+		}
+		else {
+			console.log("tournament");
 		}
 
 		
