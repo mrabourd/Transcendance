@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.http import JsonResponse
 
 from .serializers import UserSerializer
 from django.contrib.auth import get_user_model, login
@@ -10,6 +11,7 @@ import os
 import json
 import requests
 from django.middleware.csrf import get_token
+import uuid
 
 User = get_user_model()
 
@@ -22,7 +24,7 @@ def get_tokens_for_user(user):
 
 def check_user_existence(user_id):
     # Utilisez la méthode exists() pour vérifier si un utilisateur avec cet ID existe
-    user_exists = User.objects.filter(id=user_id).exists()
+    user_exists = User.objects.filter(id_42=user_id).exists()
 
     return user_exists
 
@@ -44,14 +46,12 @@ def login42Callback(request):
 
 	else:
 		return JsonResponse({'error': 'Method not allowed'}, status=405)
-	# print("Data", data)
 	r = requests.post(get_token_path, data=data)
 	if r.json().get('error'):
 		return  Response(r.json())
-	# print("r: ", r)
+
 	token = r.json()['access_token']
 	headers = {"Authorization": "Bearer %s" % token}
-	# print("headers: ", headers)
 
 	user_response = requests.get("https://api.intra.42.fr/v2/me", headers=headers)
 	user_response_json = user_response.json()
@@ -59,19 +59,19 @@ def login42Callback(request):
 	av_1 = user_response_json['image']
 	av_2 = av_1['versions']
 	avatar_url = av_2['small']
-	user_id = user_response_json['id']
 
-	if check_user_existence(user_id):
-		user = User.objects.get(id=user_id)
+	user_id_42 = user_response_json['id']
+
+	if check_user_existence(user_id_42):
+		user = User.objects.get(id_42=user_id_42)
 		user.username=user_response_json['login'],
 		user.first_name=user_response_json['first_name'],
 		user.last_name=user_response_json['last_name'],
 		user.email=user_response_json['email'],
 		user.avatar=avatar_url,
-
 	else:
 		user = User.objects.create_user(
-			id=user_id,
+			id_42=user_id_42,
 			username=user_response_json['login'],
 			first_name=user_response_json['first_name'],
 			last_name=user_response_json['last_name'],
@@ -83,11 +83,13 @@ def login42Callback(request):
 	user_info = {}
 	token_info = get_tokens_for_user(user)  
 
-	user_info = {"refresh": token_info["refresh"],
+	user_info = {
+		"refresh": token_info["refresh"],
 		"access": token_info["access"],
 		"user": serializer.data,
-		
 	}
+	user = User.objects.get(id_42=user_id_42)
+	user.SetStatus(User.USER_STATUS['ONLINE'])
 	response = Response(user_info)
 	response['X-CSRFToken'] = get_token(request)  # Récupère le jeton CSRF et l'ajoute à l'en-tête de la réponse
 	response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
