@@ -59,15 +59,19 @@ class UsersAPIView(APIView):
 
 class UserDetail(APIView):
     def get_user(self, id):
-        try:
-            return User.objects.get(id=id)
-        except User.DoesNotExist:
-            raise Http404
+        return get_object_or_404(User, id=id)
 
     def get(self, request, id, format=None):
         user = self.get_user(id)
         serializer = UserSerializer(user)
-        return Response(serializer.data)
+        response_data = serializer.data
+        
+        response = JsonResponse(response_data, safe=False)
+        response['X-CSRFToken'] = get_token(request)
+        response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
+        response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
+        response['Access-Control-Allow-Credentials'] = 'true'
+        return response
 
     def put(self, request, id, format=None):
         user = self.get_user(id)

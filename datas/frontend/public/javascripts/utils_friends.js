@@ -50,7 +50,21 @@ export async function invite(user, friend_id, action)
     let response = await user.request.post(`/api/match/invite/${action}/${friend_id}/`)
     if (response.status == 200)
     {
-        await user.RefreshLocalDatas();
+        console.log('action >>>>> ', action)
+        if (action == 'send')
+        {
+            console.log('invitation sent to ', friend_id)
+            // ajouter dans invitation sent
+            user.datas.invitation_sent = friend_id;
+            //user.datas.invitation_sent_to = friend_id;
+            user.saveDatasToLocalStorage();
+        }else{
+            user.datas.invitation_sent = null;
+            //user.datas.invitation_sent_to = null;
+            user.saveDatasToLocalStorage();
+
+        }
+        //await user.RefreshLocalDatas();
         update_profile_cards_text(user)
     }
 }
