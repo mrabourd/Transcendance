@@ -4,11 +4,11 @@ from rest_framework.test import APIRequestFactory
 from users.views_login import CustomLogoutView
 from rest_framework import status
 from channels.db import database_sync_to_async
+from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from users.serializers import UserSerializer
-from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
 #from channels.auth import channel_session_user_from_http, channel_session_user
 from .models import ChatRoom
@@ -88,41 +88,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
 class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.user = self.scope["user"]
-		#print(self.scope['headers'].cookie)
-		#self.refresh = self.scope["JWTtoken"]["refresh"]
 		if isinstance(self.user, AnonymousUser):
 			await self.accept()
 			await self.send(text_data=json.dumps({"error": "token_not_valid"}))
 			await self.close()
 			return
-		
+		# add user to channels 
 		await self.channel_layer.group_add("public_room", self.channel_name)
 		await self.channel_layer.group_add(f"{self.user.id}", self.channel_name)
-
+		# set user status to ONLINE if necessay & send a notification to users
+		if self.user.status == User.USER_STATUS['OFFLINE']:
+			self.user.status = User.USER_STATUS['ONLINE']
+			await sync_to_async(self.user.save, thread_sensitive=True)()
+			await sync_to_async(Notification.objects.create)(type="public",code="STA",message=self.user.status,sender=self.user,receiver=self.user,link=None)
 		await self.accept()
 
 	async def disconnect(self, close_code):
 		try:
+			# remove user from channels 
 			await self.channel_layer.group_discard("public_room", self.channel_name)
 			await self.channel_layer.group_discard(f"{self.user.id}", self.channel_name)
-			'''
-			# Crée une instance de la requête pour utiliser dans la vue
-			factory = APIRequestFactory()
-			request = factory.post('/logout/', {'refresh': 'your_refresh_token_here'})
+			# set user status to OFFLINE & send a notification to users
+			self.user.status = User.USER_STATUS['OFFLINE']
+			await sync_to_async(self.user.save, thread_sensitive=True)()
+			await sync_to_async(Notification.objects.create)(type="public",code="STA",message=self.user.status,sender=self.user,receiver=self.user,link=None)
 
-			# Simule l'authentification de l'utilisateur
-			request.user = self.scope['user']
-
-			# Exécute la vue de déconnexion
-			view = CustomLogoutView.as_view()
-			response = view(request)
-
-			# Vérifie la réponse et agit en conséquence
-			if response.status_code == status.HTTP_200_OK:
-				print("User logged out successfully.")
-			else:
-				print("Error logging out user:", response.data)
-			'''
 		except Exception as e:
 			print("Error:", str(e))
 
@@ -136,11 +126,3 @@ class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 			   'link': event['link'],
 			   'sender': sender_id
 			}))
-
-'''
-"type": "send_notification",
-"code": instance.code,
-"message": instance.message,
-"link": instance.link,
-"sender": instance.sender.username
-'''
