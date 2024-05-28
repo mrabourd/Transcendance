@@ -27,14 +27,21 @@ export default class extends AbstractView {
 
     addEvents () {
         console.log("Add Event Tournament")
-        document.getElementById('tournament').addEventListener('click', async (event) =>  {
+        document.querySelector('#app p.lead span.btn-create-tournament').addEventListener('click', async (event) =>  {
             event.preventDefault();
             this.createTournament();
         })
     }
 
-    createTournament = async () => { 
+    createTournament = () => { 
         console.log("now you can create tournament")
         document.getElementById("createTournament").classList.remove("d-none")
+        document.querySelector('#app input#player1').value = this.user.datas.username;
+
+        document.getElementById("matchmaking").addEventListener('click', async (event) =>  {
+            event.preventDefault();
+            console.log("do the tournament NOW!")
+            
+        });
     }
 }
