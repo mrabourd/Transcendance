@@ -214,7 +214,13 @@ export async function update_status_text(profile_card)
     dom.classList.add(color)
 }
 
-export async function create_thumbnail(nodeToCopy, user, friend) {
+export async function create_thumbnail(nodeToCopy, user, friend)
+{
+    // clone existing tumbnail if exists
+    let existing_thumbnail = document.querySelector(`.profile_card[data-friend-id="${friend.id}"]`)
+    if (existing_thumbnail)
+        return existing_thumbnail.cloneNode(true)
+
     const nodeCopy = nodeToCopy.cloneNode(true);
     await nodeCopy.setAttribute("data-friend-id", friend.id)
     await nodeCopy.setAttribute("data-friend-status", friend.status)
