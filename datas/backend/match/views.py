@@ -39,7 +39,7 @@ class Invite(APIView):
                 invitation = Invitation.objects.create(sender=user, receiver=user_invited)
                 user.invitation_sent = invitation
                 user.save()
-    
+                
                 notif_message = f'{user.username} has invited {user_invited.username} to play'
                 Notification.objects.create(
                     type="public",

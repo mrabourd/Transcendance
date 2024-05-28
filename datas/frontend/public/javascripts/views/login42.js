@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import * as utils from "../utils_form.js"
 import * as router from "../router.js";
+import Websockets from "../websockets.js";
 
 export default class extends AbstractView {
 	constructor(params) {
@@ -50,12 +51,8 @@ export default class extends AbstractView {
 
 				this.user.isConnected = true;
 
-				const resp_csrf = await this.user.request.post('/api/users/ma_vue_protegee/');
-				// if(resp_csrf.status == 403)
-				// {
-				// 	console.warn("CSRF attack")
-				// 	return true;
-				// }
+				this.user.websockets = new Websockets(this.user)
+
 				this.user.router.navigateTo('/profile/', this.user);
 			}
 			

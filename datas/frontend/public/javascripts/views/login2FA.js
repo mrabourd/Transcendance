@@ -100,31 +100,6 @@ export default class extends AbstractView {
 
 	}
 
-
-    login = async () => { 
-        let username =  document.getElementById("username").value;
-        let password = document.getElementById("password").value;
-        this.user.login(username, password)
-        .then(async result => {
-            if (result == true)
-                router.navigateTo("/home", this.user)
-            else
-            {
-                let errDiv = document.querySelector("#errorFeedback");
-                errDiv.classList.remove("d-none")
-                errDiv.innerHTML = 'An error occured ! Please check fields below ...';
-                let jsonData = await result.json()
-                for (const key in jsonData) {
-                    if (Object.hasOwnProperty.call(jsonData, key))
-                        utils.printError(key, 1, jsonData[key])
-                }
-            }
-        })
-        .catch(error => {
-            console.error('login.js (76) : There was a problem with the fetch operation:', error);
-        });
-    }
-
 	verify2FA = async () => {
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
@@ -162,4 +137,29 @@ export default class extends AbstractView {
 		}
 	
 	}
+
+
+    login = async () => { 
+        let username =  document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+        this.user.login(username, password)
+        .then(async result => {
+            if (result == true)
+                router.navigateTo("/home", this.user)
+            else
+            {
+                let errDiv = document.querySelector("#errorFeedback");
+                errDiv.classList.remove("d-none")
+                errDiv.innerHTML = 'An error occured ! Please check fields below ...';
+                let jsonData = await result.json()
+                for (const key in jsonData) {
+                    if (Object.hasOwnProperty.call(jsonData, key))
+                        utils.printError(key, 1, jsonData[key])
+                }
+            }
+        })
+        .catch(error => {
+            console.error('login.js (76) : There was a problem with the fetch operation:', error);
+        });
+    }
 }
