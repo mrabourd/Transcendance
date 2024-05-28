@@ -118,7 +118,9 @@ export default class User {
         // TODO enregistrer un cookie pour plus de securite
     }
 
-
+    saveDatasToLocalStorage = async () =>{
+        window.localStorage.setItem("LocalDatas", JSON.stringify(this.datas));
+    }
 
     logout = async() =>{
         this.websockets.notifyScoket.close();

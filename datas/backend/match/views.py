@@ -37,9 +37,9 @@ class Invite(APIView):
                 return HttpResponse("You have already sent an invitation.", status=400)
             try:
                 invitation = Invitation.objects.create(sender=user, receiver=user_invited)
-                user.invitation_sent = invitation
-                user.save()
-                
+                #user.invitation_sent = invitation
+                #user.save()
+
                 notif_message = f'{user.username} has invited {user_invited.username} to play'
                 Notification.objects.create(
                     type="public",
@@ -57,10 +57,11 @@ class Invite(APIView):
         elif req_type == 'cancel':
             # Vérifier si l'utilisateur a effectivement envoyé une invitation
             if not hasattr(user, 'sent_invitation'):
-                return HttpResponse("No invitation to cancel.", status=400)
+                return HttpResponse("No invitation to cancel.", status=204)
             user.SetStatus(User.USER_STATUS['ONLINE'])
-            user.save()
-            user.invitation_sent.delete()
+            user.sent_invitation.delete()
+            #user.sent_invitation = None
+            #user.save()
             notif_message = f'{user.username} has cancelled his invitation'
             Notification.objects.create(
                 type="private",
@@ -70,7 +71,7 @@ class Invite(APIView):
                 receiver=user_invited,
                 link=None
             )
-            return HttpResponse("Cancel invitation!")
+            return HttpResponse("invitation cancelled", status=200)
 
         elif req_type == 'deny':
             # Vérifier si l'utilisateur cible a reçu une invitation

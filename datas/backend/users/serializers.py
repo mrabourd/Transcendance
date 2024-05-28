@@ -6,7 +6,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, Toke
 from django.core.validators import MinLengthValidator
 from users.models import User, Invitation
 from websockets.models import Message
-
+from django.core.exceptions import ObjectDoesNotExist
 User = get_user_model() # Get reference to the model
 
 
@@ -50,8 +50,21 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
     def to_representation(self, instance):
+        print(">>>>>>>>>>>>>>>>>>>> INIVTAION <<<<<<<<<<<<<<<<<<<<<<<")
+        print("instance", instance)
         representation = super().to_representation(instance)
-        representation['invitation_sent'] = instance.invitation_sent.receiver.id if instance.invitation_sent else None
+        try:
+            representation['invitation_sent'] = instance.sent_invitation.receiver.id
+        except ObjectDoesNotExist:
+            representation['invitation_sent'] = None        
+        
+        
+       #try:
+       #     representation['invitation_sent'] = instance.sent_invitation.receiver.id if instance.sent_invitation else None
+        #print("instance.sent_invitation ", instance.sent_invitation)
+        #if instance.sent_invitation:
+            #print("instance.sent_invitation,receiver ", instance.sent_invitation.receiver)
+            #print("instance.sent_invitation,receiver.id ", instance.sent_invitation.receiver.id)
         representation['received_invitations'] = [
             {
                 'id': invitation.id,
