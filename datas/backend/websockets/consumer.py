@@ -4,11 +4,11 @@ from rest_framework.test import APIRequestFactory
 from users.views_login import CustomLogoutView
 from rest_framework import status
 from channels.db import database_sync_to_async
+from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from users.serializers import UserSerializer
-from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
 #from channels.auth import channel_session_user_from_http, channel_session_user
 from .models import ChatRoom
@@ -103,8 +103,22 @@ class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 
 	async def disconnect(self, close_code):
 		try:
+			print("###############   DISCONNECTED ")
 			await self.channel_layer.group_discard("public_room", self.channel_name)
 			await self.channel_layer.group_discard(f"{self.user.id}", self.channel_name)
+			self.user.status = 0
+			print("2")
+			await sync_to_async(self.user.save, thread_sensitive=True)()
+			print("3")
+			await sync_to_async(Notification.objects.create)(
+				type="public",
+				code="STA",
+				message=0,
+				sender=self.user,
+				receiver=self.user,
+				link=None
+			)
+			print("4")
 			'''
 			# Crée une instance de la requête pour utiliser dans la vue
 			factory = APIRequestFactory()
