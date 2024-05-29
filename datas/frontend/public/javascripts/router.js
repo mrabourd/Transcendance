@@ -78,13 +78,8 @@ export const router = async (user) => {
 
 
 
-    await user.view.getTemplates();
-    
-    await user.view.printAside();
-    await user.view.printHeader();
 
     await user.view.getHtml(document.querySelector("#app"));
     await user.view.fillHtml();
     await user.view.addEvents();
-    
 };

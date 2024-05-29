@@ -29,7 +29,7 @@ urlpatterns = [
 	path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
 
-    path('get_csrf_token/', GetCSRFTokenView.as_view(), name='get_csrf_token'),
+    path('refresh_csrftoken/', GetCSRFTokenView.as_view(), name='get_csrf_token'),
     path('ma_vue_protegee/', MaVueProtegee.as_view(), name='ma_vue_protegee'),
 
     # USERS VIEWS

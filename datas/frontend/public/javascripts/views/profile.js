@@ -124,18 +124,11 @@ export default class extends AbstractView {
 			if (!friends)
 				return
 			friends.forEach(async friend_id => {
-				let response = await this.user.request.get(`/api/users/profile/${friend_id}/`)
-				if (response.status === 200)
-				{
-					let friend = await response.json();
-					if (friend.username === "root" || friend.id === this.UserDatas.id)
-						return;
-					let test = dest_container.querySelector(`.profile_card[data-friend-id="${friend.id}"]`);
-					if (test)
-						return;
-					nodeCopy = await friends_utils.create_thumbnail(this.DOMProfileCard, this.user, friend)
+				if (friend.username !== "root" && friend_id !== userId) {
+					const nodeCopy = await friends_utils.create_thumbnail(DOMProfileCard, user, null, friend_id);
 					dest_container.appendChild(nodeCopy);
 				}
+
 			})
 		});
 

@@ -50,26 +50,13 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
     def to_representation(self, instance):
-
         representation = super().to_representation(instance)
         try:
             representation['invitation_sent'] = instance.sent_invitation.receiver.id
         except ObjectDoesNotExist:
             representation['invitation_sent'] = None        
-        
-        
-       #try:
-       #     representation['invitation_sent'] = instance.sent_invitation.receiver.id if instance.sent_invitation else None
-        #print("instance.sent_invitation ", instance.sent_invitation)
-        #if instance.sent_invitation:
-            #print("instance.sent_invitation,receiver ", instance.sent_invitation.receiver)
-            #print("instance.sent_invitation,receiver.id ", instance.sent_invitation.receiver.id)
         representation['received_invitations'] = [
-            {
-                'id': invitation.id,
-                'sender': invitation.sender.id,
-                'created_at': invitation.created_at
-            }
+            invitation.sender.id
             for invitation in instance.received_invitations.all()
         ]
         return representation

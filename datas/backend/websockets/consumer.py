@@ -100,7 +100,7 @@ class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 		if self.user.status == User.USER_STATUS['OFFLINE']:
 			self.user.status = User.USER_STATUS['ONLINE']
 			await sync_to_async(self.user.save, thread_sensitive=True)()
-			await sync_to_async(Notification.objects.create)(type="public",code="STA",message=self.user.status,sender=self.user,receiver=self.user,link=None)
+			await sync_to_async(Notification.objects.create)(type="public",code_name="STA",code_value=self.user.status,sender=self.user,receiver=self.user,link=None)
 		await self.accept()
 
 	async def disconnect(self, close_code):
@@ -111,7 +111,7 @@ class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 			# set user status to OFFLINE & send a notification to users
 			self.user.status = User.USER_STATUS['OFFLINE']
 			await sync_to_async(self.user.save, thread_sensitive=True)()
-			await sync_to_async(Notification.objects.create)(type="public",code="STA",message=self.user.status,sender=self.user,receiver=self.user,link=None)
+			await sync_to_async(Notification.objects.create)(type="public",code_name="STA",code_value=self.user.status,sender=self.user,receiver=self.user,link=None)
 
 		except Exception as e:
 			print("Error:", str(e))
@@ -121,7 +121,8 @@ class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 		sender = event['sender']
 		sender_id = str(sender) if isinstance(sender, UUID) else sender.id
 		await self.send(text_data=json.dumps({ 
-			   'code': event['code'],
+			   'code_name': event['code_name'],
+			   'code_value': event['code_value'],
 			   'message': event['message'],
 			   'link': event['link'],
 			   'sender': sender_id
