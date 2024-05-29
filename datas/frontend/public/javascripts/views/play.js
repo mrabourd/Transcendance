@@ -48,16 +48,10 @@ export default class extends AbstractView {
 		else if (this.params.adversaire === "vs_player"){
 			this._game = new pongPlayer(canvas, playerleft_score, playerright_score);
 		}
-		else if (this.params.adversaire === "online"){
-			this._game = new pongOnline(canvas, playerleft_score, playerright_score);
+		else {
+			this._game = new pongOnline(canvas, playerleft_score, playerright_score, this.user);
 			console.log("vs user id: creer avec websocket");
 		}
-		else {
-			console.log("tournament");
-			// create match for tournament with the right names of players
-			// this._game = new pongPlayer(canvas, playerleft_score, playerright_score);
-		}
-
 		
 		document.addEventListener("keydown", (event) => {
 			if (!this._game.currentKeysDown.includes(event.key)) {

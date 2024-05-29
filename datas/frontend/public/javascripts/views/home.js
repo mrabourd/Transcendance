@@ -9,7 +9,6 @@ export default class extends AbstractView {
         this.setTitle("home");
     }
 
-
     async getHtml(DOM) {
         await fetch('/template/home').then(function (response) {
             return response.text();
@@ -47,38 +46,15 @@ export default class extends AbstractView {
                     nodeCopy.querySelector(".dropdown").innerHTML = bt_accept + " " + bt_deny
                     bt_accept = nodeCopy.querySelector(".dropdown .accept")
                     bt_deny = nodeCopy.querySelector(".dropdown .deny")
-    
-    
                     bt_accept.addEventListener('click', async (e) => {
                         e.preventDefault();
-                        let response 
-                        try {
-                        response = await this.user.request.post(`/api/match/invite/accept/${invitation}/`)
-                        if (response.status === 200)
-                        {
-                            let JSONresponse = await response.json();
-                            router.navigateTo('/play/online/' + JSONresponse.match_id, this.user);
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                    }
+                        await friends_utils.invite(this.user, invitation, 'accept')
                     });
-    
-                
                     bt_deny.addEventListener('click', async (e) => {
                         e.preventDefault();
                         await friends_utils.invite(this.user, invitation, 'deny')
-
-                        //let response = await this.user.request.post(`/api/match/invite/deny/${invitation}/`)
-                        //if (response.status == 200)
-                        //{
-                        //    document.querySelector(`#app .invitations_received .profile_card[data-friend-id="${invitation}"]`).remove()
-                        //}
                     });
                 }
-
-                
-
                 document.querySelector(`#app .invitations_received ul`).append(nodeCopy);
             })
         }
@@ -101,16 +77,46 @@ export default class extends AbstractView {
             });
             document.querySelector(`#app .invitation_sent ul`).append(nodeCopy);
         }
+
+
     }
 
     addEvents () {
-        document.querySelector('#subscribe a').addEventListener('click',  async e => 
+        // WAITING_PLAYER
+        let dom
+        let response 
+
+
+        // SUBSCRIBE
+        dom = document.querySelector('.subscribe a')
+        console.log("this.user.datas.status ", this.user.datas.status )
+        if (this.user.datas.status == USER_STATUS["WAITING_PLAYER"])
+            dom.innerHTML = 'Unsubscribe from waiting list'
+        else if (this.user.datas.status == USER_STATUS["ONLINE"])
+            dom.innerHTML = 'Find a random oponent'
+        else
+            dom.parentNode.remove();
+        if (dom){
+        dom.addEventListener('click',  async e => 
         {
             e.preventDefault();
-            console.log(this.user.datas.id)
-            console.log("subscribe")
-            let response = await this.user.request.post('/api/match/subscribe/', {})
+            if (e.target.innerHTML == 'Find a random oponent')
+            {
+                response = await this.user.request.post('/api/match/subscribe/', {})
+                e.target.innerHTML = 'Unsubscribe from waiting list'
+                this.user.datas.status = USER_STATUS["WAITING_PLAYER"];
+                this.user.saveDatasToLocalStorage()
+                // if found >> redirect to match_id
+            }
+            else
+                response = await this.user.request.post('/api/match/unsubscribe/', {})
             console.log('response : ', response)
+        })
+    }
+        document.querySelector('.tournament a').addEventListener('click',  async e => 
+        {
+            e.preventDefault();
+            this.user.router.navigateTo('/tournament', this.user)
         })
     }
 }

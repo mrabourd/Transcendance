@@ -29,14 +29,24 @@ export default class extends AbstractView {
     }
 
     addEvents () {
-        document.querySelector('#app p.lead span.btn-create-tournament').addEventListener('click', async (event) =>  {
-            event.preventDefault();
-            this.enterNames();
-        })
+		document.querySelector('#app p.lead span.btn-create-tournament').addEventListener('click', async (event) =>  {
+			console.log("this.user.datas.status: ", this.user.datas.status);
+			event.preventDefault();
+			// if (this.user.datas.status == 'online'){
+				// console.log("this.user.datas.status: ", this.user.datas.status);
+				this.enterNames();
+			// }
+			// else {
+			// 	let errDiv = document.querySelector("#errorFeedback");
+			// 	errDiv.classList.remove("d-none")
+			// 	errDiv.innerHTML = 'You are not allowed to create a tournament due to your status!';
+			// }
+		})
     }
 
-    displayPlayers = async (picks, nametournament) => {
-        console.log("nametournament: ", nametournament);
+    displayPlayers = async (picks, JSONresponse) => {
+		// let tournament_name = JSONresponse.name;
+		let tournament_id = JSONresponse.tournament_id;
         document.querySelector('#app table.table').classList.remove("d-none");
 
         document.querySelector('#app td.player1-match').innerHTML = picks[0];
@@ -47,7 +57,14 @@ export default class extends AbstractView {
 
         document.querySelector('#app #match1-button').addEventListener('click', async (event) =>  {
             event.preventDefault();
-            router.navigateTo('/play/' + nametournament);
+			let RQ_BODY =
+			{
+				"tournament_id": tournament_id,
+				"alias1": picks[0],
+				"alias2": picks[1]
+			}
+			let response = await this.user.request.post(`/api/match/${tournament_id}/match1/`, RQ_BODY);
+            // router.navigateTo('/play/' + nametournament);
         })
         // document.querySelector('#app #match1-button').link = ;
         // document.querySelector('#app #match2-button').link = ;
@@ -67,9 +84,8 @@ export default class extends AbstractView {
             
             let used = undefined;
 
-            for (let i = 0; i < 2 ; i++) {
+            for (let x = 0; x < 2 ; x++) {
                 let random = Math.floor(Math.random() * 3);
-
                 if (players[random] == used){
                     random++;
                 }
@@ -77,10 +93,14 @@ export default class extends AbstractView {
                 used = players[random];
             }
             for (let i = 0; i < 4 ; i++){
-                if (players[i] == picks[0] || players[i] == picks[1])
-                    continue;
-                else
+                if (players[i] == picks[0] || players[i] == picks[1]){
+					console.log("continue");
+					continue;
+				}
+                else{
+					console.log("add ", players[i]);
                     picks.push(players[i]);
+				}
             }
 
         }
@@ -94,7 +114,8 @@ export default class extends AbstractView {
         let nametournament = document.querySelector('#app input#name-tournament').value;
         if (nametournament == ""){
             errDiv.classList.remove("d-none")
-            errDiv.innerHTML = 'An error occured ! Please check fields below ...';
+            errDiv.innerHTML = 'An error occured! Please fill all the fields...';
+            return;
         }
         else
             errDiv.classList.add("d-none");
@@ -104,6 +125,7 @@ export default class extends AbstractView {
 
         let action = "create";
         let picks = [];
+
         let response = await this.user.request.post(`/api/match/tournament/${action}/${nametournament}/`)
         if (response.status == 200)
         {
@@ -113,11 +135,17 @@ export default class extends AbstractView {
             let p2 = document.querySelector('#app input#player2').value;
             let p3 = document.querySelector('#app input#player3').value;
             let p4 = document.querySelector('#app input#player4').value;
-            let players = [p1, p2, p3, p4];
+            let players = [[p1, "username"], [p2, "alias"], [p3, "alias"], [p4, "alias"]];
+			// let users = ["username", "alias", "alias", "alias"];
             picks = await this.matchmaking(players);
+			console.log("picks: ", picks);
+            this.displayPlayers(picks, JSONresponse);
 
-            this.displayPlayers(picks, nametournament);
-
+        }
+        else if (response.status == 401) {
+            errDiv.classList.remove("d-none")
+            errDiv.innerHTML = 'You are not allowed to create a tournament due to your status!';
+            return;
         }
     }
 

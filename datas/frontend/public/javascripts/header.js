@@ -7,8 +7,6 @@ export function print(user)
 		{ path: "/home", libelle: "home" },
 		{ path: "/profile", libelle: "profile" },
 		{ path: "/tournament", libelle: "tournament" },
-		{ path: "/contact", libelle: "contact"  },
-		{ path: "/chatroom", libelle: "chatroom" },
 		{ path: "/play", libelle: "play",
 		sousmenu: [{path: "/vs_computer", libelle: "play with robot"},
 		{path: "/vs_player", libelle: "play with player" },

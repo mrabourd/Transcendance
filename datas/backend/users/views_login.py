@@ -91,14 +91,9 @@ class CustomObtainTokenPairView(TokenObtainPairView):
 		# Authentification de l'utilisateur
 		user = self.authenticate_user(username, password)
 		if user is not None and user.is_authenticated:
-			print('request', request, *args, **kwargs)
-
+			user.SetStatus(User.USER_STATUS['ONLINE'])
 			response = super().post(request, *args, **kwargs)
-			print('super() response', response)
 			if response.status_code == 200:
-				# Mettre à jour le statut de l'utilisateur
-				user.SetStatus(User.USER_STATUS['ONLINE'])
-				print('############ SET STATUS LOGIN')
 				# Ajouter le jeton CSRF à la réponse
 				response['X-CSRFToken'] = get_token(request)
 				response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
