@@ -111,8 +111,8 @@ class Invite(APIView):
             # creer deux entree dans la table match_points (match_id, user_id)
             # recuperer l'id du match pour le renvoyer
             ##### TO DO
-            match_id = 'XXX' 
 
+            match_id = 'XXX' 
             user.SetStatus(User.USER_STATUS['PLAYING'])
             invitation_sender.SetStatus(User.USER_STATUS['PLAYING'])
 
