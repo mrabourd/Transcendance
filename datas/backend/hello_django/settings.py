@@ -65,14 +65,19 @@ DJANGO_ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ['accept', 'authorization', 'content-type', 'user-agent', 'x-csrftoken', 'x-requested-with']
+CORS_EXPOSE_HEADERS = ['Set-Cookie', 'X-CSRFToken']
+CORS_ORIGIN_ALLOW_ALL = True  # 
 CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_ALLOWED_ORIGINS").split(" ")
 
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_AGE = 3600
+CSRF_COOKIE_AGE = 36000
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = True 
+# Durée de vie de la session en secondes (1 heure)
+SESSION_COOKIE_AGE = 36000
 
 AUTH_USER_MODEL = 'users.User'
 # Application definition

@@ -42,7 +42,7 @@ class Invite(APIView):
 
                 notif_message = f'{user.username} has invited {user_invited.username} to play'
                 Notification.objects.create(
-                    type="public",
+                    type="private",
                     code="xxx",
                     message=notif_message,
                     sender=user,
