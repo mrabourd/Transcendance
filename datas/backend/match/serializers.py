@@ -14,3 +14,9 @@ class TournamentSerializer(serializers.ModelSerializer):
         model = Tournament
         fields = ['tournament_id', 'name', 'status', 'user', 'created_at']
         read_only_fields = ['tournament_id', 'created_at']
+
+class MatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Match
+        fields = ['match_id', 'tournament', 'created_at', 'player1', 'player2']
+        read_only_fields = ['match_id', 'tournament', 'created_at']

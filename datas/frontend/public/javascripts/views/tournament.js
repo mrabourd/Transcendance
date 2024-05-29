@@ -29,14 +29,24 @@ export default class extends AbstractView {
     }
 
     addEvents () {
-        document.querySelector('#app p.lead span.btn-create-tournament').addEventListener('click', async (event) =>  {
-            event.preventDefault();
-            this.enterNames();
-        })
+		document.querySelector('#app p.lead span.btn-create-tournament').addEventListener('click', async (event) =>  {
+			console.log("this.user.datas.status: ", this.user.datas.status);
+			event.preventDefault();
+			// if (this.user.datas.status == 'online'){
+				// console.log("this.user.datas.status: ", this.user.datas.status);
+				this.enterNames();
+			// }
+			// else {
+			// 	let errDiv = document.querySelector("#errorFeedback");
+			// 	errDiv.classList.remove("d-none")
+			// 	errDiv.innerHTML = 'You are not allowed to create a tournament due to your status!';
+			// }
+		})
     }
 
-    displayPlayers = async (picks, nametournament) => {
-        console.log("nametournament: ", nametournament);
+    displayPlayers = async (picks, JSONresponse) => {
+		let tournament_name = JSONresponse.name;
+		let tournament_id = JSONresponse.tournament_id;
         document.querySelector('#app table.table').classList.remove("d-none");
 
         document.querySelector('#app td.player1-match').innerHTML = picks[0];
@@ -47,7 +57,14 @@ export default class extends AbstractView {
 
         document.querySelector('#app #match1-button').addEventListener('click', async (event) =>  {
             event.preventDefault();
-            router.navigateTo('/play/' + nametournament);
+			let RQ_BODY =
+			{
+				"tournament_id": tournament_id,
+				"alias1": picks[0],
+				"alias2": picks[1]
+			}
+			let response = await this.user.request.post(`/api/match/${tournament_id}/match1/`, RQ_BODY);
+            // router.navigateTo('/play/' + nametournament);
         })
         // document.querySelector('#app #match1-button').link = ;
         // document.querySelector('#app #match2-button').link = ;
@@ -118,8 +135,13 @@ export default class extends AbstractView {
             let players = [p1, p2, p3, p4];
             picks = await this.matchmaking(players);
 
-            this.displayPlayers(picks, nametournament);
+            this.displayPlayers(picks, JSONresponse);
 
+        }
+        else if (response.status == 401) {
+            errDiv.classList.remove("d-none")
+            errDiv.innerHTML = 'You are not allowed to create a tournament due to your status!';
+            return;
         }
     }
 

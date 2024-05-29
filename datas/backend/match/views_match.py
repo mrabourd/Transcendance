@@ -18,31 +18,16 @@ from users.models import User  # Import your User model
 User = get_user_model()
 
 # @method_decorator(csrf_protect, name='dispatch')
-class TournamentView(APIView):
+class CreateMatchView(APIView):
 	permission_classes = [IsAuthenticated]
 
-	def post(self, request, req_type, name):
+	def post(self, request, id, req_type):
 		user = request.user
-		tournament_name = name
+		# tournament_id = id
 
-		if req_type == 'create':
+		# match = Match.objects.create(tournament=tournament_id, user=user, alias1=user)
 
-			# if user.status != User.USER_STATUS['ONLINE']:
-			# 	return JsonResponse({'message': 'Vous ne pouvez pas creer de tournoi.'}, status=401)
-
-			# user.SetStatus(User.USER_STATUS['WAITING_TOURNAMENT'])
-			print(f'tournament_name ${tournament_name} tournament_creator = ${user}')
-
-			tournament = Tournament.objects.create(name=tournament_name, user=user, status=2)
-			# Creer une entree dans la table match (status = in_progress)
-			# creer deux entree dans la table match_points (match_id, user_id)
-			# recuperer l'id du match pour le renvoyer
-
-
-			serializer = TournamentSerializer(tournament)
-			return Response(serializer.data)
-			
-			# response_data = {'message': 'tournament created', 'tournament_name': tournament_name, 'tournament_id'}
-			# return JsonResponse(response_data)
+		serializer = MatchSerializer(data=request.data)
+		return Response(serializer.data)
 
 		return HttpResponse("Invalid request type.", status=400)
