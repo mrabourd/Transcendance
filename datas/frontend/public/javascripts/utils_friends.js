@@ -8,27 +8,14 @@ export function is_invited(user,friend_id )
     }
     return false
 }
-
 export function is_blocked(user, friend_id)
 {
-    if (user.datas.blocks.length) {
-        for (const id of user.datas.blocks){
-            if (id && friend_id && id == friend_id)
-                return true
-        }
-    }
-    return false
+    return user.datas.blocks.find(id => id == friend_id) !== undefined;
 }
 
 export function is_followed(user, friend_id)
 {
-    if (user.datas.follows.length) {
-        for (const id of user.datas.follows){
-            if (id && friend_id && id == friend_id)
-                return true
-        }
-    }
-    return false
+    return user.datas.follows.find(id => id == friend_id) !== undefined;
 }
 
 export async function block(user, friend_id, action)
@@ -36,12 +23,19 @@ export async function block(user, friend_id, action)
     let response = await user.request.get(`/api/users/${action}/${friend_id}/`)
     if (response.status == 200)
     {
-        await user.RefreshLocalDatas();
-        // todo add/rm blocked user_id in local_datas
+        if((action == "block") && (!user.datas.blocks.includes(friend_id)))
+        {
+            user.datas.blocks.push(friend_id);
+        } else if (action == "unblock"){
+            user.datas.blocks = user.datas.blocks.filter(id => id !== friend_id);
+        }
+        user.saveDatasToLocalStorage();
         let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"] .block`);
         profile_cards.forEach(dom => {
             dom.innerHTML = (action == 'block') ? 'unblock' : 'block';
         });
+        update_profile_cards_text(user, friend_id)
+
     }
 }
 
@@ -50,37 +44,37 @@ export async function invite(user, friend_id, action)
     let response = await user.request.post(`/api/match/invite/${action}/${friend_id}/`)
     if (response.status == 200)
     {
-        console.log('action >>>>> ', action)
         if (action == 'send')
         {
-            console.log('invitation sent to ', friend_id)
-            // ajouter dans invitation sent
             user.datas.invitation_sent = friend_id;
-            //user.datas.invitation_sent_to = friend_id;
             user.saveDatasToLocalStorage();
         }else{
             user.datas.invitation_sent = null;
-            //user.datas.invitation_sent_to = null;
             user.saveDatasToLocalStorage();
-
         }
-        //await user.RefreshLocalDatas();
         update_profile_cards_text(user)
+        console.log("location.pathname", location.pathname)
+        if(location.pathname == '/home')
+            user.router.router(user);
     }
 }
+
 export async function follow(user, friend_id, action)
 {
     let response = await user.request.get(`/api/users/${action}/${friend_id}/`)
     if (response.status == 200)
     {
-        await user.RefreshLocalDatas();
+        // UPDATE LOCAL STORAGE
+        if((action == "follow") && (!user.datas.follows.includes(friend_id)))
+        {
+            user.datas.follows.push(friend_id);
+        } else if (action == "unfollow"){
+            user.datas.follows = user.datas.follows.filter(id => id !== friend_id);
+        }
+        user.saveDatasToLocalStorage();
+        update_profile_cards_text(user, friend_id)
 
-        // todo add/rm followed user_id in local_datas
-        // append/rm node in aside .follow
-        let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"] .follow`);
-        profile_cards.forEach(dom => {
-            dom.innerHTML = (action == 'follow') ? 'unfollow' : 'follow';
-        });
+       
 
         let profile_card = document.querySelector(`.profile_card[data-friend-id="${friend_id}"]`);
         let followed_div = document.querySelector(`aside .followed ul.userList`);
@@ -108,18 +102,30 @@ export async function update_follow_text(user, profile_card, friend_id) {
         dom.innerHTML = (check) ? 'unfollow' : 'follow';
 }
 
-
-export async function update_invite_text(user, profile_card, friend_id) {
-    /// TODO / update invite en fonction des status
+export async function update_chat_text(user, profile_card, friend_id) {
     let dom;
-    let check = is_invited(user, friend_id)
+    let check = is_blocked(user, friend_id);
     let friend_status = profile_card.getAttribute('data-friend-status');
-
-    dom = profile_card.querySelector('.invite');
-
+    dom = profile_card.querySelector('.chat');
     if (!dom)
         return ;
-    if ( (parseInt(friend_status) != USER_STATUS['ONLINE']) && !check)
+    if (check || friend_status == USER_STATUS["OFFLINE"])
+        dom.classList.add('d-none')
+    else
+        dom.classList.remove('d-none')
+    dom.innerHTML = (!check) ? 'send a message' : 'unblock to send a message';
+}
+
+
+export async function update_invite_text(user, profile_card, friend_id) {
+    let dom = profile_card.querySelector('.invite');
+    if (!dom)
+        return;
+    let check = is_invited(user, friend_id)
+    let friend_status = profile_card.getAttribute('data-friend-status');
+    if (
+        (((parseInt(friend_status) != USER_STATUS['ONLINE']) && !check))
+        || (user.datas.invitation_sent && user.datas.invitation_sent != friend_id))
     {
         dom.classList.add('d-none')
         return ;
@@ -231,7 +237,7 @@ export async function update_status_text(profile_card)
 export async function create_thumbnail(nodeToCopy, user, friend)
 {
     // clone existing tumbnail if exists
-    let existing_thumbnail = document.querySelector(`.profile_card[data-friend-id="${friend.id}"]`)
+    let existing_thumbnail = document.querySelector(`aside .profile_card[data-friend-id="${friend.id}"]`)
     if (existing_thumbnail)
         return existing_thumbnail.cloneNode(true)
 
@@ -253,9 +259,13 @@ export async function create_thumbnail(nodeToCopy, user, friend)
     return nodeCopy;
 }
 
-export function update_profile_cards_text(user)
+export function update_profile_cards_text(user, friend_id)
 {
-    let profile_cards = document.querySelectorAll(`.profile_card`);
+    let profile_cards
+    if(friend_id)
+        profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
+    else
+        profile_cards = document.querySelectorAll(`.profile_card`);
 
     profile_cards.forEach(profile_card => {
         let profile_id = profile_card.getAttribute('data-friend-id');
@@ -263,6 +273,7 @@ export function update_profile_cards_text(user)
         update_follow_text(user, profile_card, profile_id)
         update_status_text(profile_card)
         update_invite_text(user, profile_card, profile_id)
+        update_chat_text(user, profile_card, profile_id)
     });
 }
 
@@ -273,6 +284,7 @@ export function update_profile_cards(user, profile_card)
     update_follow_text(user, profile_card, profile_id)
     update_status_text(profile_card)
     update_invite_text(user, profile_card, profile_id)
+    update_chat_text(user, profile_card, profile_id)
     
     add_follow_event(user, profile_card, profile_id)
     add_block_event(user, profile_card, profile_id)
