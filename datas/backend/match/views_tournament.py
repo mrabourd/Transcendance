@@ -11,19 +11,32 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from websockets.models import Notification
-from .models import Tournament
+from .models import Tournament, Match, MatchPoints
 from .serializers import TournamentSerializer
+from .views_match import createMatch
 # Create your views here.
 from users.models import User  # Import your User model
+import json
+import requests
 User = get_user_model()
+
 
 # @method_decorator(csrf_protect, name='dispatch')
 class TournamentView(APIView):
 	permission_classes = [IsAuthenticated]
 
-	def post(self, request, req_type, name):
+	def post(self, request, req_type):
 		user = request.user
-		tournament_name = name
+		body_data = json.loads(request.body.decode('utf-8'))
+			
+		data = {
+			'tournament': body_data.get('name'),
+			'players': body_data.get('players'),
+		}
+		players = data['players']
+		tournament_name = data['tournament']
+		print("data: ", data)
+
 
 		if req_type == 'create':
 
@@ -38,9 +51,23 @@ class TournamentView(APIView):
 			# creer deux entree dans la table match_points (match_id, user_id)
 			# recuperer l'id du match pour le renvoyer
 
-
 			serializer = TournamentSerializer(tournament)
-			return Response(serializer.data)
+
+			# creer les deux matchs ici
+			print(players[0], players[1])
+
+			match1 = createMatch(user, tournament, players[0], players[1])
+			match2 = createMatch(user, tournament, players[2], players[3])
+
+			print("match1: ", match1)
+			
+			matchs = {
+				'match1': match1.match_id,
+				'match2': match2.match_id,
+			}
+			# renvoyer les deux id
+			# match1.match_id + match2.match_id
+			return Response(matchs)
 			
 			# response_data = {'message': 'tournament created', 'tournament_name': tournament_name, 'tournament_id'}
 			# return JsonResponse(response_data)

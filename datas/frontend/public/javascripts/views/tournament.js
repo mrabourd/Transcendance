@@ -44,30 +44,16 @@ export default class extends AbstractView {
 		})
     }
 
-    displayPlayers = async (picks, JSONresponse) => {
+    displayPlayers = async (picks) => {
 		// let tournament_name = JSONresponse.name;
-		let tournament_id = JSONresponse.tournament_id;
+
         document.querySelector('#app table.table').classList.remove("d-none");
 
         document.querySelector('#app td.player1-match').innerHTML = picks[0];
         document.querySelector('#app td.player2-match').innerHTML = picks[1];
         document.querySelector('#app td.player3-match').innerHTML = picks[2];
         document.querySelector('#app td.player4-match').innerHTML = picks[3];
-     
 
-        document.querySelector('#app #match1-button').addEventListener('click', async (event) =>  {
-            event.preventDefault();
-			let RQ_BODY =
-			{
-				"tournament_id": tournament_id,
-				"alias1": picks[0],
-				"alias2": picks[1]
-			}
-			let response = await this.user.request.post(`/api/match/${tournament_id}/match1/`, RQ_BODY);
-            // router.navigateTo('/play/' + nametournament);
-        })
-        // document.querySelector('#app #match1-button').link = ;
-        // document.querySelector('#app #match2-button').link = ;
     }
 
     matchmaking = async (players) => {
@@ -98,7 +84,6 @@ export default class extends AbstractView {
 					continue;
 				}
                 else{
-					console.log("add ", players[i]);
                     picks.push(players[i]);
 				}
             }
@@ -125,21 +110,33 @@ export default class extends AbstractView {
 
         let action = "create";
         let picks = [];
+		let p1 = document.querySelector('#app input#player1').value;
+		let p2 = document.querySelector('#app input#player2').value;
+		let p3 = document.querySelector('#app input#player3').value;
+		let p4 = document.querySelector('#app input#player4').value;
+		let players = [[p1, "username"], [p2, "alias"], [p3, "alias"], [p4, "alias"]];
+		picks = await this.matchmaking(players);
+		console.log("picks: ", picks);
 
-        let response = await this.user.request.post(`/api/match/tournament/${action}/${nametournament}/`)
+		let RQ_BODY = {
+			'name': nametournament,
+			'players': picks
+		}
+		
+        let response = await this.user.request.post(`/api/match/tournament/${action}/`, RQ_BODY)
         if (response.status == 200)
-        {
-            let JSONresponse = await response.json();
-            console.log("response: ", JSONresponse);
-            let p1 = document.querySelector('#app input#player1').value;
-            let p2 = document.querySelector('#app input#player2').value;
-            let p3 = document.querySelector('#app input#player3').value;
-            let p4 = document.querySelector('#app input#player4').value;
-            let players = [[p1, "username"], [p2, "alias"], [p3, "alias"], [p4, "alias"]];
+			{
+			let JSONresponse = await response.json();
+			console.log("response: ", JSONresponse);
 			// let users = ["username", "alias", "alias", "alias"];
-            picks = await this.matchmaking(players);
-			console.log("picks: ", picks);
-            this.displayPlayers(picks, JSONresponse);
+			this.displayPlayers(picks);
+
+			// choper les 2 matchs id dans JSONresponse
+
+			document.querySelector('#app #match1-button').addEventListener('click', async (event) =>  {
+				event.preventDefault();
+				router.navigateTo('/play/' + JSONresponse.match1, this.user);
+			})
 
         }
         else if (response.status == 401) {
