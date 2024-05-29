@@ -5,12 +5,13 @@ const PLAYER_HEIGHT = 100;
 export default class pongOnline extends AbstractPong {
 	constructor(params) {
 		super(params);
+		this.user = params.user;
 		this.currentKeysDown = [];
 		this.winner = false;
-		this.websocket = new WebSocket('wss://localhost:8443/ws/pong/');
+		this.websocket = new WebSocket('wss://localhost:8443/ws/pong/&token=' + this.user.request.getJWTtoken()["access"] );
 
 		this.websocket.onopen = function(e) {
-			console.log('Socket successfully connected.');
+			console.log('Socket connected for online pong.');
 		};
 
 		this.websocket.onmessage = function(e) {
