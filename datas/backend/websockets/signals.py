@@ -12,7 +12,8 @@ def notification_created(sender, instance, created, **kwargs):
 			'public_room',
 			{
 				"type": "send_notification",
-				"code": instance.code,
+				"code_name": instance.code_name,
+				"code_value": instance.code_value,
 				"message": instance.message,
 				"link": instance.link,
 				"sender": instance.sender.id if instance.sender else None
@@ -24,7 +25,8 @@ def notification_created(sender, instance, created, **kwargs):
 			f"{instance.receiver.id}",
 			{
 				"type": "send_notification",
-				"code": instance.code,
+				"code_name": instance.code_name,
+				"code_value": instance.code_value,
 				"message": instance.message,
 				"link": instance.link,
 				"sender": instance.sender.id if instance.sender else None

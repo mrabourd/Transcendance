@@ -53,8 +53,8 @@ class User(AbstractUser):
         from websockets.models import Notification
         Notification.objects.create(
             type="public",
-            code=f"STA",
-            message=status,
+            code_name=f"STA",
+            code_value=status,
             sender=self,
             receiver=self,
             link=None

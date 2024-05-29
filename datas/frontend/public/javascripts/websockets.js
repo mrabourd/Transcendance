@@ -27,17 +27,19 @@ export default class Websockets {
 				return;
 			}
 			
-			if (data.code == "STA")
-			{
+			if (data.code_name == "STA")
 				this.update_status(data)
-			}
-			else if (data.message)
+			
+			if (data.code_name == "INV")
+				this.update_invitation(data)
+
+			if (data.message)
 			{
 				this.print_notification(data)
-				router.router(this.user);
+				//router.router(this.user);
 			}
-				
-			console.log('data.code:', data.code);
+			
+			console.log('data.code:', data.code_name);
 			console.log('WebSocket Received:', data);		
 		};
     }
@@ -46,45 +48,71 @@ export default class Websockets {
 	{
 		var newLi = document.createElement('li');
 		var newAnchor = document.createElement('a');
+
 		newAnchor.className = 'dropdown-item text-wrap';
-		newAnchor.href = '#';
 		newAnchor.textContent = data.message;
+		newAnchor.addEventListener('click', async (e) => {
+			e.preventDefault();
+			this.user.router.navigateTo(data.link, this.user)
+		});
 		newLi.appendChild(newAnchor);
 		var ulElement = document.getElementById('notify');
 		ulElement.appendChild(newLi);
+	}
 
-		router.router(this.user);
+
+	async update_invitation(data)
+	{
+		console.log("UPDATE INVITATION")
+		if (data.code_value == 1) // invitation received
+		{
+			if (!this.user.datas.received_invitations.includes(data.sender))
+				this.user.datas.received_invitations.push(data.sender)
+		}
+		if (data.code_value == 2) // invitation cancelled
+		{
+			this.user.datas.received_invitations = this.user.datas.received_invitations.filter(id => id !== data.sender);
+		}
+		if (data.code_value == 3) // invitation denied
+		{
+			this.user.datas.invitation_sent = null;
+		}
+
+		this.user.saveDatasToLocalStorage()
+		friends_utils.update_profile_cards_text(this.user)
+        if(location.pathname == '/home')
+            this.user.router.router(this.user);
+		/*
+		if((action == "block") && (!user.datas.blocks.includes(friend_id)))
+        {
+            user.datas.blocks.push(friend_id);
+        } else if (action == "unblock"){
+        }
+		*/
 	}
 
 	async update_status(data)
 	{
 		let friend_id = data.sender
-		let friend_status = data.message
+		let friend_status = data.code_value
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
-		profile_cards.forEach(profile_card => {
-			
-			if (friend_status == USER_STATUS['OFFLINE'])
-				profile_card.remove();
-			else
-			{
-				profile_card.setAttribute('data-friend-status', friend_status);
-				friends_utils.update_status_text(profile_card)
-			}
-		});
 		if(friend_id == this.user.datas.id)
 			return
-		if (friend_status == USER_STATUS['ONLINE'])
-		{
-			let existing_thumbnail = document.querySelector(`aside .online ul .profile_card[data-friend-id="${friend_id}"]`);
-			if (existing_thumbnail)
-				return
-			let response = await this.user.request.get('/api/users/profile/'+friend_id+'/')
-			if (response.ok)
-			{
-				let friend = await response.json();
-				let nodeCopy = await friends_utils.create_thumbnail(this.user.view.DOMProfileCard, this.user, friend)
-				document.querySelector(`aside .online ul`).append(nodeCopy)
-			}
+		
+		profile_cards.forEach(profile_card => {
+				profile_card.setAttribute('data-friend-status', friend_status);
+		});
+
+		friends_utils.update_profile_cards_text(this.user, friend_id)
+		
+		let existing_thumbnail = document.querySelector(`aside .online ul .profile_card[data-friend-id="${friend_id}"]`);
+		if (existing_thumbnail && friend_status == USER_STATUS['OFFLINE'])
+			existing_thumbnail.remove()
+
+		if (!existing_thumbnail && friend_status == USER_STATUS['ONLINE'] && friend_id != this.user.datas.id)
+		{			
+			let nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend_id)
+			document.querySelector(`aside .online ul`).append(nodeCopy)
 		}
 	}
 }

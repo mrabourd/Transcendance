@@ -1,3 +1,5 @@
+import { navigateTo } from "./router";
+
 // setup chat scoket
 const notifyScoket = new WebSocket(
 	'wss://localhost:8443/ws/msg/?token=' + user.request.getJWTtoken()["access"] +'/'
@@ -23,8 +25,13 @@ notifyScoket.onmessage = function (e) {
 	// Create a new anchor element
 	var newAnchor = document.createElement('a');
 	newAnchor.className = 'dropdown-item text-wrap';
-	newAnchor.href = '#';
+	//newAnchor.href = data.link ? data.link : '#';
 	newAnchor.textContent = message;
+
+	newAnchor.onclick = function() {
+		e.preventDefault();
+		navigateTo(data.link, user);
+	};
 
 	// Append the anchor element to the li element
 	newLi.appendChild(newAnchor);

@@ -39,8 +39,12 @@ User = get_user_model()
 
 class GetCSRFTokenView(View):
 	def get(self, request, *args, **kwargs):
-		csrf_token = get_token(request)
-		return JsonResponse({'csrf_token': csrf_token})
+		response = JsonResponse({"message": "New Token"}, status=200)
+		response['X-CSRFToken'] = get_token(request)
+		response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
+		response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
+		response['Access-Control-Allow-Credentials'] = 'true'
+		return response
 
 class CustomTokenRefreshView(TokenRefreshView):
 	permission_classes = [AllowAny]
@@ -49,21 +53,21 @@ class CustomTokenRefreshView(TokenRefreshView):
 		return Response('ok')
 
 class CustomLogoutView(APIView):
-    def post(self, request, *args, **kwargs):
-        try:
-            if request.user and request.user.is_authenticated:
-                request.user.SetStatus(User.USER_STATUS['OFFLINE'])
-                request.user.save()
-                logout(request)
-                token = RefreshToken(request.data.get('refresh'))
-                token.blacklist()
-                response = Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
-                response.delete_cookie('csrftoken')
-                return response
-            else:
-                return Response({"error": "User not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+	def post(self, request, *args, **kwargs):
+		try:
+			if request.user and request.user.is_authenticated:
+				request.user.SetStatus(User.USER_STATUS['OFFLINE'])
+				request.user.save()
+				logout(request)
+				token = RefreshToken(request.data.get('refresh'))
+				token.blacklist()
+				response = Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
+				response.delete_cookie('csrftoken')
+				return response
+			else:
+				return Response({"error": "User not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
+		except Exception as e:
+			return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 # Dans cet exemple, nous avons étendu la vue CustomObtainTokenPairView 
@@ -73,36 +77,36 @@ class CustomLogoutView(APIView):
 # Si c'est le cas, nous ajoutons le cookie CSRF à la réponse en utilisant 
 # la fonction get_token(request) pour obtenir le jeton CSRF.
 class CustomObtainTokenPairView(TokenObtainPairView):
-    permission_classes = [AllowAny]
-    serializer_class = CustomTokenObtainPairSerializer
-    
-    def authenticate_user(self, username, password):
-        return authenticate(username=username, password=password)
+	permission_classes = [AllowAny]
+	serializer_class = CustomTokenObtainPairSerializer
+	
+	def authenticate_user(self, username, password):
+		return authenticate(username=username, password=password)
 
-    def post(self, request, *args, **kwargs):
-        # Récupère les données du corps de la requête
-        username = request.data.get('username')
-        password = request.data.get('password')
+	def post(self, request, *args, **kwargs):
+		# Récupère les données du corps de la requête
+		username = request.data.get('username')
+		password = request.data.get('password')
 
-        # Authentification de l'utilisateur
-        user = self.authenticate_user(username, password)
-        if user is not None and user.is_authenticated:
-            print('request', request, *args, **kwargs)
+		# Authentification de l'utilisateur
+		user = self.authenticate_user(username, password)
+		if user is not None and user.is_authenticated:
+			print('request', request, *args, **kwargs)
 
-            response = super().post(request, *args, **kwargs)
-            print('super() response', response)
-            if response.status_code == 200:
-                # Mettre à jour le statut de l'utilisateur
-                user.SetStatus(User.USER_STATUS['ONLINE'])
-                print('############ SET STATUS LOGIN')
-                # Ajouter le jeton CSRF à la réponse
-                response['X-CSRFToken'] = get_token(request)
-                response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
-                response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
-                response['Access-Control-Allow-Credentials'] = True
-                return response
-        else:
-            return Response({"error": "Sorry, no account was found with the provided username and password"}, status=status.HTTP_401_UNAUTHORIZED)
+			response = super().post(request, *args, **kwargs)
+			print('super() response', response)
+			if response.status_code == 200:
+				# Mettre à jour le statut de l'utilisateur
+				user.SetStatus(User.USER_STATUS['ONLINE'])
+				print('############ SET STATUS LOGIN')
+				# Ajouter le jeton CSRF à la réponse
+				response['X-CSRFToken'] = get_token(request)
+				response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
+				response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
+				response['Access-Control-Allow-Credentials'] = True
+				return response
+		else:
+			return Response({"error": "Sorry, no account was found with the provided username and password"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserRegistrationAPIView(APIView):
@@ -125,7 +129,7 @@ class UserRegistrationAPIView(APIView):
 
 @method_decorator(csrf_protect, name='dispatch')
 class MaVueProtegee(View):
-    # Cette méthode gère les requêtes POST
-    def post(self, request):
-        # Traitement de la requête POST ici
-        return HttpResponse("Requête POST protégée reçue avec succès.")
+	# Cette méthode gère les requêtes POST
+	def post(self, request):
+		# Traitement de la requête POST ici
+		return HttpResponse("Requête POST protégée reçue avec succès.")

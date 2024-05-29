@@ -26,8 +26,12 @@ export default class Request {
                 body: JSON.stringify(RQ_body),
                 credentials: 'include'
             });
+            //console.log("POST response ", response)
+
             if (response.headers.has('X-CSRFToken'))
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
+            if(response.headers.has('csrftoken'))
+                this.setCookie('csrftoken', 'Strict', response.headers.get('csrftoken'), 1)
  
             if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
@@ -38,13 +42,16 @@ export default class Request {
                     let RefreshResponse = await this.refreshJWTtoken();
                     if (RefreshResponse.ok)
                         return await this.post(RQ_url);
-                    //else
-                    //    return response;
                 }
-               // else
-                //    return response;
             }
-          // else
+            else if (response.status == 403 && response.statusText == "Forbidden")
+            {
+                console.warn("############# REFRESH CSRF")
+                this.rmCsrfToken()
+                let RefreshResponse = await this.refreshCsrftoken();
+                //if (RefreshResponse.ok)
+                    //return await this.post(RQ_url);
+            }
             return response;
         } catch (error) {
             console.error('request.js post error :', error);
@@ -93,7 +100,7 @@ export default class Request {
             if (response.headers.has('X-CSRFToken'))
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
  
-            //console.log("response.status ", response.status)
+            //console.log("GET response ", response)
             //console.log("RQ_url ", RQ_url)
             if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
@@ -106,7 +113,6 @@ export default class Request {
                 if (jsonData.code === 'token_not_valid')
                 {
                     console.log("refreshJWTtoken() ")
-
                     let RefreshResponse = await this.refreshJWTtoken();
                     if (RefreshResponse.ok)
                         return await this.get(RQ_url);
@@ -133,6 +139,21 @@ export default class Request {
 		}
         else
             this.rmJWTtoken()
+        return response;
+    }
+
+    async refreshCsrftoken()
+    {
+        let response = await this.get('/api/users/refresh_csrftoken/');
+		if (response.ok)
+		{
+            console.log("response.ok")
+            if (response.headers.has('X-CSRFToken'))
+                {
+                    console.log("set new token : ", response.headers.get('X-CSRFToken'))
+                    this.setCsrfToken(response.headers.get('X-CSRFToken'))
+                }
+ 		}
         return response;
     }
 
@@ -214,6 +235,7 @@ export default class Request {
     async setCsrfToken(csrftoken)
     {
         this.setCookie('X-CSRFToken', 'Strict', csrftoken, 1)
+        //this.setCookie('csrftoken', 'Strict', csrftoken, 1)
     }
 
     async rmCsrfToken(csrftoken)

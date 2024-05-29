@@ -23,8 +23,12 @@ document.addEventListener("DOMContentLoaded", async() => {
             
         }
     });
+    await user.getTemplates();
+
     user.router = router
     router.router(user);
+
+
 
     let observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
@@ -38,5 +42,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         });
     });
     observer.observe(document.body, { childList: true, subtree: true });
+    await user.view.printHeader();
+    await user.view.printAside();
 
 });

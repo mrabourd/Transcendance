@@ -4,7 +4,6 @@ import * as aside from "../aside.js";
 export default class {
     constructor(params) {
         this.params = params;
-        this.DOMProfileCard = null
     }
 
     async setTitle(title) {
@@ -29,15 +28,6 @@ export default class {
 
     }
 
-    async getTemplates() {
-        await this.user.RefreshLocalDatas();
-        let profile_card_url = '/template/profile_card';
-        let response = await fetch(profile_card_url);
-        let html = await response.text();
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(html, 'text/html');
-        this.DOMProfileCard = doc.querySelector('.profile_card');
-    }
 
     printHeader()
     {
