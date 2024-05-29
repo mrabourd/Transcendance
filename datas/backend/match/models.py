@@ -6,6 +6,7 @@ import uuid
 
 # Create your models here.
 class Tournament(models.Model):
+    tournament_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
@@ -29,6 +30,7 @@ class MatchPoints(models.Model):
     match = models.ForeignKey(Match, null=True, blank=True, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     points = models.IntegerField()
+    # username = str
 
     def __str__(self):
         return f'MatchPoints {self.pk} - Match {self.match.pk} - User {self.user.username}'

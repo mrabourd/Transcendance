@@ -12,35 +12,33 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from websockets.models import Notification
 from .models import Tournament
+from .serializers import TournamentSerializer
 # Create your views here.
 from users.models import User  # Import your User model
 User = get_user_model()
 
 # @method_decorator(csrf_protect, name='dispatch')
 class TournamentView(APIView):
-    permission_classes = [IsAuthenticated]
+	permission_classes = [IsAuthenticated]
 
-    def post(self, request, req_type, name):
-        user = request.user
-        tournament_name = name
+	def post(self, request, req_type, name):
+		user = request.user
+		tournament_name = name
 
-        if req_type == 'create':
-            # Vérifier si l'utilisateur cible a reçu une invitation
-            user.SetStatus(User.USER_STATUS['PLAYING'])
-            print(f'tournament_name ${tournament_name} tournament_creator = ${user}')
-            
-            # Vérifier le statut du demandeur (s'il est en ligne, annuler la demande)
-            # S'il est en ligne, cela signifie que l'invitation a été annulée
+		if req_type == 'create':
+			user.SetStatus(User.USER_STATUS['WAITING_TOURNAMENT'])
+			print(f'tournament_name ${tournament_name} tournament_creator = ${user}')
 
-            tournament = Tournament.objects.create(name=tournament_name, user=user, status=2)
-            # Creer une entree dans la table match (status = in_progress)
-            # creer deux entree dans la table match_points (match_id, user_id)
-            # recuperer l'id du match pour le renvoyer
-            ##### TO DO
+			tournament = Tournament.objects.create(name=tournament_name, user=user, status=2)
+			# Creer une entree dans la table match (status = in_progress)
+			# creer deux entree dans la table match_points (match_id, user_id)
+			# recuperer l'id du match pour le renvoyer
 
-            # Envoyer une notification / invitation acceptee + match_id + lien
 
-            response_data = {'message': 'tournament created', 'tournament_name': tournament_name}
-            return JsonResponse(response_data)
+			serializer = TournamentSerializer(tournament)
+			return Response(serializer.data)
+			
+			# response_data = {'message': 'tournament created', 'tournament_name': tournament_name, 'tournament_id'}
+			# return JsonResponse(response_data)
 
-        return HttpResponse("Invalid request type.", status=400)
+		return HttpResponse("Invalid request type.", status=400)

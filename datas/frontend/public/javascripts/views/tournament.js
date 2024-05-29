@@ -94,7 +94,8 @@ export default class extends AbstractView {
         let nametournament = document.querySelector('#app input#name-tournament').value;
         if (nametournament == ""){
             errDiv.classList.remove("d-none")
-            errDiv.innerHTML = 'An error occured ! Please check fields below ...';
+            errDiv.innerHTML = 'An error occured! Please fill all the fields...';
+            return;
         }
         else
             errDiv.classList.add("d-none");
@@ -104,6 +105,7 @@ export default class extends AbstractView {
 
         let action = "create";
         let picks = [];
+
         let response = await this.user.request.post(`/api/match/tournament/${action}/${nametournament}/`)
         if (response.status == 200)
         {
