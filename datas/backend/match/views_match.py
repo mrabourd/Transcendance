@@ -26,8 +26,8 @@ class CreateMatchView(APIView):
 		# tournament_id = id
 
 		# match = Match.objects.create(tournament=tournament_id, user=user, alias1=user)
-
 		serializer = MatchSerializer(data=request.data)
+		match_point = MatchPoints.objects.create(match=serializer.data.id, user=user, )
 		return Response(serializer.data)
 
 		return HttpResponse("Invalid request type.", status=400)

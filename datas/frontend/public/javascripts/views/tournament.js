@@ -45,7 +45,7 @@ export default class extends AbstractView {
     }
 
     displayPlayers = async (picks, JSONresponse) => {
-		let tournament_name = JSONresponse.name;
+		// let tournament_name = JSONresponse.name;
 		let tournament_id = JSONresponse.tournament_id;
         document.querySelector('#app table.table').classList.remove("d-none");
 
@@ -84,9 +84,8 @@ export default class extends AbstractView {
             
             let used = undefined;
 
-            for (let i = 0; i < 2 ; i++) {
+            for (let x = 0; x < 2 ; x++) {
                 let random = Math.floor(Math.random() * 3);
-
                 if (players[random] == used){
                     random++;
                 }
@@ -94,10 +93,14 @@ export default class extends AbstractView {
                 used = players[random];
             }
             for (let i = 0; i < 4 ; i++){
-                if (players[i] == picks[0] || players[i] == picks[1])
-                    continue;
-                else
+                if (players[i] == picks[0] || players[i] == picks[1]){
+					console.log("continue");
+					continue;
+				}
+                else{
+					console.log("add ", players[i]);
                     picks.push(players[i]);
+				}
             }
 
         }
@@ -132,9 +135,10 @@ export default class extends AbstractView {
             let p2 = document.querySelector('#app input#player2').value;
             let p3 = document.querySelector('#app input#player3').value;
             let p4 = document.querySelector('#app input#player4').value;
-            let players = [p1, p2, p3, p4];
+            let players = [[p1, "username"], [p2, "alias"], [p3, "alias"], [p4, "alias"]];
+			// let users = ["username", "alias", "alias", "alias"];
             picks = await this.matchmaking(players);
-
+			console.log("picks: ", picks);
             this.displayPlayers(picks, JSONresponse);
 
         }
