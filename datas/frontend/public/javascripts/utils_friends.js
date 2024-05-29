@@ -48,13 +48,19 @@ export async function invite(user, friend_id, action)
             user.datas.invitation_sent = friend_id;
         }else if (action == 'cancel'){
             user.datas.invitation_sent = null;
-        }else if (action == 'deny'){
+        }else if (action == 'deny' || action == 'accept' ){
 			user.datas.received_invitations = user.datas.received_invitations.filter(id => id !== friend_id);
         }
         user.saveDatasToLocalStorage();
         update_profile_cards_text(user)
-        if(location.pathname == '/home')
+        if ((action != "accept") && (location.pathname == '/home')){
             user.router.router(user);
+        }
+        if (action == 'accept')
+        {
+            let JSONresponse = await response.json();
+            user.router.navigateTo('/play/online/' + JSONresponse.match_id, user);
+        }
     }
 }
 

@@ -35,7 +35,7 @@ export default class User {
 
 
     async getTemplates() {
-        await this.RefreshLocalDatas();
+        //await this.RefreshLocalDatas();
         let profile_card_url = '/template/profile_card';
         let response = await fetch(profile_card_url);
         let html = await response.text();
@@ -123,7 +123,7 @@ export default class User {
             let jsonData = await response.json();
             window.localStorage.setItem("LocalDatas", JSON.stringify(jsonData));
             this.datas = jsonData;
-            return true 
+            return true
         }
         else
             return false

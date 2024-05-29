@@ -17,14 +17,14 @@ User = get_user_model()
 
 @method_decorator(csrf_protect, name='dispatch')
 class Subscribe(APIView):
-# Cette méthode gère les requêtes POST
+	# Cette méthode gère les requêtes POST
 	def post(self, request):
 		# Traitement de la requête POST ici
 		print(f'user id = {request.user.id}')
 		request.user.SetStatus(User.USER_STATUS['WAITING_PLAYER'])
 		return HttpResponse("Subscribe !")
 
-#@method_decorator(csrf_protect, name='dispatch')
+	#@method_decorator(csrf_protect, name='dispatch')
 class Invite(APIView):
 	permission_classes = [IsAuthenticated]
 	def post(self, request, req_type, id):
