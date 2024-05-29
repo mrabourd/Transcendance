@@ -56,11 +56,7 @@ class UserSerializer(serializers.ModelSerializer):
         except ObjectDoesNotExist:
             representation['invitation_sent'] = None        
         representation['received_invitations'] = [
-            {
-                'id': invitation.id,
-                'sender': invitation.sender.id,
-                'created_at': invitation.created_at
-            }
+            invitation.sender.id
             for invitation in instance.received_invitations.all()
         ]
         return representation

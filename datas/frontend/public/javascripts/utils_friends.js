@@ -44,16 +44,15 @@ export async function invite(user, friend_id, action)
     let response = await user.request.post(`/api/match/invite/${action}/${friend_id}/`)
     if (response.status == 200)
     {
-        if (action == 'send')
-        {
+        if (action == 'send'){
             user.datas.invitation_sent = friend_id;
-            user.saveDatasToLocalStorage();
-        }else{
+        }else if (action == 'cancel'){
             user.datas.invitation_sent = null;
-            user.saveDatasToLocalStorage();
+        }else if (action == 'deny'){
+			user.datas.received_invitations = user.datas.received_invitations.filter(id => id !== friend_id);
         }
+        user.saveDatasToLocalStorage();
         update_profile_cards_text(user)
-        console.log("location.pathname", location.pathname)
         if(location.pathname == '/home')
             user.router.router(user);
     }
@@ -234,13 +233,21 @@ export async function update_status_text(profile_card)
     dom.classList.add(color)
 }
 
-export async function create_thumbnail(nodeToCopy, user, friend)
+export async function create_thumbnail(nodeToCopy, user, friend, friend_id)
 {
     // clone existing tumbnail if exists
-    let existing_thumbnail = document.querySelector(`aside .profile_card[data-friend-id="${friend.id}"]`)
+    let existing_thumbnail = document.querySelector(`aside .profile_card[data-friend-id="${friend_id}"]`)
     if (existing_thumbnail)
+    {
+        console.log('existing_thumbnail')
         return existing_thumbnail.cloneNode(true)
-
+    }
+    if (friend == null)
+    {
+        let response = await user.request.get(`/api/users/profile/${friend_id}/`)
+        if (response.status === 200)
+            friend = await response.json();
+    }
     const nodeCopy = nodeToCopy.cloneNode(true);
     await nodeCopy.setAttribute("data-friend-id", friend.id)
     await nodeCopy.setAttribute("data-friend-status", friend.status)

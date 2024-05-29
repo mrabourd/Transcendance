@@ -32,6 +32,17 @@ export default class User {
     {
         return this._datas;
     }
+
+
+    async getTemplates() {
+        await this.RefreshLocalDatas();
+        let profile_card_url = '/template/profile_card';
+        let response = await fetch(profile_card_url);
+        let html = await response.text();
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, 'text/html');
+        this.DOMProfileCard = doc.querySelector('.profile_card');
+    }
     async login(userName, passWord) {
         let RQ_Body = {username: userName, password: passWord};
         let response = await this.request.post('/api/users/login/', RQ_Body);
@@ -49,6 +60,8 @@ export default class User {
             } */
 			
             this.websockets = new Websockets(this)
+            await this.view.printHeader();
+            await this.view.printAside();
             return true;
         } else  {
             return response;
@@ -131,6 +144,8 @@ export default class User {
             this.request.rmJWTtoken();
             this.request.rmCsrfToken();
             this._isConnected = false;
+            await this.view.printHeader();
+            await this.view.printAside();
             this.router.navigateTo('/', this);
         }
     }

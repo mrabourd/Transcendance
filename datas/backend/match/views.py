@@ -43,7 +43,8 @@ class Invite(APIView):
                 notif_message = f'{user.username} has invited {user_invited.username} to play'
                 Notification.objects.create(
                     type="private",
-                    code="xxx",
+                    code_name="INV",
+                    code_value=1,
                     message=notif_message,
                     sender=user,
                     receiver=user_invited,
@@ -65,7 +66,8 @@ class Invite(APIView):
             notif_message = f'{user.username} has cancelled his invitation'
             Notification.objects.create(
                 type="private",
-                code="xxx",
+                code_name="INV",
+                code_value=2,
                 message=notif_message,
                 sender=user,
                 receiver=user_invited,
@@ -84,7 +86,8 @@ class Invite(APIView):
             notif_message = f'{user.username} has rejected {invitation_sender.username} invitation'
             Notification.objects.create(
                 type="private",
-                code="xxx",
+                code_name="INV",
+                code_value=3,
                 message=notif_message,
                 sender=user,
                 receiver=invitation_sender,
@@ -117,7 +120,8 @@ class Invite(APIView):
             notif_message = f'{user.username} has accepted {invitation_sender.username} invitation'
             Notification.objects.create(
                 type="private",
-                code="xxx",
+                code_name="INV",
+                code_value=4,
                 message=notif_message,
                 sender=user,
                 receiver=invitation_sender,
