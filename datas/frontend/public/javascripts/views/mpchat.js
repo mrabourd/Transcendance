@@ -54,6 +54,7 @@ export default class extends AbstractView {
 		if (this.user.datas.id == friend_id) {
 			return false
 		}
+        
 
 		console.log(this.user.datas.username + ' is connected to the chatroom.');
 		const user = this.user;
@@ -64,7 +65,8 @@ export default class extends AbstractView {
 		// on socket open
 		chatSocket.onopen = function (e) {
 			console.log('Socket between ' + user.datas.id + ' and ' + friend_id + ' successfully connected.');
-		};
+		
+        };
 
 		let response = await user.request.get('/api/users/profile/'+friend_id+'/')
         let friend = await response.json();

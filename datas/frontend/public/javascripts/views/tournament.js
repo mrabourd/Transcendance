@@ -49,10 +49,10 @@ export default class extends AbstractView {
 
         document.querySelector('#app table.table').classList.remove("d-none");
 
-        document.querySelector('#app td.player1-match').innerHTML = picks[0];
-        document.querySelector('#app td.player2-match').innerHTML = picks[1];
-        document.querySelector('#app td.player3-match').innerHTML = picks[2];
-        document.querySelector('#app td.player4-match').innerHTML = picks[3];
+        document.querySelector('#app td.player1-match').innerHTML = picks[0][0];
+        document.querySelector('#app td.player2-match').innerHTML = picks[1][0];
+        document.querySelector('#app td.player3-match').innerHTML = picks[2][0];
+        document.querySelector('#app td.player4-match').innerHTML = picks[3][0];
 
     }
 
@@ -71,7 +71,7 @@ export default class extends AbstractView {
             let used = undefined;
 
             for (let x = 0; x < 2 ; x++) {
-                let random = Math.floor(Math.random() * 3);
+                let random = Math.floor(Math.random() * 4);
                 if (players[random] == used){
                     random++;
                 }
@@ -132,10 +132,14 @@ export default class extends AbstractView {
 			this.displayPlayers(picks);
 
 			// choper les 2 matchs id dans JSONresponse
-
+            console.log("user: ", this.user);
 			document.querySelector('#app #match1-button').addEventListener('click', async (event) =>  {
 				event.preventDefault();
 				router.navigateTo('/play/' + JSONresponse.match1, this.user);
+			})
+            document.querySelector('#app #match2-button').addEventListener('click', async (event) =>  {
+				event.preventDefault();
+				router.navigateTo('/play/' + JSONresponse.match2, this.user);
 			})
 
         }
