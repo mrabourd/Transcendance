@@ -60,22 +60,32 @@ export default class extends AbstractView {
         }
 
         /***  INVITATION SENT ***/
-        const invitation_sent = this.user.datas.invitation_sent
-        if (invitation_sent == "" || invitation_sent == null)
-            document.querySelector(`#app .invitation_sent`).classList.add('d-none')
+        const invitations_sent = this.user.datas.invitations_sent
+        if (invitations_sent.length === 0)
+            document.querySelector(`#app .invitations_sent`).classList.add('d-none')
         else
         {
+            invitations_sent.forEach(async invitation => {
+                console.log('invitation :', invitation)
+                nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, invitation)
+                let bt_cancel = '<a class="cancel btn btn-primary btn-sm" role="button">cancel</a>'
+                nodeCopy.querySelector(".dropdown").innerHTML = bt_cancel
+                bt_cancel = nodeCopy.querySelector(".dropdown .cancel")
+                bt_cancel.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await friends_utils.invite(this.user, invitation, 'cancel')
+                });
+                document.querySelector(`#app .invitations_sent ul`).append(nodeCopy);
+            })
+
+
+
+            /* 
             let friend = []
-            friend.id = invitation_sent
+            friend.id = 
             nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend.id)
-            let bt_cancel = '<a class="cancel btn btn-primary btn-sm" role="button">cancel</a>'
-            nodeCopy.querySelector(".dropdown").innerHTML = bt_cancel
-            bt_cancel = nodeCopy.querySelector(".dropdown .cancel")
-            bt_cancel.addEventListener('click', async (e) => {
-                e.preventDefault();
-                await friends_utils.invite(this.user, friend.id, 'cancel')
-            });
-            document.querySelector(`#app .invitation_sent ul`).append(nodeCopy);
+
+            */
         }
 
 
@@ -89,7 +99,6 @@ export default class extends AbstractView {
 
         // SUBSCRIBE
         dom = document.querySelector('.subscribe a')
-        console.log("this.user.datas.status ", this.user.datas.status )
         if (this.user.datas.status == USER_STATUS["WAITING_PLAYER"])
             dom.innerHTML = 'Unsubscribe from waiting list'
         else if (this.user.datas.status == USER_STATUS["ONLINE"])
@@ -103,20 +112,41 @@ export default class extends AbstractView {
             if (e.target.innerHTML == 'Find a random oponent')
             {
                 response = await this.user.request.post('/api/match/subscribe/', {})
-                e.target.innerHTML = 'Unsubscribe from waiting list'
-                this.user.datas.status = USER_STATUS["WAITING_PLAYER"];
-                this.user.saveDatasToLocalStorage()
+                if (response.status == 201)
+                {
                 // if found >> redirect to match_id
+                this.user.datas.status = USER_STATUS["PLAYING"];
+                    
+                }else if (response.status == 200)
+                {
+                    e.target.innerHTML = 'Unsubscribe from waiting list'
+                    this.user.datas.status = USER_STATUS["WAITING_PLAYER"];
+                }
+                this.user.saveDatasToLocalStorage()
             }
             else
+            {
                 response = await this.user.request.post('/api/match/unsubscribe/', {})
+                if (response.ok)
+                {
+                    this.user.datas.status = USER_STATUS["ONLINE"];
+                    this.user.saveDatasToLocalStorage()
+                }
+            }
             console.log('response : ', response)
         })
     }
-        document.querySelector('.tournament a').addEventListener('click',  async e => 
-        {
-            e.preventDefault();
-            this.user.router.navigateTo('/tournament', this.user)
+    console.log('status', this.user.datas.status )
+    dom = document.querySelector('.tournament a')
+    if (this.user.datas.status != USER_STATUS["WAITING_TOURNAMENT"]
+    && this.user.datas.status != USER_STATUS["ONLINE"])
+        dom.parentNode.remove();
+    if (dom)
+    {
+        dom.addEventListener('click',  async e => {
+                e.preventDefault();
+                this.user.router.navigateTo('/tournament', this.user)
         })
+    }
     }
 }

@@ -98,9 +98,12 @@ export default class Websockets {
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
 		if(friend_id == this.user.datas.id)
 		{
+			if (friend_status != 0 && friend_status != 1)
+			{
+				this.user.datas.status = friend_status;
+				this.user.saveDatasToLocalStorage()
+			}
 			return 
-			this.user.datas.status = friend_status;
-			this.user.saveDatasToLocalStorage()
 		}
 		
 		profile_cards.forEach(profile_card => {

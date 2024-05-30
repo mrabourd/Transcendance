@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from websockets.models import Notification
+from .models import Match
 # Create your views here.
 from users.models import User, Invitation  # Import your User model
 User = get_user_model()
@@ -19,10 +20,30 @@ User = get_user_model()
 class Subscribe(APIView):
 	# Cette méthode gère les requêtes POST
 	def post(self, request):
-		# Traitement de la requête POST ici
-		print(f'user id = {request.user.id}')
-		request.user.SetStatus(User.USER_STATUS['WAITING_PLAYER'])
-		return HttpResponse("Subscribe !")
+		current_user = request.user
+		current_user.SetStatus(User.USER_STATUS['WAITING_PLAYER'])
+		current_user.save()
+		
+		# Try to find another user with status WAITING_PLAYER
+		waiting_user = User.objects.filter(status=User.USER_STATUS['WAITING_PLAYER']).exclude(id=current_user.id).first()
+		
+		if waiting_user:
+			# Create a match object
+			match = Match.objects.create(player1=current_user, player2=waiting_user)
+			
+			# Retrieve match ID
+			match_id = match.id
+			
+			# Response with match ID
+			response_content = f'Match created! Match ID: {match_id}'
+		else:
+			# Change the status of the current user to WAITING_PLAYER
+			current_user.SetStatus(User.USER_STATUS['WAITING_PLAYER'])
+			current_user.save()
+			
+			response_content = 'No waiting player found, status updated to WAITING_PLAYER.'
+		return HttpResponse(response_content)
+
 
 	#@method_decorator(csrf_protect, name='dispatch')
 class Invite(APIView):
@@ -37,8 +58,6 @@ class Invite(APIView):
 				return HttpResponse("You have already sent an invitation.", status=400)
 			try:
 				invitation = Invitation.objects.create(sender=user, receiver=user_invited)
-				#user.invitation_sent = invitation
-				#user.save()
 
 				notif_message = f'{user.username} has invited {user_invited.username} to play'
 				Notification.objects.create(
@@ -57,12 +76,9 @@ class Invite(APIView):
 
 		elif req_type == 'cancel':
 			# Vérifier si l'utilisateur a effectivement envoyé une invitation
-			if not hasattr(user, 'sent_invitation'):
-				return HttpResponse("No invitation to cancel.", status=204)
 			user.SetStatus(User.USER_STATUS['ONLINE'])
-			user.sent_invitation.delete()
-			#user.sent_invitation = None
-			#user.save()
+			invitation = get_object_or_404(Invitation, sender=user, receiver=user_invited)
+			invitation.delete()
 			notif_message = f'{user.username} has cancelled his invitation'
 			Notification.objects.create(
 				type="private",

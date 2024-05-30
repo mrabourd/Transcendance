@@ -35,11 +35,9 @@ class User(AbstractUser):
     )
     first_name = models.CharField(max_length=30, blank=True, validators=[MinLengthValidator(1)])
     last_name = models.CharField(max_length=150, blank=True, validators=[MinLengthValidator(1)])
-    invitation_sent = models.OneToOneField(
+    invitations_sent = models.ManyToManyField(
         'Invitation',
-        null=True,
         blank=True,
-        on_delete=models.SET_NULL,
         related_name='invitation_sender',
         verbose_name='Invitation sent'
     )
@@ -62,9 +60,9 @@ class User(AbstractUser):
 
 class Invitation(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    sender = models.OneToOneField(
+    sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='sent_invitation',
+        related_name='sent_invitations',
         on_delete=models.CASCADE
     )
     receiver = models.ForeignKey(
