@@ -34,12 +34,16 @@ export default class extends AbstractView {
 			nodeFriend.querySelector(".dropdown").innerHTML = ''
 			friends_utils.update_status_text(nodeFriend)
 
+			// DOM = this.user.DOMMpChatMessage.cloneNode(true)
+
 			chat_with.appendChild(nodeFriend);
 
 			/* get message history */
 			let historyResponse = await this.user.request.get(`/api/users/chat/messages/history/${this.friend_id}/`);
 			/* TODO -> createChatMessage for each */
-			console.log("history", historyResponse);
+			// this.messageHistory = this.historyJSON(historyResponse);
+			this.historyJSON(historyResponse);
+			
 		} catch (err) {
 			console.warn('Something went wrong.', err);
 		}
@@ -78,7 +82,7 @@ export default class extends AbstractView {
 		// on socket close
 		chatSocket.onmessage = (e) => {
             const data = JSON.parse(e.data);
-			this.createChatMessage(data);
+			this.createChatMessage(data, this.user.datas.id);
 			//const chatText = document.querySelector('#chat-text-left').innerHTML;
 			//document.querySelector('#chat-text-left').innerHTML = chatText + data.created_at + '<br>' + data.username + ' : ' + data.message;
 
@@ -102,62 +106,92 @@ export default class extends AbstractView {
         };
 	}
 
+	formatDate = (dateString) => {
+		const options = { hour: '2-digit', minute: '2-digit' };
+		return new Date(dateString).toLocaleTimeString('fr-FR', options);
+	}
+
+	historyJSON = async (history) => {
+		let messageHistory = await history.json();
+		let currentUser = this.user.datas.id;
+
+		console.log(messageHistory)
+		
+		messageHistory.forEach(message => {
+
+			this.createChatMessage({
+				...message,
+				user_id: message.user,
+				message: message.message.trim(),
+				created_at: this.formatDate(message.created_at)
+			}, currentUser);
+			
+		});
+	}
 
 
+	displayRight = (data, time, text, DOM) => {
+		let chatbox = document.querySelector("#app .overflow-scroll");
+		let firstTime;
 
-	createChatMessage = (data) => {
+		time.classList.add('d-flex', 'flex-row', 'justify-content-end')
+		text.classList.add('d-flex', 'flex-row', 'justify-content-end')
+		text.innerHTML = data.message;
+		time.innerHTML = time.innerText;
+		firstTime = true;
+		if (firstTime){
+			chatbox.scrollTop = chatbox.scrollHeight;
+			firstTime = false;
+		}
+		else if (chatbox.scrollTop + chatbox.clientHeight === chatbox.scrollHeight) {
+			chatbox.scrollTop = chatbox.scrollHeight;
+		}
+		console.log(chatbox.scrollTop);
+	}
+
+	displayLeft = (data, time, text, DOM) => {
+		let chatbox = document.querySelector("#app .overflow-scroll");
+		let firstTime;
+
+		firstTime = true;
+		if (firstTime){
+			chatbox.scrollTop = chatbox.scrollHeight;
+			firstTime = false;
+		}
+		else if (chatbox.scrollTop + chatbox.clientHeight === chatbox.scrollHeight) {
+			chatbox.scrollTop = chatbox.scrollHeight;
+		}
+		text.innerHTML = data.message
+		document.querySelector('#chat-message-input')		
+		chatbox.scrollTop = chatbox.scrollHeight;
+	}
+
+	createChatMessage = (data, currentUser) => {
 		let DOM = this.user.DOMMpChatMessage.cloneNode(true)
+
 		/* TO DO remlir le DOM */
 		
 		const date = new Date();
 		const hour = date.getHours();
 		const min = date.getMinutes();
 		let time = DOM.querySelector(".hour");
-		// time.classList.add('h6')
+
 		time.innerHTML = hour+":"+min;
 
-		const messageElement = document.createElement('div');
-		messageElement.innerText = data.message;
-
 		let chatbox = document.querySelector("#app .overflow-scroll");
-		let firstTime;
+
+
 		console.log("data: ", data)
 		
-		let side = 'right';
-		if (data.user_id != this.user.datas.id) {
-			side = 'left';
-		}
+		let side = data.user === currentUser ? 'right' : 'left';
+		
 		let text = DOM.querySelector(".message");
-		text.classList.add('h4')
-		// messageElement.classList.add(`chat-message-${side}`);
-		// document.querySelector(`.message`).append(messageElement);
+
 		if (side == 'right') {
-			time.classList.add('d-flex', 'flex-row', 'justify-content-end')
-			text.classList.add('d-flex', 'flex-row', 'justify-content-end')
-			text.innerHTML = data.message;
-			time.innerHTML = time.innerText;
-			firstTime = true;
-			if (firstTime){
-				chatbox.scrollTop = chatbox.scrollHeight;
-				firstTime = false;
-			}
-			else if (chatbox.scrollTop + chatbox.clientHeight === chatbox.scrollHeight) {
-				chatbox.scrollTop = chatbox.scrollHeight;
-			}
-			console.log(chatbox.scrollTop);
+			this.displayRight(data, time, text, DOM)
 		}
 		else  {
-			firstTime = true;
-			if (firstTime){
-				chatbox.scrollTop = chatbox.scrollHeight;
-				firstTime = false;
-			}
-			else if (chatbox.scrollTop + chatbox.clientHeight === chatbox.scrollHeight) {
-				chatbox.scrollTop = chatbox.scrollHeight;
-			}
-			text.innerHTML = data.message
-			document.querySelector('#chat-message-input')		
-			chatbox.scrollTop = chatbox.scrollHeight;
+			this.displayLeft(data, time, text, DOM)
 		}
 		document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
 
