@@ -256,7 +256,7 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id)
     await nodeCopy.setAttribute("data-friend-id", friend.id)
     await nodeCopy.setAttribute("data-friend-status", friend.status)
     nodeCopy.querySelector(".username").innerHTML = friend.username
-    nodeCopy.querySelector(".id").innerHTML = friend.id
+    //nodeCopy.querySelector(".id").innerHTML = friend.id
     let avatar = (friend.avatar) ? friend.avatar : '/avatars/default.png'
     nodeCopy.querySelector("img.avatar").src = avatar
 
