@@ -183,7 +183,7 @@ export default class extends AbstractView {
 
 		console.log("data: ", data)
 		
-		let side = data.user === currentUser ? 'right' : 'left';
+		let side = data.user_id === currentUser ? 'right' : 'left';
 		
 		let text = DOM.querySelector(".message");
 
