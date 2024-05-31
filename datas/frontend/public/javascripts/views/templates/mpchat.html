@@ -10,77 +10,23 @@
 	</head>
 <body class="m-5">
 <main>
-	<div id="app">
 
+<div  id="app" class="chat-container">
+	<h1 class="chat-with"></h1>
+	<div class="mh-80 overflow-scroll" style="height: 500px;">
+			<ul class="list-unstyled chat-box chatContainerScroll">
 
-<div class="jumbotron">
-<h1 class="display-4">Chat</h1>
-<hr class="my-4">
-
-
-<div  id="app" class="container">
-
-
-<div class="content-wrapper">
-
-
-<div class="row gutters">
-
-<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-
-<div class="card m-0">
-
-<div>
-	<div  id="app" class="chat-container">
-		<div class="mh-80 overflow-scroll" style="height: 500px;">
-		<ul class="chat-box chatContainerScroll">
-
-
-			
-
-			<li class="chat-left">
-				<div class="chat-avatar">
-					<img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="Retail Admin">
-					<div class="chat-name" id="chat-name-friend"></div>
-				</div>
-				<div class="chat-left" id ="chat-text-left">
-					
-				</div>
-				<div class="chat-hour" id="chat-hour-friend"><span class="fa fa-check-circle"></span></div>
-			</li>
-
-			<li class="chat-right">
-				<div class="chat-hour" id="chat-hour-me"> <span class="fa fa-check-circle"></span></div>
-				<div id="chat-text-right" class="chat-text-right">
-
-				</div>
-				<div class="chat-avatar">
-					<img src="https://www.bootdey.com/img/Content/avatar/avatar3.png" alt="Retail Admin">
-					<div class="chat-name" id="chat-name-me"></div>
-				</div>
-			</li>
+				
 			</ul>
-			<!-- <li class="bg-white mb-3">
-				<form id="input-form" class="col-2">
-					<input id="chat-message-input" type="text" ><br>
-					<input id="chat-message-submit" type="button" value="Send">
-				</form>
-			</div> -->
+	</div>
 
-			<div class="bg-white mb-3">
+	<div class="bg-white mb-3">
 				<div data-mdb-input-init class="form-outline" id="input-form">
 				  <textarea class="form-control" rows="4" id="chat-message-input"></textarea>
 				  <!-- <label class="form-label" for="textAreaExample2">Message</label> -->
 				</div>
-			</div>
-			  <button  type="button" id="chat-message-submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded float-end">Send</button>
-
-		</div>
-		</div>
 	</div>
-</div>
-							
-
+	<button  type="button" id="chat-message-submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded float-end">Send</button>
 </div>
 </main>
 </body>

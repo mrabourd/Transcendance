@@ -36,13 +36,23 @@ export default class User {
 
     async getTemplates() {
         //await this.RefreshLocalDatas();
-        let profile_card_url = '/template/profile_card';
-        let response = await fetch(profile_card_url);
+        let tpl_url = '/template/profile_card';
+        let response = await fetch(tpl_url);
         let html = await response.text();
         let parser = new DOMParser();
         let doc = parser.parseFromString(html, 'text/html');
         this.DOMProfileCard = doc.querySelector('.profile_card');
+
+        tpl_url = '/template/mpchat_message';
+        response = await fetch(tpl_url);
+        html = await response.text();
+        parser = new DOMParser();
+        doc = parser.parseFromString(html, 'text/html');
+        this.DOMMpChatMessage = doc.querySelector('.chat_message');
+
+
     }
+
     async login(userName, passWord) {
         let RQ_Body = {username: userName, password: passWord};
         let response = await this.request.post('/api/users/login/', RQ_Body);
