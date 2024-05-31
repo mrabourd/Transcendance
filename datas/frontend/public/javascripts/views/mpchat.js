@@ -1,42 +1,50 @@
 import AbstractView from "./AbstractView.js";
-
+import * as friends_utils from "../utils_friends.js";
 import { send_message } from "../utils_chat.js";
 
 
 
 export default class extends AbstractView {
-    constructor(params) {
-        super(params);
-        this.setTitle("Chat");
+	constructor(params) {
+		super(params);
+		this.setTitle("Chat");
 
-    }
+	}
 
-    async getHtml(DOM) {
-            try {
-                let response = await fetch('/template/mpchat');
-                let html = await response.text();
-                
-                let parser = new DOMParser();
-                let doc = parser.parseFromString(html, 'text/html');
-                let body = doc.querySelector('#app');
-                DOM.innerHTML = body.innerHTML;
+	async getHtml(DOM) {
+		try {
+			let response = await fetch('/template/mpchat');
+			let html = await response.text();
+			
+			let parser = new DOMParser();
+			let doc = parser.parseFromString(html, 'text/html');
+			let body = doc.querySelector('#app');
+			DOM.innerHTML = body.innerHTML;
 
-                /* get friend history */
-                this.friend_id = this.params.friend_id; // Assuming 'this' refers to the proper context here.
-                response = await this.user.request.get('/api/users/profile/'+this.friend_id+'/')
-                let friend = await response.json();
-                this.friend_username = friend.username;              
-                document.querySelector("#app .chat-with").innerHTML = this.friend_username;
+			/* get friend history */
+			this.friend_id = this.params.friend_id; // Assuming 'this' refers to the proper context here.
+			response = await this.user.request.get('/api/users/profile/'+this.friend_id+'/')
+			let friend = await response.json();
+			this.friend_username = friend.username;
+			
+			var chat_with = document.querySelector("#app .chat-with");
+			var nodeFriend = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend.id)
+			nodeFriend.classList.remove('mb-2', 'col-12');
+			nodeFriend.classList.add('d-flex', 'row','justify-content-end', 'col-8');
+			nodeFriend.querySelector(".dropdown").innerHTML = ''
+			friends_utils.update_status_text(nodeFriend)
 
-                /* get message history */
-                let historyResponse = await this.user.request.get(`/api/users/chat/messages/history/${this.friend_id}/`);
-                /* TODO -> createChatMessage for each */
-                console.log("history", historyResponse);
-            } catch (err) {
-                console.warn('Something went wrong.', err);
-            }
+			chat_with.appendChild(nodeFriend);
 
-    }
+			/* get message history */
+			let historyResponse = await this.user.request.get(`/api/users/chat/messages/history/${this.friend_id}/`);
+			/* TODO -> createChatMessage for each */
+			console.log("history", historyResponse);
+		} catch (err) {
+			console.warn('Something went wrong.', err);
+		}
+
+	}
 
 	async addEvents() {
 
@@ -63,7 +71,6 @@ export default class extends AbstractView {
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
-
 
 
 
@@ -95,27 +102,66 @@ export default class extends AbstractView {
         };
 	}
 
+
+
+
 	createChatMessage = (data) => {
-        let DOM = this.user.DOMMpChatMessage.cloneNode(true)
-        /* TO DO remlir le DOM */
-        DOM.querySelector(".message").innerHTML = data.message
-        document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
-        //return DOM
-        /*
-        const date = new Date();
-        const hour = date.getHours();
-        const min = date.getMinutes();
-        DOM.querySelector("#chat-hour-me").innerHTML = hour+":"+min;
-        let side = 'left';
-        const messageElement = document.createElement('div');
-        messageElement.innerText = data.message;
-        if (data.user_id == user_id) {
-            
-            side = 'right';
-        }
-        messageElement.classList.add(`chat-message-${side}`);
-        document.querySelector(`#chat-text-${side}`).append(messageElement);
-        */
-    }
+		let DOM = this.user.DOMMpChatMessage.cloneNode(true)
+		/* TO DO remlir le DOM */
+		
+		const date = new Date();
+		const hour = date.getHours();
+		const min = date.getMinutes();
+		let time = DOM.querySelector(".hour");
+		// time.classList.add('h6')
+		time.innerHTML = hour+":"+min;
+
+		const messageElement = document.createElement('div');
+		messageElement.innerText = data.message;
+
+		let chatbox = document.querySelector("#app .overflow-scroll");
+		let firstTime;
+		console.log("data: ", data)
+		
+		let side = 'right';
+		if (data.user_id != this.user.datas.id) {
+			side = 'left';
+		}
+		let text = DOM.querySelector(".message");
+		text.classList.add('h4')
+		// messageElement.classList.add(`chat-message-${side}`);
+		// document.querySelector(`.message`).append(messageElement);
+		if (side == 'right') {
+			time.classList.add('d-flex', 'flex-row', 'justify-content-end')
+			text.classList.add('d-flex', 'flex-row', 'justify-content-end')
+			text.innerHTML = data.message;
+			time.innerHTML = time.innerText;
+			firstTime = true;
+			if (firstTime){
+				chatbox.scrollTop = chatbox.scrollHeight;
+				firstTime = false;
+			}
+			else if (chatbox.scrollTop + chatbox.clientHeight === chatbox.scrollHeight) {
+				chatbox.scrollTop = chatbox.scrollHeight;
+			}
+			console.log(chatbox.scrollTop);
+		}
+		else  {
+			firstTime = true;
+			if (firstTime){
+				chatbox.scrollTop = chatbox.scrollHeight;
+				firstTime = false;
+			}
+			else if (chatbox.scrollTop + chatbox.clientHeight === chatbox.scrollHeight) {
+				chatbox.scrollTop = chatbox.scrollHeight;
+			}
+			text.innerHTML = data.message
+			document.querySelector('#chat-message-input')		
+			chatbox.scrollTop = chatbox.scrollHeight;
+		}
+		document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
+
+
+	}
 };
 
