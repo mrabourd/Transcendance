@@ -11,8 +11,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from websockets.models import Notification
-from .models import Tournament, Match, MatchPoints
-from .serializers import TournamentSerializer
+from .models import Match, MatchPoints
+from .serializers import MatchSerializer
 import json
 import requests
 # Create your views here.
@@ -28,23 +28,44 @@ User = get_user_model()
 # 			return i
 # 		i =+ 1
 
+
+
+
+class MatchList(APIView):
+	# Cette méthode gère les requêtes POST
+	def post(self, request, req_type):
+		current_user = request.user
+
+		# Filtrer les matchs dont le statut est 0
+		if req_type == 'pending':
+			matches = Match.objects.filter(status=0)
+		else:
+			matches = Match.objects()
+
+		# Filtrer les matchs pour lesquels l'utilisateur actuel a des points de match
+		matches_with_user_points = matches.filter(players__user=current_user).distinct()
+
+		# Sérialiser les résultats
+		serializer = MatchSerializer(matches_with_user_points, many=True)
+		return JsonResponse(serializer.data, safe=False, status=200)
+
 def createMatch(user, tournament, player1, player2):
 	user = user
 	# recuperer l'objet tournoi
 	match = Match.objects.create(tournament=tournament)
 
 	# user en user ou en alias, a checker
-	for player in player1:
-		if player1[1] == 'username':
-			match_point1 = MatchPoints.objects.create(match=match, user=user, points=0)
-		else:
-			match_point1 = MatchPoints.objects.create(match=match, alias=player1, points=0)
+	#for player in player1:
+	if player1[0] == 'username':
+		match_point1 = MatchPoints.objects.create(match=match, alias=player1[1].username, user=player1[1], points=0)
+	else:
+		match_point1 = MatchPoints.objects.create(match=match, alias=player1[1], points=0)
 
-	for player in player2:
-		if player1[1] == 'username':
-			match_point2 = MatchPoints.objects.create(match=match, user=user, points=0)
-		else:
-			match_point2 = MatchPoints.objects.create(match=match, alias=player2, points=0)
+	#for player in player2:
+	if player2[0] == 'username':
+		match_point2 = MatchPoints.objects.create(match=match, alias=player2[1].username, user=player2[1], points=0)
+	else:
+		match_point2 = MatchPoints.objects.create(match=match, alias=player2[1], points=0)
 
 	# renvoyer l'id du match:
 

@@ -3,10 +3,7 @@ import {USER_STATUS} from "./constants.js";
 
 export function is_invited(user,friend_id )
 {
-    if (user.datas.invitation_sent && user.datas.invitation_sent == friend_id) {
-        return true
-    }
-    return false
+    return user.datas.invitations_sent.find(id => id == friend_id) !== undefined;
 }
 export function is_blocked(user, friend_id)
 {
@@ -45,11 +42,21 @@ export async function invite(user, friend_id, action)
     if (response.status == 200)
     {
         if (action == 'send'){
-            user.datas.invitation_sent = friend_id;
+            user.datas.status = USER_STATUS["WAITING_FRIEND"]
+            if (!user.datas.invitations_sent.includes(friend_id))
+                user.datas.invitations_sent.push(friend_id)
+
         }else if (action == 'cancel'){
-            user.datas.invitation_sent = null;
+            user.datas.status = USER_STATUS["ONLINE"]
+            console.log("CANCEL invitation", friend_id)
+            user.datas.invitations_sent = user.datas.invitations_sent.filter(id => id !== friend_id);
+
         }else if (action == 'deny' || action == 'accept' ){
 			user.datas.received_invitations = user.datas.received_invitations.filter(id => id !== friend_id);
+        }
+        if(action == 'accept')
+        {
+            user.datas.status = USER_STATUS["PLAYING"]
         }
         user.saveDatasToLocalStorage();
         update_profile_cards_text(user)
@@ -127,15 +134,6 @@ export async function update_invite_text(user, profile_card, friend_id) {
     if (!dom)
         return;
     let check = is_invited(user, friend_id)
-    let friend_status = profile_card.getAttribute('data-friend-status');
-    if (
-        (((parseInt(friend_status) != USER_STATUS['ONLINE']) && !check))
-        || (user.datas.invitation_sent && user.datas.invitation_sent != friend_id))
-    {
-        dom.classList.add('d-none')
-        return ;
-    }
-    dom.classList.remove('d-none')
     if (!check)
         dom.innerHTML = 'invite to play';
     else
@@ -221,18 +219,18 @@ export async function update_status_text(profile_card)
             text = 'offline'
             color = 'text-danger'
             break
-        case USER_STATUS['ONLINE'] :
-            text = 'online'
-            color = 'text-success'
-            break
         case USER_STATUS['PLAYING'] :
             text = 'playing ...'
             color = 'text-primary'
             break
         default:
-            text = 'waiting to play ...'
-            color = 'text-primary'
+        //case USER_STATUS['ONLINE'] :
+            text = 'online'
+            color = 'text-success'
             break
+        //    text = 'waiting to play ...'
+        //    color = 'text-primary'
+        //    break
     }
     dom.innerHTML = text
     dom.removeAttribute('class')
@@ -258,7 +256,7 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id)
     await nodeCopy.setAttribute("data-friend-id", friend.id)
     await nodeCopy.setAttribute("data-friend-status", friend.status)
     nodeCopy.querySelector(".username").innerHTML = friend.username
-    nodeCopy.querySelector(".id").innerHTML = friend.id
+    //nodeCopy.querySelector(".id").innerHTML = friend.id
     let avatar = (friend.avatar) ? friend.avatar : '/avatars/default.png'
     nodeCopy.querySelector("img.avatar").src = avatar
 

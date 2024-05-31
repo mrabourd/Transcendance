@@ -11,6 +11,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from websockets.models import Notification
+from .models import Match
+from .views_match import createMatch
 # Create your views here.
 from users.models import User, Invitation  # Import your User model
 User = get_user_model()
@@ -19,10 +21,37 @@ User = get_user_model()
 class Subscribe(APIView):
 	# Cette méthode gère les requêtes POST
 	def post(self, request):
-		# Traitement de la requête POST ici
-		print(f'user id = {request.user.id}')
-		request.user.SetStatus(User.USER_STATUS['WAITING_PLAYER'])
-		return HttpResponse("Subscribe !")
+		current_user = request.user
+		# Try to find another user with status WAITING_PLAYER
+		waiting_user = User.objects.filter(status=User.USER_STATUS['WAITING_PLAYER']).exclude(id=current_user.id).first()
+		if waiting_user:
+			# Create a match object
+			player1 = ['username', current_user]
+			player2 = ['username', waiting_user]
+			match = createMatch(current_user, None, player1, player2)
+			# Retrieve match ID
+			match_id = match.match_id
+			waiting_user.SetStatus(User.USER_STATUS['ONLINE'])
+			# Response with match ID
+			return JsonResponse({'message': 'Match created!', 'match_id': match_id}, status=201)
+
+		else:
+			# Change the status of the current user to WAITING_PLAYER
+			current_user.SetStatus(User.USER_STATUS['WAITING_PLAYER'])
+			current_user.save()
+			response_content = 'No waiting player found, status updated to WAITING_PLAYER.'
+			return JsonResponse({'message': response_content}, status=200)
+
+@method_decorator(csrf_protect, name='dispatch')
+class Unsubscribe(APIView):
+	# Cette méthode gère les requêtes POST
+	def post(self, request):
+		current_user = request.user
+		current_user.SetStatus(User.USER_STATUS['ONLINE'])
+		current_user.save()
+		response_content = 'Unscubscribed from waiting list'
+		return HttpResponse(response_content, status = 200)
+
 
 	#@method_decorator(csrf_protect, name='dispatch')
 class Invite(APIView):
@@ -37,8 +66,6 @@ class Invite(APIView):
 				return HttpResponse("You have already sent an invitation.", status=400)
 			try:
 				invitation = Invitation.objects.create(sender=user, receiver=user_invited)
-				#user.invitation_sent = invitation
-				#user.save()
 
 				notif_message = f'{user.username} has invited {user_invited.username} to play'
 				Notification.objects.create(
@@ -57,12 +84,9 @@ class Invite(APIView):
 
 		elif req_type == 'cancel':
 			# Vérifier si l'utilisateur a effectivement envoyé une invitation
-			if not hasattr(user, 'sent_invitation'):
-				return HttpResponse("No invitation to cancel.", status=204)
 			user.SetStatus(User.USER_STATUS['ONLINE'])
-			user.sent_invitation.delete()
-			#user.sent_invitation = None
-			#user.save()
+			invitation = get_object_or_404(Invitation, sender=user, receiver=user_invited)
+			invitation.delete()
 			notif_message = f'{user.username} has cancelled his invitation'
 			Notification.objects.create(
 				type="private",
@@ -107,13 +131,11 @@ class Invite(APIView):
 				return JsonResponse({'message': 'La demande a été annulée'}, status=404)
 
 			invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
-			# Creer une entree dans la table match (status = in_progress)
-			# creer deux entree dans la table match_points (match_id, user_id)
-			# recuperer l'id du match pour le renvoyer
-			##### TO DO
-			# le plus grand au debut
-			match_id = str(invitation_sender.id) +"---" + str(user.id)  if invitation_sender.id > user.id else str(user.id) + "---" + str(invitation_sender.id)
-			print(f'match_id = {match_id}')
+			
+			player1 = ['username', user]
+			player2 = ['username', invitation_sender]
+			match = createMatch(user, None, player1, player2)
+			match_id = match.match_id
 			user.SetStatus(User.USER_STATUS['PLAYING'])
 			invitation_sender.SetStatus(User.USER_STATUS['PLAYING'])
 
@@ -131,8 +153,7 @@ class Invite(APIView):
 
 			# supprimer l'invitation 
 			invitation.delete()
-
-			response_data = {'message': 'accept invitation!', 'match_id': match_id}
+			response_data = {'message': 'Invitation accepted !', 'match_id': match_id}
 			return JsonResponse(response_data)
 
 		return HttpResponse("Invalid request type.", status=400)

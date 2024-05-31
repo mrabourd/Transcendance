@@ -1,4 +1,5 @@
 # Create your views here.
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -21,7 +22,7 @@ import json
 import requests
 from django.http import JsonResponse, HttpResponse
 from django.views.generic import View
-from django.middleware.csrf import get_token
+from django.middleware.csrf import get_token, rotate_token
 from django.http import Http404
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
@@ -37,15 +38,33 @@ from smtplib import SMTPException
 
 User = get_user_model()
 
-class GetCSRFTokenView(View):
+class GetCSRFTokenView(APIView):
 	def get(self, request, *args, **kwargs):
 		response = JsonResponse({"message": "New Token"}, status=200)
+		csrf_token = request.headers.get("api-csrftoken")
+		csrf_cookie = request.META.get("CSRF_COOKIE")
 		response['X-CSRFToken'] = get_token(request)
 		response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
 		response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
 		response['Access-Control-Allow-Credentials'] = 'true'
+		response.status_code = status.HTTP_200_OK
+		response.set_cookie(
+            key = 'csrftoken', 
+            value = get_token(request),
+            expires = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
+            path= settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+            secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+            httponly = False,
+            samesite = 'Lax'
+          )
+		"""
+		Check if both alphanumerics(strings) values are differents to prevent 
+		a malicious user get the csrf cookie and send it from the ajax.
+		"""
+		if csrf_token == csrf_cookie:
+			rotate_token(request)
 		return response
-
+			
 class CustomTokenRefreshView(TokenRefreshView):
 	permission_classes = [AllowAny]
 	serializer_class = CustomTokenObtainPairSerializer

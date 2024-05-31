@@ -73,9 +73,9 @@ export default class Websockets {
 		{
 			this.user.datas.received_invitations = this.user.datas.received_invitations.filter(id => id !== data.sender);
 		}
-		if (data.code_value == 3) // invitation denied
+		if (data.code_value == 3 || data.code_value == 4) // invitation denied or accepted
 		{
-			this.user.datas.invitation_sent = null;
+			this.user.datas.invitations_sent = this.user.datas.invitations_sent.filter(id => id !== data.sender);
 		}
 
 		this.user.saveDatasToLocalStorage()
@@ -98,9 +98,12 @@ export default class Websockets {
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
 		if(friend_id == this.user.datas.id)
 		{
+			if (friend_status != 0 && friend_status != 1)
+			{
+				this.user.datas.status = friend_status;
+				this.user.saveDatasToLocalStorage()
+			}
 			return 
-			this.user.datas.status = friend_status;
-			this.user.saveDatasToLocalStorage()
 		}
 		
 		profile_cards.forEach(profile_card => {

@@ -10,7 +10,13 @@ from django.core.exceptions import ObjectDoesNotExist
 User = get_user_model() # Get reference to the model
 
 
+from django.contrib.auth import get_user_model
+from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from users.models import Invitation
 
+User = get_user_model()
 
 class InvitationSerializer(serializers.ModelSerializer):
     sender = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
@@ -20,56 +26,49 @@ class InvitationSerializer(serializers.ModelSerializer):
         model = Invitation
         fields = ['id', 'sender', 'receiver', 'created_at']
 
-
 class UserSerializer(serializers.ModelSerializer):
-    invitation_sent = InvitationSerializer(read_only=True)
-    received_invitations = InvitationSerializer(many=True, read_only=True)
+    invitations_sent = serializers.SerializerMethodField()
+    received_invitations = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status", "invitation_sent", "received_invitations", "follows", "followed_by", "blocks", "blocked_by", 'otp')
+        fields = (
+            'id', 'email', 'avatar', 'username', 'password', 'first_name', 'last_name', 'biography', "status",
+            "invitations_sent", "received_invitations", "follows", "followed_by", "blocks", "blocked_by", 'otp'
+        )
         extra_kwargs = {
-            'avatar': {'required': False}, # 'avatar' is not required
+            'avatar': {'required': False},
             'password': {'write_only': True},
             'follows': {'required': False},
             'followed_by': {'required': False},
             'blocks': {'required': False},
             'blocked_by': {'required': False},
             'status': {'required': False},
-            'invitation_sent': {'required': False},
-            'received_invitations': {'required': False},
             'email': {
                 'validators': [UniqueValidator(queryset=User.objects.all())]
             },
             'otp': {'required': False},
             'otp_expiry_time': {'required': False},
-            'id': {'read_only': True},  # Définir le champ 'id' en lecture seule
+            'id': {'read_only': True},
         }
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        try:
-            representation['invitation_sent'] = instance.sent_invitation.receiver.id
-        except ObjectDoesNotExist:
-            representation['invitation_sent'] = None        
-        representation['received_invitations'] = [
-            invitation.sender.id
-            for invitation in instance.received_invitations.all()
-        ]
-        return representation
+    def get_invitations_sent(self, obj):
+        return [invitation.receiver.id for invitation in obj.sent_invitations.all()]
 
+    def get_received_invitations(self, obj):
+        return [invitation.sender.id for invitation in obj.received_invitations.all()]
 
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):    
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         refresh = self.get_token(self.user)
 
         data["refresh"] = str(refresh)
         data["access"] = str(refresh.access_token)
-        data['user'] = UserSerializer().to_representation(self.user)
+        data['user'] = UserSerializer(self.user).data
 
         return data
 
