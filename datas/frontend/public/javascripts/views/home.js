@@ -1,7 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import * as friends_utils from "../utils_friends.js"
 import * as router from "../router.js";
-import { USER_STATUS } from "../constants.js";
+import { USER_STATUS } from "../config.js";
 
 export default class extends AbstractView {
     constructor(params) {

@@ -1,4 +1,4 @@
-import {USER_STATUS} from "./constants.js";
+import {USER_STATUS} from "./config.js";
 
 
 

@@ -1,3 +1,5 @@
+//require('dotenv').config();
+
 const path = __dirname + '/public/';
 const port = 3000;
 
@@ -49,6 +51,20 @@ router.get('/template/:name', function (req, res) {
 	var fileName = req.params.name
 	res.sendFile(path + '/javascripts/views/templates/' + fileName + '.html');
 })
+
+/*
+router.get('/get_env', function (req, res) {
+  const BACK_URL = process.env.BACK_URL;
+  const FRONT_URL = process.env.FRONT_URL;
+  console.log(`BACK_URL: ${process.env.BACK_URL}`);
+  console.log(`FRONT_URL: ${process.env.FRONT_URL}`);
+  res.json({
+    BACK_URL: BACK_URL,
+    FRONT_URL: FRONT_URL
+  });
+});
+*/
+
 
 router.get('/*', function(req,res){
 	res.sendFile(path + 'index.html');

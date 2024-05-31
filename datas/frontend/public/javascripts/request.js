@@ -1,7 +1,7 @@
 export default class Request {
     constructor() {
         this.url_origin = 'https://localhost:8483/'
-        this.url_backend = 'https://localhost:8443'
+        this.url_backend = 'https://localhost:8443/'
     }
 
     async get_request_header(){

@@ -5,60 +5,83 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from users.serializers import UserSerializer
-from channels.db import database_sync_to_async
 from django.contrib.auth.models import AnonymousUser
+
 #from channels.auth import channel_session_user_from_http, channel_session_user
-from .models import ChatRoom
+from match.models import Match, MatchPoints
+from websockets.models import ChatRoom
 from .pong import Game, Player
+
+import json
+from uuid import UUID
+from rest_framework.test import APIRequestFactory
+from users.views_login import CustomLogoutView
+from rest_framework import status
+from channels.db import database_sync_to_async
+from django.contrib.auth import get_user_model
+#from channels.auth import channel_session_user_from_http, channel_session_user
+
 User = get_user_model()
 
-onlineGames = []
 
 class PongConsumer(AsyncWebsocketConsumer):
-	
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.game = None
-
-
 	async def connect(self):
+		self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
 		self.user = self.scope["user"]
-
-		if isinstance(self.user, AnonymousUser):
-			await self.accept()
-			await self.send(text_data=json.dumps({"error": "token_not_valid"}))
+		if self.user.is_anonymous:
 			await self.close()
-			return
-		
-		# match_id a recuperer dans l'url
-		self.match_id = self.scope['url_route']['kwargs']['match_id']
-		await self.channel_layer.group_add(self.match_id, self.channel_name)
 
-		self.game = next(x for x in onlineGames if x.match_id == self.match_id)
-		if self.game is None:
-			self.game = Game(self.match_id)
-			onlineGames.append(self.game)
-		
-		if self.match_id.split('---')[0] == str(self.user.id):
-			self.game.player1 = Player (self.user.id, self.user.username)
-			self.game.player1.ws = self
-		elif self.match_id.split('---')[1] == str(self.user.id):
-			self.game.player2 = Player (self.user.id, self.user.username)
-			self.game.player2.ws = self
-			# verif si les deux users sont la
-		await self.accept()
+		self.room_name = f"pong_room_{self.match_id}"
+		self.room_group_name = f"pong_{self.match_id}"
 
-	async def disconnect(self, close_code):
-		await self.channel_layer.group_discard(
-			"match_id", self.channel_name
+		# Ensure the chat room exists or create it
+		self.pong_room, created = await database_sync_to_async(Match.objects.get_or_create)(
+			match_id=self.match_id
 		)
 
-	async def send_notification(self, event):
-		await self.send(text_data=json.dumps({ 'message': event['message'] }))
+		if created:
+			print(f">>>>>>>>>>>> ${self.match_id} created !!!!!")
+			match_points = await database_sync_to_async(MatchPoints.objects.filter)(match_id=self.match_id)
+			users = await database_sync_to_async(list)(match_points.values_list('user', flat=True))
+			# Ajouter les utilisateurs à la chat room
+			for user_id in users:
+				print(f'>>>>>>>>>>>> user.add {user}')
+				user = await database_sync_to_async(User.objects.get)(id=user_id)
+				await database_sync_to_async(self.pong_room.users.add)(user)
+		else:
+			existing_users = await database_sync_to_async(list)(self.pong_room.users.all())
+			print(f">>>>>>>>>>>> ${self.match_id} exists !!!!!")
+			print(f'>>>>>>>>>>>> existing_users {existing_users}')
 
+		# Join room group
+		await self.channel_layer.group_add(
+			self.room_group_name,
+			self.channel_name
+		)
+		await self.accept()
+		#@channel_session_user
 
+	async def disconnect(self, close_code):
+		# Leave room group
+		print(f'>>>>>>>>>>>> pong disconnected ....')
+		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
-	# INSPI:
-	# https://github1s.com/MatPizzolo/ft_transcendence/blob/main/backend/server/ws_api/consumers/gameconsumer2.py
+	# Receive message from WebSocket
+	#@channel_session_user
+	async def receive(self, text_data):
+		text_data_json = json.loads(text_data)
+		message = text_data_json["message"]
 
-	# Creer PONG en ython dans un autre fichier.
+		# Send message to room group
+		await self.channel_layer.group_send(
+			self.room_group_name, {"type": "chat.message", "message": message, "user": self.user}
+		)
+		#new_notif = Notification(message=message)
+		#await self.create_notification(new_notif) """
+		# Save message to database
+
+	async def chat_message(self, event):
+		message = event["message"]
+		# Send message to WebSocket
+		await self.send(text_data=json.dumps({"message": message}))
+

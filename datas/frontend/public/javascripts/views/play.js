@@ -1,13 +1,15 @@
 import AbstractView from "./AbstractView.js";
 import pongComputer from "../pongComputer.js";
 import pongPlayer from "../pongPlayer.js";
-import pongOnline from "../online.js";
+import pongOnline from "../pongOnline.js";
 import AbstractPong from "../AbstractPong.js";
 
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-        this.setTitle("Play PlayJS");
+		console.warn('pong params', this.params)
+		this.match_id = this.params.match_id
+        this.setTitle("Play Pong");
         // this.currentKeysDown = [];
     }
 
@@ -29,8 +31,6 @@ export default class extends AbstractView {
 
 	addEvents () {
 		let canvas = document.getElementById('canvas');
-		let playerleft_score = document.getElementById('player-score');
-		let playerright_score = document.getElementById('computer-score');
 
 		console.log("user:", this.user);
 		// function resizeCanvas() {
@@ -44,16 +44,20 @@ export default class extends AbstractView {
 		document.querySelector('#stop-game').innerHTML = "Stop game";
 
 		if (this.params.adversaire === "vs_computer"){
-			this._game = new pongComputer(canvas, playerleft_score, playerright_score);
+			this._game = new pongComputer(canvas);
 		}
 		else if (this.params.adversaire === "vs_player"){
-			this._game = new pongPlayer(canvas, playerleft_score, playerright_score);
+			this._game = new pongPlayer(canvas);
 		}
 		else {
-			this._game = new pongOnline(canvas, playerleft_score, playerright_score, this.user);
+			this._game = new pongOnline(canvas, this.user, this.match_id);
+			this._game.connect();
 			console.log("vs user id: creer avec websocket");
 		}
 		
+
+
+
 		document.addEventListener("keydown", (event) => {
 			if (!this._game.currentKeysDown.includes(event.key)) {
 				this._game.currentKeysDown.push(event.key);
@@ -61,11 +65,14 @@ export default class extends AbstractView {
 			this._game.movePaddles();
 		})
 		
+
+
 		document.addEventListener("keyup", (event) => {
 			this._game.currentKeysDown.splice(this._game.currentKeysDown.indexOf(event.key), 1)
-			
 			this._game.movePaddles();
 		})
+
+
 		document.querySelector('#start-game').addEventListener('click',(e) =>
 		{
 			if (e.target.innerHTML =="Pause game") {

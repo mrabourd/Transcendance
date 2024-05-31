@@ -1,5 +1,5 @@
 /// BLOCK FUNCTIONS
-import {USER_STATUS} from "./constants.js";
+import {USER_STATUS} from "./config.js";
 
 export function is_invited(user,friend_id )
 {

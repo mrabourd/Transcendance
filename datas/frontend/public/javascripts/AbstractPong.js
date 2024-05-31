@@ -8,6 +8,7 @@ const PLAYER_WIDTH = 5;
 export default class AbstractPong {
 
 	constructor(canvas) {
+		this.currentKeysDown = [];
 		this._canvas = canvas;
 		this.winner = false;
 		//this._player_score = player_score;
@@ -43,6 +44,7 @@ export default class AbstractPong {
 		this.draw();
 		// this.pause();
 		// this.stop();
+
 	}
 
 	setPlayerLeftValues(y) {
@@ -100,7 +102,7 @@ export default class AbstractPong {
 	
 	doOneFrame = () => {
 		this.draw();
-		//this.playerLeftMove();
+		this.playerLeftMove();
 		this.ballMove();
 	}
 

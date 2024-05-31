@@ -1,6 +1,6 @@
 import * as router from "./router.js";
 import * as friends_utils from "./utils_friends.js"
-import {USER_STATUS} from "./constants.js";
+import {USER_STATUS} from "./config.js";
 
 export default class Websockets {
     constructor(user) {

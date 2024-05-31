@@ -21,6 +21,7 @@ class Match(models.Model):
     tournament = models.ForeignKey(Tournament, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     status = models.IntegerField(default=0)
+    users = models.ManyToManyField(User)
 
     @property
     def players_set(self):

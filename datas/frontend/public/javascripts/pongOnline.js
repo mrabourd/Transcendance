@@ -3,11 +3,28 @@ import AbstractPong from "./AbstractPong.js";
 const PLAYER_HEIGHT = 100;
 
 export default class extends AbstractPong {
-	constructor(params) {
-		super(params);
+
+	constructor(canvas, user, match_id) {
+		super(canvas);
+        this.user = user
+        this.match_id = match_id
     }
 	
-	  
+	connect = () =>
+    {
+        console.log("PongSocket creation")
+		const PongSocket = new WebSocket(
+			'wss://localhost:8443/ws/pong/'+ this.match_id +'/?token=' + this.user.request.getJWTtoken()["access"]
+		);
+
+		PongSocket.onopen = function(e) {console.log('Socket connected for online pong.');};
+		PongSocket.onclose = function(e) {console.warn('Socket connection closed ...');};
+
+		PongSocket.onmessage = function(e) {
+			const data = JSON.parse(e.data);
+            console.log('pong : ', data)
+		}
+    }
 	movePaddles() {
 		window.addEventListener("keydown", function(e) {
 			if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
@@ -23,14 +40,16 @@ export default class extends AbstractPong {
 			this.leftPaddleMoveDown();
 		}
 		
-		// PlayerTwo&leftSide
-		if (this.currentKeysDown.includes('ArrowUp')) {
+		// PlayerTwo&leftSide 
+        /*
+        if (this.currentKeysDown.includes('ArrowUp')) {
 			this.rightPaddleMoveUp();
 		} else if (this.currentKeysDown.includes('ArrowDown')) {
 			this.rightPaddleMoveDown();
 		}
+        */
 	}
-	
+	/*
 	rightPaddleMoveUp() {
 		if(this._game.playerright.y < PLAYER_HEIGHT / 2){
 			this._game.playerright.y = 0;
@@ -46,6 +65,7 @@ export default class extends AbstractPong {
 		this._game.playerright.y += 10;
 		this.setPlayerRightValues(this._game.playerright.y);
 	}
+    */
 	
 	leftPaddleMoveUp() {
 		if (this._game.playerleft.y + PLAYER_HEIGHT > this._canvas.height){
@@ -61,12 +81,5 @@ export default class extends AbstractPong {
 		}
 		this._game.playerleft.y -= 10;
 		this.setPlayerLeftValues(this._game.playerleft.y);
-	}
-
-
-	//playerLeftMove() {
-		// console.log("computer not playing this time");
-        //this._game.computer.y += this._game.ball.speed.y * 0.85;
-   // }
-    
+	}    
 }

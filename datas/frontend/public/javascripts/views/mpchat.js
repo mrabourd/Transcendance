@@ -64,9 +64,6 @@ export default class extends AbstractView {
             console.error('Chat socket closed unexpectedly');
         };
 
-
-
-
 		
 		// on socket close
 		chatSocket.onmessage = (e) => {

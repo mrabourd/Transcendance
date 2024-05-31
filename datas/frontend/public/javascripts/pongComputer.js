@@ -5,7 +5,6 @@ const PLAYER_HEIGHT = 100;
 export default class extends AbstractPong {
     constructor(params) {
         super(params);
-		this.currentKeysDown = [];
     }
 
 	movePaddles() {
@@ -36,7 +35,7 @@ export default class extends AbstractPong {
 		this._game.playerright.y += 10;
 	}
 
-    playerLeftMove() {
+    playerLeftMove = () => {
         // console.log("this._game.ball.speed.y:",this._game.ball.speed.y);
         this._game.playerleft.y += this._game.ball.speed.y * 0.85;
     }
