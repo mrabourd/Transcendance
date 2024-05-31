@@ -89,6 +89,11 @@ export default class extends AbstractView {
         }
 
 
+        /* PENDING MATCHES */
+        response = await this.user.request.post('/api/match/list/pending/')
+        console.log(response)
+        
+
     }
 
     addEvents () {
@@ -101,10 +106,8 @@ export default class extends AbstractView {
         dom = document.querySelector('.subscribe a')
         if (this.user.datas.status == USER_STATUS["WAITING_PLAYER"])
             dom.innerHTML = 'Unsubscribe from waiting list'
-        else if (this.user.datas.status == USER_STATUS["ONLINE"])
-            dom.innerHTML = 'Find a random oponent'
         else
-            dom.parentNode.remove();
+            dom.innerHTML = 'Find a random oponent'
         if (dom){
         dom.addEventListener('click',  async e => 
         {
@@ -136,17 +139,17 @@ export default class extends AbstractView {
             console.log('response : ', response)
         })
     }
-    console.log('status', this.user.datas.status )
-    dom = document.querySelector('.tournament a')
-    if (this.user.datas.status != USER_STATUS["WAITING_TOURNAMENT"]
-    && this.user.datas.status != USER_STATUS["ONLINE"])
-        dom.parentNode.remove();
-    if (dom)
-    {
+
+        dom = document.querySelector('.tournament a')
+        if (this.user.datas.status == USER_STATUS["WAITING_TOURNAMENT"])
+            dom.innerHTML = 'View my tournament page'
+        else
+            dom.innerHTML = 'Create a tournament'
         dom.addEventListener('click',  async e => {
-                e.preventDefault();
-                this.user.router.navigateTo('/tournament', this.user)
+            e.preventDefault();
+            this.user.router.navigateTo('/tournament', this.user)
         })
-    }
+
+
     }
 }

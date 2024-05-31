@@ -73,9 +73,9 @@ export default class Websockets {
 		{
 			this.user.datas.received_invitations = this.user.datas.received_invitations.filter(id => id !== data.sender);
 		}
-		if (data.code_value == 3) // invitation denied
+		if (data.code_value == 3 || data.code_value == 4) // invitation denied or accepted
 		{
-			this.user.datas.invitation_sent = null;
+			this.user.datas.invitations_sent = this.user.datas.invitations_sent.filter(id => id !== data.sender);
 		}
 
 		this.user.saveDatasToLocalStorage()

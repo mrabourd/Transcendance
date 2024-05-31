@@ -15,8 +15,21 @@ class TournamentSerializer(serializers.ModelSerializer):
         fields = ['tournament_id', 'name', 'status', 'user', 'created_at']
         read_only_fields = ['tournament_id', 'created_at']
 
+class MatchPointsSerializer(serializers.ModelSerializer):
+    user_id = serializers.PrimaryKeyRelatedField(source='user', read_only=True)
+
+    class Meta:
+        model = MatchPoints
+        fields = ['user_id', 'points', 'alias']
+
 class MatchSerializer(serializers.ModelSerializer):
+    players = MatchPointsSerializer(many=True, read_only=True)
+
     class Meta:
         model = Match
-        fields = ['match_id', 'tournament', 'created_at', 'player1', 'player2']
-        read_only_fields = ['match_id', 'tournament', 'created_at']
+        fields = ['match_id', 'status', 'tournament', 'created_at', 'players']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['players'] = MatchPointsSerializer(instance.players_set.all(), many=True).data
+        return representation
