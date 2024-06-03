@@ -51,6 +51,12 @@ export default class Websockets {
 
 		newAnchor.className = 'dropdown-item text-wrap';
 		newAnchor.textContent = data.message;
+		// if (data.code_name == "INV"){
+		// 	console.log("it is an invitation");
+		// 	new accept = document.createElement('btn');
+		// 	new deny = document.createElement('btn');
+		// 	accept.classList.add("btn-primary", "btn-lg")
+		// }
 		newAnchor.addEventListener('click', async (e) => {
 			e.preventDefault();
 			this.user.router.navigateTo(data.link, this.user)

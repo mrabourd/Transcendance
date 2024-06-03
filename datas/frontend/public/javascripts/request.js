@@ -51,7 +51,7 @@ export default class Request {
                 body: JSON.stringify(RQ_body),
                 credentials: 'include'
             });
-            console.log("POST response ", response)
+            // console.log("POST response ", response)
 
             if (response.headers.has('X-CSRFToken'))
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
@@ -126,7 +126,6 @@ export default class Request {
             if (response.headers.has('X-CSRFToken'))
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
  
-            console.log("GET response ", response)
             console.log("RQ_url ", RQ_url)
             if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
@@ -157,7 +156,7 @@ export default class Request {
             }
             else
             {
-                console.log("GET response", response )
+                // console.log("GET response", response )
                 return response;
             }
         } catch (error) {

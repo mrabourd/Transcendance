@@ -61,7 +61,6 @@ export default class extends AbstractView {
 			return false
 		}
         */
-		console.log("this.friend_id: ", this.friend_id)
 
 		console.log(this.user.datas.username + ' is connected to the chatroom.');
 		const user = this.user;
@@ -114,7 +113,6 @@ export default class extends AbstractView {
 		let messageHistory = await history.json();
 		let currentUser = this.user.datas.id;
 
-		console.log(messageHistory)
 		
 		messageHistory.forEach(message => {
 
@@ -140,16 +138,15 @@ export default class extends AbstractView {
 		time.innerHTML = time.innerText;
 
 		chatbox.scrollTop = document.getElementById("endofscroll").offsetTop
-		console.log(chatbox.scrollTop);
 	}
 
 	displayLeft = (data, time, text, DOM) => {
 		let chatbox = document.querySelector("#app .overflow-scroll");
 		let firstTime;
 
-		chatbox.scrollTop = document.getElementById("endofscroll").offsetTop
-		// }
 		text.innerHTML = data.message
+
+		chatbox.scrollTop = document.getElementById("endofscroll").offsetTop
 		document.querySelector('#chat-message-input')
 		// let element_to_scroll_to = document.getElementById("endofscroll");
 		// document.querySelector("ul.chatContainerScroll").scrollTop(element_to_scroll_to.offsetTop);
@@ -168,12 +165,7 @@ export default class extends AbstractView {
 		let time = DOM.querySelector(".hour");
 
 		time.innerHTML = hour+":"+min;
-
-		let chatbox = document.querySelector("#app .overflow-scroll");
-
-
-		console.log("data: ", data)
-		
+	
 		let side = data.user_id === currentUser ? 'right' : 'left';
 		
 		let text = DOM.querySelector(".message");
