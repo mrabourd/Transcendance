@@ -50,7 +50,8 @@ export default class extends AbstractView {
 				this.user.request.setJWTtoken(jsonData.access, jsonData.refresh)
 
 				this.user.isConnected = true;
-
+				await this.user.view.printHeader();
+				await this.user.view.printAside();
 				this.user.websockets = new Websockets(this.user)
 
 				this.user.router.navigateTo('/profile/', this.user);

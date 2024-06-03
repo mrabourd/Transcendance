@@ -95,49 +95,53 @@ export default class extends AbstractView {
 
         let dom = document.querySelector('#app .pending_matchs ul')
         let response = await this.user.request.post('/api/match/list/pending/')
-        let JSONResponse = await response.json()
-        JSONResponse.forEach(async match => {
-            var newLi = document.createElement('li')
-            newLi.classList.add('row', 'col-12');
+        try{
+            let JSONResponse = await response.json()
+            JSONResponse.forEach(async match => {
+                var newLi = document.createElement('li')
+                newLi.classList.add('row', 'col-12');
 
-            var nodePlayer1 = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  match['players'][0]['user_id'])
-            nodePlayer1.classList.remove('col-12')
-            nodePlayer1.classList.add('col-md-4')
-            nodePlayer1.querySelector(".dropdown").innerHTML = ''
-            friends_utils.update_status_text(nodePlayer1)
-            var nodePlayer2 = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  match['players'][1]['user_id'])
-            nodePlayer2.classList.remove('col-12')
-            nodePlayer2.classList.add('col-md-4')
-            nodePlayer2.querySelector(".dropdown").innerHTML = ''
-            friends_utils.update_status_text(nodePlayer2)
-            console.log(nodePlayer2)
-
-
-            var VS = document.createElement('div')
-            VS.classList.add('col-md-2', 'text-center')
-            VS.innerHTML = '<h4>VS</h4>'
-
- 
-            var play_button = document.createElement('div')
-            play_button.classList.add('col-md-2', 'text-center')
-            play_button.innerHTML = '<a class="btn btn-primary btn-sm" role="button">play</a>'
-
-            play_button.addEventListener('click', async (e) => {
-                e.preventDefault();
-                this.user.router.navigateTo(`/play/online/${match['match_id']}`, this.user)
-            });
+                var nodePlayer1 = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  match['players'][0]['user_id'])
+                nodePlayer1.classList.remove('col-12')
+                nodePlayer1.classList.add('col-md-4')
+                nodePlayer1.querySelector(".dropdown").innerHTML = ''
+                friends_utils.update_status_text(nodePlayer1)
+                var nodePlayer2 = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  match['players'][1]['user_id'])
+                nodePlayer2.classList.remove('col-12')
+                nodePlayer2.classList.add('col-md-4')
+                nodePlayer2.querySelector(".dropdown").innerHTML = ''
+                friends_utils.update_status_text(nodePlayer2)
+                console.log(nodePlayer2)
 
 
+                var VS = document.createElement('div')
+                VS.classList.add('col-md-2', 'text-center')
+                VS.innerHTML = '<h4>VS</h4>'
 
-            //newLi.innerHTML = `match ${match['match_id']} : ${match['players'][0]['alias']} vs ${match['players'][1]['alias']}`
-            newLi.appendChild(nodePlayer1);
-            newLi.appendChild(VS);
-            newLi.appendChild(nodePlayer2);
-            newLi.appendChild(play_button);
-            dom.appendChild(newLi);
+    
+                var play_button = document.createElement('div')
+                play_button.classList.add('col-md-2', 'text-center')
+                play_button.innerHTML = '<a class="btn btn-primary btn-sm" role="button">play</a>'
 
-        })
+                play_button.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    this.user.router.navigateTo(`/play/online/${match['match_id']}`, this.user)
+                });
 
+
+
+                //newLi.innerHTML = `match ${match['match_id']} : ${match['players'][0]['alias']} vs ${match['players'][1]['alias']}`
+                newLi.appendChild(nodePlayer1);
+                newLi.appendChild(VS);
+                newLi.appendChild(nodePlayer2);
+                newLi.appendChild(play_button);
+                dom.appendChild(newLi);
+
+            })
+        } catch (e) {
+            console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
+            throw e; // Re-throw the error after logging it
+        }
     }
 
     /***  INVITATIONS RECEIVED ***/

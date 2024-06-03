@@ -10,7 +10,7 @@ export default class pongOnline extends AbstractPong {
 		console.log("user in online: ", this.user);
 		this.currentKeysDown = [];
 		this.winner = false;
-		this.websocket = new WebSocket('wss://localhost:8443/ws/pong/&token=' + this.user.request.getJWTtoken()["access"] );
+		this.websocket = new WebSocket(this.user.request.url_wss + '/ws/pong/&token=' + this.user.request.getJWTtoken()["access"] );
 
 		this.websocket.onopen = function(e) {
 			console.log('Socket connected for online pong.');

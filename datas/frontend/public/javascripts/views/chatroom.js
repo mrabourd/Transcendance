@@ -22,7 +22,7 @@ export default class extends AbstractView {
 	async addEvents() {
 		//let headers = await this.user.request.get_request_header();
 		
-        const chatSocket = new WebSocket('wss://localhost:8443/ws/msg/general/?token=' + this.user.request.getJWTtoken()["access"]);
+        const chatSocket = new WebSocket(this.user.request.url_wss + '/ws/msg/general/?token=' + this.user.request.getJWTtoken()["access"]);
 		//https://echo.websocket.org/
 		//const chatSocket = new WebSocket('wss://echo.websocket.org/');
         chatSocket.onmessage = function(e) {

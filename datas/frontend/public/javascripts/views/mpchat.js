@@ -53,7 +53,7 @@ export default class extends AbstractView {
 		console.log(this.user.datas.username + ' is connected to the chatroom.');
 		const user = this.user;
 		const chatSocket = new WebSocket(
-			'wss://localhost:8443/ws/msg/'+ this.friend_id +'/?token=' + user.request.getJWTtoken()["access"]
+			this.user.request.url_wss + '/ws/msg/'+ this.friend_id +'/?token=' + user.request.getJWTtoken()["access"]
 		);
 
 		// on socket open

@@ -47,6 +47,3 @@ EXPOSE 8000
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
-# CMD ["daphne -b localhost -p 8000 hello_django.asgi:application" \
-# 	"--keyfile", "/etc/ssl/sethomas.42.fr.key", \
-#     "--certfile", "/etc/ssl/sethomas.42.fr.cert"]

@@ -2,9 +2,9 @@ import Request from "./request.js";
 import Websockets from "./websockets.js";
 
 export default class User {
-    constructor() {
+    constructor(RequestInstance) {
         this.isConnected = false;
-        this.request = new Request;
+        this.request = RequestInstance;
 		this.websockets = null;
     }
     set isConnected(n)

@@ -35,7 +35,7 @@ def login42Callback(request):
 		
 		# Convertir la chaîne JSON en objet Python
 		body_data = json.loads(request.body.decode('utf-8'))
-		
+		print('API42_REDIRECT_URI', os.environ.get("API42_REDIRECT_URI"))
 		data = {
 			'grant_type': 'authorization_code',
 			'client_id': os.environ.get("API42_CLIENT_ID"),

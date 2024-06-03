@@ -14,7 +14,7 @@ export default class extends AbstractPong {
     {
         console.log("PongSocket creation")
 		const PongSocket = new WebSocket(
-			'wss://localhost:8443/ws/pong/'+ this.match_id +'/?token=' + this.user.request.getJWTtoken()["access"]
+			this.user.request.url_wss+'/ws/pong/'+ this.match_id +'/?token=' + this.user.request.getJWTtoken()["access"]
 		);
 
 		PongSocket.onopen = function(e) {console.log('Socket connected for online pong.');};

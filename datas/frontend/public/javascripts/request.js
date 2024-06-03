@@ -1,10 +1,35 @@
+
 export default class Request {
-    constructor() {
-        this.url_origin = 'https://localhost:8483/'
-        this.url_backend = 'https://localhost:8443/'
+    constructor(url_backend, url_origin, url_wss, host) {
+
+        this.url_origin = url_origin
+        this.url_backend = url_backend
+        this.url_wss = url_wss
+        this.host = host
+    }
+
+    static async create() {
+
+        let tpl_url = '/get_env';
+        let response = await fetch(tpl_url);
+        let textResponse = await response.text(); // Get the response as text
+        console.log("Raw response:", textResponse); // Log the raw response
+
+        try {
+            let JSONResponse = JSON.parse(textResponse); // Parse the response manually
+            console.log("Parsed JSON:", JSONResponse); // Log the parsed JSON
+            return new Request(JSONResponse['URL_BACK'], JSONResponse['URL_FRONT'], JSONResponse['URL_WSS'], JSONResponse['HOST']);
+        } catch (e) {
+            console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
+            throw e; // Re-throw the error after logging it
+        }
+
+
+
     }
 
     async get_request_header(){
+
         let request_headers = 
         {
             'Accept': 'application/json, text/plain, */*',
@@ -26,7 +51,7 @@ export default class Request {
                 body: JSON.stringify(RQ_body),
                 credentials: 'include'
             });
-            //console.log("POST response ", response)
+            console.log("POST response ", response)
 
             if (response.headers.has('X-CSRFToken'))
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
@@ -93,6 +118,7 @@ export default class Request {
     // Pas besoin d'inclure le csrftoken
     async get(RQ_url) {
         try {
+            console.log('GET >>>> URL_BACK', this.url_backend)
             const response = await fetch(this.url_backend + RQ_url, {
                 method: 'GET',
                 headers: await this.get_request_header(),
@@ -100,28 +126,40 @@ export default class Request {
             if (response.headers.has('X-CSRFToken'))
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
  
-            //console.log("GET response ", response)
-            //console.log("RQ_url ", RQ_url)
+            console.log("GET response ", response)
+            console.log("RQ_url ", RQ_url)
             if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
 
-                let jsonData = await response.json();
-                if (jsonData.code === "user_not_found")
-                {
-                    //throw "user not found"
+
+                try {
+                    let jsonData = await response.json();
+
+                    if (jsonData.code === "user_not_found")
+                    {
+                        //throw "user not found"
+                    }
+                    if (jsonData.code === 'token_not_valid')
+                    {
+                        console.log("refreshJWTtoken() ")
+                        let RefreshResponse = await this.refreshJWTtoken();
+                        if (RefreshResponse.ok)
+                            return await this.get(RQ_url);
+                        //else
+                          //  return response;
+                    }
+                } catch (e) {
+                    console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
+                    throw e; // Re-throw the error after logging it
                 }
-                if (jsonData.code === 'token_not_valid')
-                {
-                    console.log("refreshJWTtoken() ")
-                    let RefreshResponse = await this.refreshJWTtoken();
-                    if (RefreshResponse.ok)
-                        return await this.get(RQ_url);
-                    //else
-                      //  return response;
-                }
+        
+
             }
             else
+            {
+                console.log("GET response", response )
                 return response;
+            }
         } catch (error) {
             console.error('request.js get error :', error);
             throw error;

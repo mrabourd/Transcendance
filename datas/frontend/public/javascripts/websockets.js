@@ -6,10 +6,11 @@ export default class Websockets {
     constructor(user) {
 		this.user = user
         console.log("websocket object create ()")
-
+		if (!this.user.request.getJWTtoken())
+			return
 		// setup notification webscoket
 		this.notifyScoket = new WebSocket(
-			`wss://localhost:8443/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
+			`${this.user.request.url_wss}/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
 		);
 		// on socket open
 		this.notifyScoket.onopen = function (e) {console.log('Socket successfully connected.');};

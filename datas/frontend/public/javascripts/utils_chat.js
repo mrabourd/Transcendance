@@ -11,7 +11,7 @@ export function send_message(user,friend_id )
 	}
 
 	const chatSocket = new WebSocket(
-		'wss://localhost:8443/ws/msg/'+ friend_id +'?token=' + user.request.getJWTtoken()["access"] +'/'
+		'wss://'+user.request.url_backend+':8443/ws/msg/'+ friend_id +'?token=' + user.request.getJWTtoken()["access"] +'/'
 	);
 	
 	// on socket open
