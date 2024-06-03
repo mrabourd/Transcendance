@@ -146,7 +146,7 @@ export default class User {
     }
 
     logout = async() =>{
-        this.websockets.notifyScoket.close();
+        this.websockets.notifySocket.close();
         let RQ_Body = await this.request.getJWTtoken();
         let response = await this.request.post('/api/users/logout/', RQ_Body)
         if (response.ok) {

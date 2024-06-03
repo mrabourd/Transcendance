@@ -12,6 +12,7 @@ from users.serializers import UserSerializer
 from django.contrib.auth.models import AnonymousUser
 #from channels.auth import channel_session_user_from_http, channel_session_user
 from .models import ChatRoom
+from datetime import datetime
 User = get_user_model()
 
 from .models import Message, Notification
@@ -68,21 +69,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		#new_notif = Notification(message=message)
 		#await self.create_notification(new_notif) """
 		# Save message to database
+		
+		message_saved = await self.save_message(message)
+		# 
 
 
 	# Receive message from room group
 	@database_sync_to_async
 	def save_message(self, message):
 		Message.objects.create(message=message, user=self.user, chat_room=self.chat_room)
+		
 		return Message.objects.last()
 
 	async def chat_message(self, event):
 		message = event["message"]
 		user = event["user"]
-		save_message = await self.save_message(message)
-		
+
 		# Send message to WebSocket
-		await self.send(text_data=json.dumps({"message": message, "username": user.username, "user_id" : str(user.id), "avatar" : user.avatar, "created_at": save_message.created_at.strftime("%Y-%m-%d %H:%M:%S")}))
+		await self.send(text_data=json.dumps(
+			{"message": message,
+			"username": user.username,
+			"user_id" : str(user.id),
+			"avatar" : user.avatar,
+			"created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+		}))
 
 
 class GeneralNotificationConsumer(AsyncWebsocketConsumer):

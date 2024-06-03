@@ -18,22 +18,23 @@ User = get_user_model()
 
 @method_decorator(csrf_protect, name='dispatch')
 class ChatMessageHistory(APIView):
-    # Cette méthode gère les requêtes POST
-    def get(self, request, friend_id):
-        try:
-              other_user = User.objects.get(id=friend_id)
-        except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        room_name = f"room_{min(request.user.id, other_user.id)}_{max(request.user.id, other_user.id)}"
-        try :
-            chat_room = ChatRoom.objects.get(name=room_name)
-        except ChatRoom.DoesNotExist:
-            return Response({"error": "ChatRoom not found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        
-        # messages de la chatroom, trie par date, limite a 20
-        print('chat_room', chat_room)
-        messages = Message.objects.filter(chat_room=chat_room)
-        serializer = ChatMessageSerializer(messages, many=True)
-        return Response(serializer.data)
+	# Cette méthode gère les requêtes POST
+	def get(self, request, friend_id):
+		try:
+			other_user = User.objects.get(id=friend_id)
+		except User.DoesNotExist:
+			return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+		
+		room_name = f"room_{min(request.user.id, other_user.id)}_{max(request.user.id, other_user.id)}"
+		try :
+			chat_room = ChatRoom.objects.get(name=room_name)
+		except ChatRoom.DoesNotExist:
+			return Response({"error": "ChatRoom not found"}, status=status.HTTP_404_NOT_FOUND)
+		
+		
+		# messages de la chatroom, trie par date, limite a 20
+		print('chat_room', chat_room)
+		messages = Message.objects.filter(chat_room=chat_room)
+		serializer = ChatMessageSerializer(messages, many=True)
+		print("messages: ", messages)
+		return Response(serializer.data)

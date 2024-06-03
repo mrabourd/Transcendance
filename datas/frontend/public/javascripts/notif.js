@@ -1,22 +1,22 @@
 import { navigateTo } from "./router";
 
-// setup chat scoket
-const notifyScoket = new WebSocket(
+console.log("setup chat socket")
+const notifySocket = new WebSocket(
 	'wss://localhost:8443/ws/msg/?token=' + user.request.getJWTtoken()["access"] +'/'
 );
 
 // on socket open
-notifyScoket.onopen = function (e) {
+notifySocket.onopen = function (e) {
 	console.log('Socket successfully connected.');
 };
 
 // on socket close
-notifyScoket.onclose = function (e) {
+notifySocket.onclose = function (e) {
 	console.log('Socket closed unexpectedly');
 };
 
 // on receiving message on group
-notifyScoket.onmessage = function (e) {
+notifySocket.onmessage = function (e) {
 	const data = JSON.parse(e.data);
 	const message = data.message;
 	// Call the setMessage function to add the new li element

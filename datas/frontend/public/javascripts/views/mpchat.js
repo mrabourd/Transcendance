@@ -61,6 +61,7 @@ export default class extends AbstractView {
 			return false
 		}
         */
+		console.log("this.friend_id: ", this.friend_id)
 
 		console.log(this.user.datas.username + ' is connected to the chatroom.');
 		const user = this.user;
@@ -69,7 +70,7 @@ export default class extends AbstractView {
 		);
 
 		// on socket open
-		chatSocket.onopen = function (e) {
+		chatSocket.onopen = (e) => {
 			console.log('Socket between ' + user.datas.id + ' and ' + this.friend_id + ' successfully connected.');
         };
         chatSocket.onclose = function(e) {
@@ -130,6 +131,7 @@ export default class extends AbstractView {
 	}
 
 
+
 	displayRight = (data, time, text, DOM) => {
 		let chatbox = document.querySelector("#app .overflow-scroll");
 		let firstTime;
@@ -138,14 +140,8 @@ export default class extends AbstractView {
 		text.classList.add('d-flex', 'flex-row', 'justify-content-end')
 		text.innerHTML = data.message;
 		time.innerHTML = time.innerText;
-		firstTime = true;
-		if (firstTime){
-			chatbox.scrollTop = chatbox.scrollHeight;
-			firstTime = false;
-		}
-		else if (chatbox.scrollTop + chatbox.clientHeight === chatbox.scrollHeight) {
-			chatbox.scrollTop = chatbox.scrollHeight;
-		}
+
+		chatbox.scrollTop = document.getElementById("endofscroll").offsetTop
 		console.log(chatbox.scrollTop);
 	}
 
@@ -153,17 +149,14 @@ export default class extends AbstractView {
 		let chatbox = document.querySelector("#app .overflow-scroll");
 		let firstTime;
 
-		firstTime = true;
-		if (firstTime){
-			chatbox.scrollTop = chatbox.scrollHeight;
-			firstTime = false;
-		}
-		else if (chatbox.scrollTop + chatbox.clientHeight === chatbox.scrollHeight) {
-			chatbox.scrollTop = chatbox.scrollHeight;
-		}
+		chatbox.scrollTop = document.getElementById("endofscroll").offsetTop
+		// }
 		text.innerHTML = data.message
-		document.querySelector('#chat-message-input')		
-		chatbox.scrollTop = chatbox.scrollHeight;
+		document.querySelector('#chat-message-input')
+		// let element_to_scroll_to = document.getElementById("endofscroll");
+		// document.querySelector("ul.chatContainerScroll").scrollTop(element_to_scroll_to.offsetTop);
+
+		// element_to_scroll_to.scrollIntoView();
 	}
 
 	createChatMessage = (data, currentUser) => {
