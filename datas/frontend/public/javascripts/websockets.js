@@ -6,19 +6,18 @@ export default class Websockets {
     constructor(user) {
 		this.user = user
         console.log("websocket object create ()")
-		if (!this.user.request.getJWTtoken())
-			return
-		// setup notification webscoket
-		this.notifyScoket = new WebSocket(
-			`${this.user.request.url_wss}/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
+
+		// setup notification websocket
+		this.notifySocket = new WebSocket(
+			`wss://localhost:8443/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
 		);
 		// on socket open
-		this.notifyScoket.onopen = function (e) {console.log('Socket successfully connected.');};
+		this.notifySocket.onopen = function (e) {console.log('Socket successfully connected.');};
 		// on socket close
-		this.notifyScoket.onclose = function (e) {console.log('Socket closed');};
+		this.notifySocket.onclose = function (e) {console.log('Socket closed');};
 
 		// on receiving message on group
-		this.notifyScoket.onmessage = async (e) => {
+		this.notifySocket.onmessage = async (e) => {
 			const data = JSON.parse(e.data);
 			if(data.error && data.error == 'token_not_valid')
 			{

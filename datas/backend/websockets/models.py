@@ -25,6 +25,7 @@ class ChatRoom(models.Model):
         return self.name
 
 class Message(models.Model):
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     chat_room = models.ForeignKey(ChatRoom, null=True, blank=True, on_delete=models.CASCADE)
     message = models.JSONField()
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, null=True, blank=True)
