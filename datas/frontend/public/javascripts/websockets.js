@@ -11,7 +11,7 @@ export default class Websockets {
 		this.countnotif.textContent = this.count;
 		// setup notification websocket
 		this.notifySocket = new WebSocket(
-			`wss://localhost:8443/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
+			`${user.request.url_wss}/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
 		);
 		// on socket open
 		this.notifySocket.onopen = function (e) {

@@ -65,7 +65,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		text_data_json = json.loads(text_data)
 		message = text_data_json["message"]
 
-		print("mesage received")
 		# Send message to room group
 		await self.channel_layer.group_send(
 			self.room_group_name, {"type": "chat.message", "message": message, "user": self.user}
@@ -81,6 +80,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 	@database_sync_to_async
 	def create_notif(self, message):
+		if message == "\n":
+			return
 		notif_message = f'{self.user.username} has sent you message'
 		Notification.objects.create(
 			type="private",
@@ -98,14 +99,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
 	# Receive message from room group
 	@database_sync_to_async
 	def save_message(self, message):
+
+		if message == "\n":
+			return
 		Message.objects.create(message=message, user=self.user, chat_room=self.chat_room)
-		
+
 		return Message.objects.last()
 
 	async def chat_message(self, event):
-		print("mesage send")
 		message = event["message"]
 		user = event["user"]
+		if message == "\n":
+			return
 
 		# Send message to WebSocket
 		await self.send(text_data=json.dumps(

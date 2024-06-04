@@ -53,7 +53,7 @@ export default class extends AbstractView {
 	async addEvents() {
 
 		
-    //console.log('datas',user.datas)
+		//console.log('datas',user.datas)
 		console.log("send_message", this.user.datas.id)
 		
         /*
@@ -123,7 +123,7 @@ export default class extends AbstractView {
 
 		if (messageHistory.length > 0){
 			messageHistory.forEach(message => {
-	
+
 				this.createChatMessage({
 					...message,
 					user_id: message.user,
@@ -138,7 +138,7 @@ export default class extends AbstractView {
 
 
 	displayRight = (data, time, text, DOM) => {
-		console.log("display right: ", data.message)
+
 		let chatbox = document.querySelector("#app .overflow-scroll");
 
 		time.classList.add('d-flex', 'flex-row', 'justify-content-end')
@@ -150,7 +150,6 @@ export default class extends AbstractView {
 	}
 
 	displayLeft = (data, time, text, DOM) => {
-		console.log("display left")
 		let chatbox = document.querySelector("#app .overflow-scroll");
 
 		text.innerHTML = data.message
@@ -166,7 +165,10 @@ export default class extends AbstractView {
 	createChatMessage = (data, currentUser) => {
 		let DOM = this.user.DOMMpChatMessage.cloneNode(true)
 
-		console.log("entre createChatMessage")
+		if (data.message == ""){
+			console.log("do not display");
+			return;
+		}
 
 		/* TO DO remlir le DOM */
 		
