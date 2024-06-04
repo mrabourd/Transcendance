@@ -7,13 +7,15 @@ export default class Websockets {
 		this.user = user
 
 		this.count = 0;
+		this.countnotif = document.querySelector(".countnotif");
+		this.countnotif.textContent = this.count;
 		// setup notification websocket
 		this.notifySocket = new WebSocket(
 			`wss://localhost:8443/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
 		);
 		// on socket open
 		this.notifySocket.onopen = function (e) {
-			//console.log('Socket successfully connected.');
+			// console.log('Socket successfully connected.');
 		};
 		// on socket close
 		this.notifySocket.onclose = function (e) {
@@ -23,6 +25,7 @@ export default class Websockets {
 		// on receiving message on group
 		this.notifySocket.onmessage = async (e) => {
 			const data = JSON.parse(e.data);
+			console.log("data.sender: ", data.sender)
 			if(data.error && data.error == 'token_not_valid')
 			{
 				let RefreshResponse = await this.user.request.refreshJWTtoken();
@@ -37,8 +40,8 @@ export default class Websockets {
 			if (data.code_name == "INV")
 				this.update_invitation(data)
 
-			// if (data.code_name == "MSG")
-			// 	this.print_notification(data)
+			if (data.code_name == "MSG")
+				this.update_msg_link(data)
 
 			if (data.message)
 			{
@@ -49,19 +52,22 @@ export default class Websockets {
 		};
     }
 
+	update_msg_link(data){
+		console.log("entre update msg link")
+		let friend_id = data.sender;
+		data.link = "/chatroom/" + friend_id;
+	}
+
 	print_notification(data)
 	{
-
-		// if (data.code_name == "INV"){
-		// 	console.log("it is an invitation");
-		// 	new accept = document.createElement('btn');
-		// 	new deny = document.createElement('btn');
-		// 	accept.classList.add("btn-primary", "btn-lg")
-		// }
+		if (location.pathname == data.link){
+			console.log("on est deja sur la page en question: ", data.link)
+			this.count = 0;
+			return;
+		}
 		this.count++;
 
-		let countnotif = document.querySelector(".countnotif");
-		countnotif.textContent = this.count;
+		this.countnotif.textContent = this.count;
 
 		let notif = document.querySelector(".notif ul");
 
@@ -72,13 +78,19 @@ export default class Websockets {
 		// newAnchor.className = 'dropdown-item text-wrap';
 		newAnchor.textContent = data.message;
 		newLi.appendChild(newAnchor);
-		notif.appendChild(newLi);
+		notif.insertBefore(newLi, notif.firstChild);
 		// 
 
 		newAnchor.addEventListener('click', async (e) => {
 			e.preventDefault();
 			this.user.router.navigateTo(data.link, this.user)
 			this.count--;
+			this.countnotif.textContent = this.count;
+		});
+
+		document.querySelector(".notifdropdown").addEventListener('click', async (e) => {
+			this.count = 0;
+			this.countnotif.textContent = this.count;
 		});
 		// 
 		// var ulElement = document.getElementById('notify');

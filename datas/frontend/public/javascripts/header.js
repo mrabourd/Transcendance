@@ -56,6 +56,8 @@ export function print(user)
 			li.innerHTML = `<a class="nav-link" id=link-` + route.libelle + ` aria-current="page" href="` + route.path + `" data-link>`+route.libelle+`</a>`
 			document.querySelector("header nav ul").appendChild(li);
 
+			document.querySelector(".user").classList.add("d-none");
+			document.querySelector(".notif").classList.add("d-none");
 		}
 
 	});
@@ -67,8 +69,10 @@ export function print(user)
 		li.classList.add("av-item", "active");
 		li.innerHTML = `<a class="nav-link"  href="/logout" logout>logout</a>`
 		document.querySelector("header nav ul").appendChild(li)
-		
+
+		document.querySelector(".user").classList.remove("d-none");
 		document.querySelector(".user").innerHTML = user.datas.username;
+		document.querySelector(".notif").classList.remove("d-none");
 	}
 
 }

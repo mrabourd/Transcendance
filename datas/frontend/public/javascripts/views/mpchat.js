@@ -64,23 +64,30 @@ export default class extends AbstractView {
 
 		console.log(this.user.datas.username + ' is connected to the chatroom.');
 		const user = this.user;
-		const chatSocket = new WebSocket(
+		this.chatSocket = new WebSocket(
 			this.user.request.url_wss + '/ws/msg/'+ this.friend_id +'/?token=' + user.request.getJWTtoken()["access"]
 		);
 
 		// on socket open
-		chatSocket.onopen = (e) => {
+		this.chatSocket.onopen = (e) => {
 			console.log('Socket between ' + user.datas.id + ' and ' + this.friend_id + ' successfully connected.');
         };
-        chatSocket.onclose = function(e) {
+        this.chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
 
 		
 		// on socket close
-		chatSocket.onmessage = (e) => {
+		this.chatSocket.onmessage = (e) => {
             const data = JSON.parse(e.data);
-			this.createChatMessage(data, this.user.datas.id);
+			console.log("data.message: ", data.message)
+			console.log("data.id: ", data.id)
+			if (data.message == `\n`){
+				return;
+			}
+			else{
+				this.createChatMessage(data, this.user.datas.id);
+			}
 			//const chatText = document.querySelector('#chat-text-left').innerHTML;
 			//document.querySelector('#chat-text-left').innerHTML = chatText + data.created_at + '<br>' + data.username + ' : ' + data.message;
 
@@ -94,10 +101,10 @@ export default class extends AbstractView {
                 document.querySelector('#chat-message-submit').click();
             }
         };
-        document.querySelector('#chat-message-submit').onclick = function(e) {
+        document.querySelector('#chat-message-submit').onclick = (e) => {
             const messageInputDom = document.querySelector('#chat-message-input');
             const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
+            this.chatSocket.send(JSON.stringify({
                 'message': message
             }));
             messageInputDom.value = '';
@@ -112,25 +119,27 @@ export default class extends AbstractView {
 	historyJSON = async (history) => {
 		let messageHistory = await history.json();
 		let currentUser = this.user.datas.id;
+		console.log(messageHistory.length);
 
-		
-		messageHistory.forEach(message => {
-
-			this.createChatMessage({
-				...message,
-				user_id: message.user,
-				message: message.message.trim(),
-				created_at: this.formatDate(message.created_at)
-			}, currentUser);
-			
-		});
+		if (messageHistory.length > 0){
+			messageHistory.forEach(message => {
+	
+				this.createChatMessage({
+					...message,
+					user_id: message.user,
+					message: message.message.trim(),
+					created_at: this.formatDate(message.created_at)
+				}, currentUser);
+				
+			});
+		}
 	}
 
 
 
 	displayRight = (data, time, text, DOM) => {
+		console.log("display right: ", data.message)
 		let chatbox = document.querySelector("#app .overflow-scroll");
-		let firstTime;
 
 		time.classList.add('d-flex', 'flex-row', 'justify-content-end')
 		text.classList.add('d-flex', 'flex-row', 'justify-content-end')
@@ -141,8 +150,8 @@ export default class extends AbstractView {
 	}
 
 	displayLeft = (data, time, text, DOM) => {
+		console.log("display left")
 		let chatbox = document.querySelector("#app .overflow-scroll");
-		let firstTime;
 
 		text.innerHTML = data.message
 
@@ -156,6 +165,8 @@ export default class extends AbstractView {
 
 	createChatMessage = (data, currentUser) => {
 		let DOM = this.user.DOMMpChatMessage.cloneNode(true)
+
+		console.log("entre createChatMessage")
 
 		/* TO DO remlir le DOM */
 		
@@ -172,17 +183,19 @@ export default class extends AbstractView {
 
 		if (side == 'right') {
 			this.displayRight(data, time, text, DOM)
-			document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
+			// document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
 		}
 		else {
 			if (location.pathname == '/chatroom/' + this.friend_id){
 				this.displayLeft(data, time, text, DOM)
-				document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
 
 			}
-			else
-				console.log("send notif pls")
+			else{
+				// console.log("send notif pls")
+				return;
+			}
 		}
+		document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
 
 
 	}

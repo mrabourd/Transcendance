@@ -43,12 +43,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			await database_sync_to_async(self.chat_room.users.add)(self.other_user)
 		else:
 			print(f">>>>>>>>>>>> ${self.chat_room} exists !!!!!")
+		
+		existing_users = await database_sync_to_async(list)(self.chat_room.users.all())
+		print(f'>>>>>>>>>>>> existing_users {existing_users}')
 
-		# Join room group
 		await self.channel_layer.group_add(
 			self.room_group_name,
 			self.channel_name
 		)
+		# Join room group
 		await self.accept()
 		#@channel_session_user
 
@@ -62,6 +65,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		text_data_json = json.loads(text_data)
 		message = text_data_json["message"]
 
+		print("mesage received")
 		# Send message to room group
 		await self.channel_layer.group_send(
 			self.room_group_name, {"type": "chat.message", "message": message, "user": self.user}
@@ -73,6 +77,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		message_saved = await self.save_message(message)
 		
 		# creer notif 
+		await self.create_notif(message)
+
 	@database_sync_to_async
 	def create_notif(self, message):
 		notif_message = f'{self.user.username} has sent you message'
@@ -83,7 +89,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			message=notif_message,
 			sender=self.user,
 			receiver=self.other_user,
-			link=f"ws/msg/{str(self.user)}"
+			link=None
 		)
 		# user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
 		# return HttpResponse("Invitation sent!")
@@ -97,6 +103,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		return Message.objects.last()
 
 	async def chat_message(self, event):
+		print("mesage send")
 		message = event["message"]
 		user = event["user"]
 

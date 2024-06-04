@@ -75,7 +75,7 @@ class Invite(APIView):
 					message=notif_message,
 					sender=user,
 					receiver=user_invited,
-					link=None
+					link=f"/home"
 				)
 				user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
 				return HttpResponse("Invitation sent!")

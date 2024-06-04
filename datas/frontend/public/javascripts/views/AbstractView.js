@@ -4,6 +4,7 @@ import * as aside from "../aside.js";
 export default class {
     constructor(params) {
         this.params = params;
+        this.chatSocket = null
     }
 
     async setTitle(title) {
