@@ -13,25 +13,39 @@ export default class extends AbstractPong {
 	connect = () =>
     {
         console.log("PongSocket creation")
-		const PongSocket = new WebSocket(
+		this.PongSocket = new WebSocket(
 			this.user.request.url_wss+'/ws/pong/'+ this.match_id +'/?token=' + this.user.request.getJWTtoken()["access"]
 		);
+		this.PongSocket.onopen = function(e) {console.log('Socket connected for online pong.');};
+		this.PongSocket.onclose = function(e) {console.warn('Socket connection closed ...');};
+		this.PongSocket.onerror = function(e) {
+			document.querySelector("#app").innerHTML = "An error occured ... WSS connection can be established"
+		};
 
-		PongSocket.onopen = function(e) {console.log('Socket connected for online pong.');};
-		PongSocket.onclose = function(e) {console.warn('Socket connection closed ...');};
-
-		PongSocket.onmessage = function(e) {
+		this.PongSocket.onmessage = async (e) => {
 			const data = JSON.parse(e.data);
-            console.log('pong : ', data)
+			if(data.error && data.error == 'token_not_valid')
+			{
+				let RefreshResponse = await this.user.request.refreshJWTtoken();
+				if (RefreshResponse.ok)
+					this.PongSocket = new Websockets(this.user)
+				return;
+			}
+			this._game = data
+			this.draw();
+            //console.log('player left  :', data.player_left.y)
+            //console.log('player right :', data.player_right.y)
 		}
     }
+
 	movePaddles() {
-		window.addEventListener("keydown", function(e) {
+		window.addEventListener("keydown", async (e) => {
 			if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
 				e.preventDefault();
 			}
 		}, false);
 		// PlayerOne&LeftSide
+		/*
 		if (this.currentKeysDown.includes("s")) {
 			this.leftPaddleMoveUp();
 		} else if (
@@ -39,35 +53,46 @@ export default class extends AbstractPong {
 		) {
 			this.leftPaddleMoveDown();
 		}
-		
+		*/
 		// PlayerTwo&leftSide 
-        /*
+        
         if (this.currentKeysDown.includes('ArrowUp')) {
 			this.rightPaddleMoveUp();
 		} else if (this.currentKeysDown.includes('ArrowDown')) {
 			this.rightPaddleMoveDown();
 		}
-        */
+
+
+
 	}
-	/*
+	
 	rightPaddleMoveUp() {
+		console.log("up")
 		if(this._game.playerright.y < PLAYER_HEIGHT / 2){
 			this._game.playerright.y = 0;
 		}
 		this._game.playerright.y -= 10;
 		this.setPlayerRightValues(this._game.playerright.y);
+		this.PongSocket.send(JSON.stringify({
+			'message': "moveup"
+		}));
 	}
 	
 	rightPaddleMoveDown() {
+		console.log("down")
 		if (this._game.playerright.y + PLAYER_HEIGHT > this._canvas.height){
 			this._game.playerright.y = this._canvas.height - PLAYER_HEIGHT;
 		}
 		this._game.playerright.y += 10;
 		this.setPlayerRightValues(this._game.playerright.y);
+		this.PongSocket.send(JSON.stringify({
+			'message': "movedowm"
+		}));
 	}
-    */
+/*
 	
 	leftPaddleMoveUp() {
+		console.log("up")
 		if (this._game.playerleft.y + PLAYER_HEIGHT > this._canvas.height){
 			this._game.playerleft.y = this._canvas.height - PLAYER_HEIGHT;
 		}
@@ -76,10 +101,12 @@ export default class extends AbstractPong {
 	}
 	
 	leftPaddleMoveDown() {
+		console.log("down")
 		if (this._game.playerleft.y + PLAYER_HEIGHT > this._canvas.height){
 			this._game.playerleft.y = this._canvas.height - PLAYER_HEIGHT;
 		}
 		this._game.playerleft.y -= 10;
 		this.setPlayerLeftValues(this._game.playerleft.y);
-	}    
+	}   
+*/
 }

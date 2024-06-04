@@ -58,16 +58,16 @@ def createMatch(user, tournament, player1, player2):
 	#for player in player1:
 	if player1[0] == 'username':
 		match_point1 = MatchPoints.objects.create(match=match, alias=player1[1].username, user=player1[1], points=0)
+		match.users.add(player1[1])
 	else:
 		match_point1 = MatchPoints.objects.create(match=match, alias=player1[1], points=0)
 
 	#for player in player2:
 	if player2[0] == 'username':
 		match_point2 = MatchPoints.objects.create(match=match, alias=player2[1].username, user=player2[1], points=0)
+		match.users.add(player2[1])
 	else:
 		match_point2 = MatchPoints.objects.create(match=match, alias=player2[1], points=0)
-
 	# renvoyer l'id du match:
-
 	return match
 # return HttpResponse("Invalid request type.", status=400)
