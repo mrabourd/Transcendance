@@ -37,4 +37,5 @@ class ChatMessageHistory(APIView):
 		messages = Message.objects.filter(chat_room=chat_room)
 		serializer = ChatMessageSerializer(messages, many=True)
 		print("messages: ", messages)
+
 		return Response(serializer.data)

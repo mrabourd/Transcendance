@@ -137,7 +137,7 @@ export default class extends AbstractView {
 		text.innerHTML = data.message;
 		time.innerHTML = time.innerText;
 
-		chatbox.scrollTop = document.getElementById("endofscroll").offsetTop
+		chatbox.scrollTop = document.querySelector(".endofscroll").offsetTop
 	}
 
 	displayLeft = (data, time, text, DOM) => {
@@ -146,7 +146,7 @@ export default class extends AbstractView {
 
 		text.innerHTML = data.message
 
-		chatbox.scrollTop = document.getElementById("endofscroll").offsetTop
+		chatbox.scrollTop = document.querySelector(".endofscroll").offsetTop
 		document.querySelector('#chat-message-input')
 		// let element_to_scroll_to = document.getElementById("endofscroll");
 		// document.querySelector("ul.chatContainerScroll").scrollTop(element_to_scroll_to.offsetTop);
@@ -172,11 +172,17 @@ export default class extends AbstractView {
 
 		if (side == 'right') {
 			this.displayRight(data, time, text, DOM)
+			document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
 		}
-		else  {
-			this.displayLeft(data, time, text, DOM)
+		else {
+			if (location.pathname == '/chatroom/' + this.friend_id){
+				this.displayLeft(data, time, text, DOM)
+				document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
+
+			}
+			else
+				console.log("send notif pls")
 		}
-		document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
 
 
 	}

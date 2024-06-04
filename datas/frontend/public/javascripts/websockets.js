@@ -6,6 +6,7 @@ export default class Websockets {
     constructor(user) {
 		this.user = user
 
+		this.count = 0;
 		// setup notification websocket
 		this.notifySocket = new WebSocket(
 			`wss://localhost:8443/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
@@ -36,6 +37,9 @@ export default class Websockets {
 			if (data.code_name == "INV")
 				this.update_invitation(data)
 
+			// if (data.code_name == "MSG")
+			// 	this.print_notification(data)
+
 			if (data.message)
 			{
 				this.print_notification(data)
@@ -47,24 +51,38 @@ export default class Websockets {
 
 	print_notification(data)
 	{
-		var newLi = document.createElement('li');
-		var newAnchor = document.createElement('a');
 
-		newAnchor.className = 'dropdown-item text-wrap';
-		newAnchor.textContent = data.message;
 		// if (data.code_name == "INV"){
 		// 	console.log("it is an invitation");
 		// 	new accept = document.createElement('btn');
 		// 	new deny = document.createElement('btn');
 		// 	accept.classList.add("btn-primary", "btn-lg")
 		// }
+		this.count++;
+
+		let countnotif = document.querySelector(".countnotif");
+		countnotif.textContent = this.count;
+
+		let notif = document.querySelector(".notif ul");
+
+		var newLi = document.createElement('li');
+		var newAnchor = document.createElement('a');
+		newAnchor.classList.add("dropdown-item")
+
+		// newAnchor.className = 'dropdown-item text-wrap';
+		newAnchor.textContent = data.message;
+		newLi.appendChild(newAnchor);
+		notif.appendChild(newLi);
+		// 
+
 		newAnchor.addEventListener('click', async (e) => {
 			e.preventDefault();
 			this.user.router.navigateTo(data.link, this.user)
+			this.count--;
 		});
-		newLi.appendChild(newAnchor);
-		var ulElement = document.getElementById('notify');
-		ulElement.appendChild(newLi);
+		// 
+		// var ulElement = document.getElementById('notify');
+		//
 	}
 
 

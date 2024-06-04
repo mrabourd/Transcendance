@@ -71,7 +71,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		# Save message to database
 		
 		message_saved = await self.save_message(message)
-		# 
+		
+		# creer notif 
+	@database_sync_to_async
+	def create_notif(self, message):
+		notif_message = f'{self.user.username} has sent you message'
+		Notification.objects.create(
+			type="private",
+			code_name="MSG",
+			code_value=5,
+			message=notif_message,
+			sender=self.user,
+			receiver=self.other_user,
+			link=f"ws/msg/{str(self.user)}"
+		)
+		# user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
+		# return HttpResponse("Invitation sent!")
 
 
 	# Receive message from room group
