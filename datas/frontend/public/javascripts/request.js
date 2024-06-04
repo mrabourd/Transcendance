@@ -13,11 +13,9 @@ export default class Request {
         let tpl_url = '/get_env';
         let response = await fetch(tpl_url);
         let textResponse = await response.text(); // Get the response as text
-        console.log("Raw response:", textResponse); // Log the raw response
 
         try {
             let JSONResponse = JSON.parse(textResponse); // Parse the response manually
-            console.log("Parsed JSON:", JSONResponse); // Log the parsed JSON
             return new Request(JSONResponse['URL_BACK'], JSONResponse['URL_FRONT'], JSONResponse['URL_WSS'], JSONResponse['HOST']);
         } catch (e) {
             console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
@@ -51,7 +49,6 @@ export default class Request {
                 body: JSON.stringify(RQ_body),
                 credentials: 'include'
             });
-            // console.log("POST response ", response)
 
             if (response.headers.has('X-CSRFToken'))
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
@@ -118,7 +115,6 @@ export default class Request {
     // Pas besoin d'inclure le csrftoken
     async get(RQ_url) {
         try {
-            console.log('GET >>>> URL_BACK', this.url_backend)
             const response = await fetch(this.url_backend + RQ_url, {
                 method: 'GET',
                 headers: await this.get_request_header(),
@@ -126,11 +122,8 @@ export default class Request {
             if (response.headers.has('X-CSRFToken'))
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
  
-            console.log("RQ_url ", RQ_url)
             if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {
-
-
                 try {
                     let jsonData = await response.json();
 
@@ -140,7 +133,6 @@ export default class Request {
                     }
                     if (jsonData.code === 'token_not_valid')
                     {
-                        console.log("refreshJWTtoken() ")
                         let RefreshResponse = await this.refreshJWTtoken();
                         if (RefreshResponse.ok)
                             return await this.get(RQ_url);
@@ -156,7 +148,6 @@ export default class Request {
             }
             else
             {
-                // console.log("GET response", response )
                 return response;
             }
         } catch (error) {
@@ -184,10 +175,8 @@ export default class Request {
         let response = await this.get('/api/users/refresh_csrftoken/');
 		if (response.ok)
 		{
-            console.log("response.ok")
             if (response.headers.has('X-CSRFToken'))
                 {
-                    console.log("set new token : ", response.headers.get('X-CSRFToken'))
                     this.setCsrfToken(response.headers.get('X-CSRFToken'))
                 }
  		}
@@ -224,7 +213,6 @@ export default class Request {
             return true;
         else
         {
-            console.log('rm tokens')
             this.rmCsrfToken()
             this.rmJWTtoken()
             return false;

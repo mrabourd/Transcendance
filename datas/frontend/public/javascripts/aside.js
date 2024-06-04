@@ -43,7 +43,7 @@ export async function print(user)
 		let detination_online = document.querySelector('aside .online ul.userList')
 		if (!detination_online.hasChildNodes())
 		{
-			response = await user.request.get('/api/users/list/all/')
+			response = await user.request.get('/api/users/list/online/')
 			if (response.status == 200)
 			{
 				const friends = await response.json();
