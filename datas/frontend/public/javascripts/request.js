@@ -49,6 +49,7 @@ export default class Request {
                 body: JSON.stringify(RQ_body),
                 credentials: 'include'
             });
+
             if (response.headers.has('X-CSRFToken'))
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
             if(response.headers.has('csrftoken'))

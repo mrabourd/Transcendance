@@ -23,7 +23,10 @@ export const getParams = match => {
 };
 
 export const navigateTo = (url, user) => {
-    
+    if(user.view && user.view.chatSocket != null){
+        user.view.chatSocket.close()
+        user.view.chatSocket = null
+    }
     history.pushState(null, null, url);
     router(user);
 };
