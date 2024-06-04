@@ -5,16 +5,19 @@ import {USER_STATUS} from "./config.js";
 export default class Websockets {
     constructor(user) {
 		this.user = user
-        console.log("websocket object create ()")
 
 		// setup notification websocket
 		this.notifySocket = new WebSocket(
 			`wss://localhost:8443/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
 		);
 		// on socket open
-		this.notifySocket.onopen = function (e) {console.log('Socket successfully connected.');};
+		this.notifySocket.onopen = function (e) {
+			//console.log('Socket successfully connected.');
+		};
 		// on socket close
-		this.notifySocket.onclose = function (e) {console.log('Socket closed');};
+		this.notifySocket.onclose = function (e) {
+			//console.log('Socket closed');
+		};
 
 		// on receiving message on group
 		this.notifySocket.onmessage = async (e) => {
@@ -39,8 +42,6 @@ export default class Websockets {
 				//router.router(this.user);
 			}
 			
-			console.log('data.code:', data.code_name);
-			console.log('WebSocket Received:', data);		
 		};
     }
 
@@ -63,7 +64,6 @@ export default class Websockets {
 
 	async update_invitation(data)
 	{
-		console.log("UPDATE INVITATION")
 		if (data.code_value == 1) // invitation received
 		{
 			if (!this.user.datas.received_invitations.includes(data.sender))

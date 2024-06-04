@@ -7,10 +7,8 @@ import AbstractPong from "../AbstractPong.js";
 export default class extends AbstractView {
     constructor(params) {
         super(params);
-		console.warn('pong params', this.params)
 		this.match_id = this.params.match_id
         this.setTitle("Play Pong");
-        // this.currentKeysDown = [];
     }
 
     async getHtml(DOM) {
@@ -32,7 +30,6 @@ export default class extends AbstractView {
 	addEvents () {
 		let canvas = document.getElementById('canvas');
 
-		console.log("user:", this.user);
 		// function resizeCanvas() {
 		// 	canvas.width = window.innerWidth;
 		// 	canvas.height = window.innerHeight;
@@ -52,7 +49,6 @@ export default class extends AbstractView {
 		else {
 			this._game = new pongOnline(canvas, this.user, this.match_id);
 			this._game.connect();
-			console.log("vs user id: creer avec websocket");
 		}
 		
 
