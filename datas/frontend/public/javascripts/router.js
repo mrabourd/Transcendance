@@ -27,6 +27,10 @@ export const navigateTo = (url, user) => {
         user.view.chatSocket.close()
         user.view.chatSocket = null
     }
+    if(user.view && user.view.PongSocket != null){
+        user.view.PongSocket.close()
+        user.view.PongSocket = null
+    }
     history.pushState(null, null, url);
     router(user);
 };

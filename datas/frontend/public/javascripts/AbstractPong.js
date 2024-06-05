@@ -15,8 +15,6 @@ export default class AbstractPong {
 		//this._computer_score = computer_score;
 
 		//let canvas = document.getElementById('canvas');
-		// this._playerleft_score = document.getElementById('playerleft-score')
-		// this._playerright_score  = document.getElementById('playerright-score')
 
 		this._game = {
 			playerleft: {
@@ -87,8 +85,8 @@ export default class AbstractPong {
 		document.querySelector('#start-game').innerHTML = "Pause game";
 		this._game.playerleft.score = 0;
 		this._game.playerright.score = 0;
-		this._playerleft_score = document.getElementById('playerleft-score')
-		this._playerright_score  = document.getElementById('playerright-score')
+		this._playerleft_score = document.querySelector('#app .scores .playerleft .score')
+		this._playerright_score  = document.querySelector('#app .scores .playerright .score')
 		
 		cancelAnimationFrame(this.ANIMATION.id);
 		this.ANIMATION.fps = 60
@@ -229,8 +227,8 @@ export default class AbstractPong {
 	stop = () => {
 		console.log("stop");
 		document.querySelector('#start-game').innerHTML = "Start game";
-		document.getElementById('playerleft-score').innerHTML = 0;
-		document.getElementById('playerright-score').innerHTML = 0;
+		document.querySelector('#app .scores .playerleft .score').innerHTML = 0;
+		document.querySelector('#app .scores .playerright .score').innerHTML = 0;
 		cancelAnimationFrame(this.ANIMATION.id);
 	
 		this.setToCenter();

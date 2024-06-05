@@ -5,6 +5,7 @@ export default class {
     constructor(params) {
         this.params = params;
         this.chatSocket = null
+        this.PongSocket = null
     }
 
     async setTitle(title) {
