@@ -41,47 +41,48 @@ export default class extends AbstractView {
 		document.querySelector('#stop-game').innerHTML = "Stop game";
 
 		if (this.params.adversaire === "vs_computer"){
-			this._game = new pongComputer(canvas);
+			this.pong = new pongComputer(canvas);
 		}
 		else if (this.params.adversaire === "vs_player"){
-			this._game = new pongPlayer(canvas);
+			this.pong = new pongPlayer(canvas);
 		}
 		else {
-			this._game = new pongOnline(canvas, this.user, this.match_id);
-			this._game.connect();
+			this.pong = new pongOnline(canvas, this.user, this.match_id);
+			this.pong.connect();
+			this.PongSocket = this.pong.PongSocket
 		}
 		
 
 
 
 		document.addEventListener("keydown", (event) => {
-			if (!this._game.currentKeysDown.includes(event.key)) {
-				this._game.currentKeysDown.push(event.key);
+			if (!this.pong.currentKeysDown.includes(event.key)) {
+				this.pong.currentKeysDown.push(event.key);
 			}
-			this._game.movePaddles();
+			this.pong.movePaddles();
 		})
 		
 
 
 		document.addEventListener("keyup", (event) => {
-			this._game.currentKeysDown.splice(this._game.currentKeysDown.indexOf(event.key), 1)
-			this._game.movePaddles();
+			this.pong.currentKeysDown.splice(this.pong.currentKeysDown.indexOf(event.key), 1)
+			this.pong.movePaddles();
 		})
 
 
 		document.querySelector('#start-game').addEventListener('click',(e) =>
 		{
 			if (e.target.innerHTML =="Pause game") {
-				this._game.pause();
+				this.pong.pause();
 				e.target.innerHTML = "Start game";
 			}
 			else{
-				this._game.start();
+				this.pong.start();
 				e.target.innerHTML = "Pause game";
 			}
 		});
 
-		document.querySelector('#stop-game').addEventListener('click', this._game.stop);
+		document.querySelector('#stop-game').addEventListener('click', this.pong.stop);
 		
     }
 
