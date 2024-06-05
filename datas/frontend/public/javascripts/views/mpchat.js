@@ -47,9 +47,7 @@ export default class extends AbstractView {
 			// 	document.querySelector(".message").classList.add("text-secondary")
 			// }
 			this.historyJSON(historyResponse);
-			let canTalk = this.checkIfBlock();
-			if (canTalk == false)
-				return;
+
 			
 		} catch (err) {
 			console.warn('Something went wrong.', err);
@@ -59,18 +57,16 @@ export default class extends AbstractView {
 
 	checkIfBlock () {
 		const user = this.user;
-		console.log("blocked_by: ", user.datas.blocked_by);
-		console.log("is it blocked by someone?: ", friends_utils.is_blocked_by(user, this.friend_id));
 		if (friends_utils.is_blocked_by(user, this.friend_id) == true ||
 				friends_utils.is_blocked(user, this.friend_id) == true){
-			console.log("you cannot talk to this person");
+			// console.log("you cannot talk to this person");
 			document.getElementById("chat-message-input").classList.add("d-none")
 			document.getElementById("chat-message-submit").classList.add("d-none")
 			// document.querySelector(".message").classList.add("text-secondary")
 			return true;
 		}
 		else {
-			console.log("please talk to this person");
+			// console.log("please talk to this person");
 			document.getElementById("chat-message-input").classList.remove("d-none")
 			document.getElementById("chat-message-submit").classList.remove("d-none")
 			return false;
@@ -103,7 +99,7 @@ export default class extends AbstractView {
             console.error('Chat socket closed unexpectedly');
         };
 
-		
+
 		// on socket close
 		this.chatSocket.onmessage = (e) => {
             const data = JSON.parse(e.data);
@@ -113,13 +109,12 @@ export default class extends AbstractView {
 				return;
 			}
 			else{
-				this.createChatMessage(data, this.user.datas.id);
+				this.createChatMessage(data, this.user.datas.id, 1);
 			}
 			//const chatText = document.querySelector('#chat-text-left').innerHTML;
 			//document.querySelector('#chat-text-left').innerHTML = chatText + data.created_at + '<br>' + data.username + ' : ' + data.message;
 
         };
-
 
 
         document.querySelector('#chat-message-input').focus();
@@ -157,7 +152,7 @@ export default class extends AbstractView {
 					user_id: message.user,
 					message: message.message.trim(),
 					created_at: this.formatDate(message.created_at)
-				}, currentUser);
+				}, currentUser, 2);
 				
 			});
 		}
@@ -190,11 +185,16 @@ export default class extends AbstractView {
 		// element_to_scroll_to.scrollIntoView();
 	}
 
-	createChatMessage = (data, currentUser) => {
+	createChatMessage = (data, currentUser, isHist) => {
 		let DOM = this.user.DOMMpChatMessage.cloneNode(true)
 
+		let canTalk = this.checkIfBlock();
+		if (canTalk == true && isHist == 1){
+			console.log("no")
+			return;
+		}
+
 		if (data.message == ""){
-			console.log("do not display");
 			return;
 		}
 

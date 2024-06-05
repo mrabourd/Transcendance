@@ -2,7 +2,7 @@ from django.urls import path
 # from . import views
 from rest_framework.urlpatterns import format_suffix_patterns
 from match.views_invite import Subscribe, Unsubscribe, Invite
-from match.views_match import MatchList
+from match.views_match import MatchList, MatchHistory
 from match.views_tournament import TournamentView
 import uuid
 
@@ -12,6 +12,7 @@ urlpatterns = [
     path('list/<str:req_type>/', MatchList.as_view(),name='invite'),
     path('invite/<str:req_type>/<uuid:id>/', Invite.as_view(),name='invite'),
     path('tournament/<str:req_type>/', TournamentView.as_view(), name='tournament'),
+    path('history/<uuid:id>/', MatchHistory.as_view(), name='history'),
 
 ]
 

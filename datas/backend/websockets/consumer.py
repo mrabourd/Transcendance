@@ -44,6 +44,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			await database_sync_to_async(self.chat_room.users.add)(self.other_user)
 		else:
 			print(f">>>>>>>>>>>> ${self.chat_room} exists !!!!!")
+			# print("self.chat_room.users, ", self.chat_room.users)
 		
 		existing_users = await database_sync_to_async(list)(self.chat_room.users.all())
 		print(f'>>>>>>>>>>>> existing_users {existing_users}')
@@ -72,6 +73,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		text_data_json = json.loads(text_data)
 		message = text_data_json["message"]
 
+		print("self.channel_layer: ", self.channel_layer)
 		# Send message to room group
 		await self.channel_layer.group_send(
 			self.room_group_name, {"type": "chat.message", "message": message, "user": self.user}
@@ -106,8 +108,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 	# Receive message from room group
 	@database_sync_to_async
 	def save_message(self, message):
-		Message.objects.create(message=message, user=self.user, chat_room=self.chat_room)
 
+		Message.objects.create(message=message, user=self.user, chat_room=self.chat_room)
 		return Message.objects.last()
 
 	async def chat_message(self, event):

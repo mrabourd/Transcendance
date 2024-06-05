@@ -71,3 +71,37 @@ def createMatch(user, tournament, player1, player2):
 	# renvoyer l'id du match:
 	return match
 # return HttpResponse("Invalid request type.", status=400)
+
+
+class MatchHistory(APIView):
+
+	# def current_profile(self):
+	# 	try:
+	# 		return self.request.data.get('me')
+	# 	except User.DoesNotExist:
+	# 		raise Http404
+			
+	# def other_profile(self, pk):
+	# 	try:
+	# 		return User.objects.get(id = pk)
+	# 	except User.DoesNotExist:
+	# 		raise Http404
+
+	def get(self, request, id):
+		# pk = id
+		# other_profile = self.other_profile(pk)
+		# current_profile = request.user
+		# # current_profile[0] = 'username'
+		# # other_profile[0] = 'username'
+
+		# match1 = createMatch(current_profile, None, current_profile, other_profile)
+		# # match2 = createMatch(id, None, id, "002")
+		match = {
+			'date': '21-04-2024',
+			'id': '0001',
+			'friend': 'toto',
+			'victory': 'toto',
+		}
+		# renvoyer les deux id
+		# match1.match_id + match2.match_id
+		return Response(match)

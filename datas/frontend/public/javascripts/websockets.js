@@ -1,5 +1,6 @@
 import * as router from "./router.js";
 import * as friends_utils from "./utils_friends.js"
+import * as checkIfBlock from "./views/mpchat.js"
 import {USER_STATUS} from "./config.js";
 
 export default class Websockets {
@@ -26,6 +27,7 @@ export default class Websockets {
 		this.notifySocket.onmessage = async (e) => {
 			const data = JSON.parse(e.data);
 			console.log("data.sender: ", data.sender)
+			console.log("data.code_name: ", data.code_name)
 			if(data.error && data.error == 'token_not_valid')
 			{
 				let RefreshResponse = await this.user.request.refreshJWTtoken();
@@ -43,8 +45,9 @@ export default class Websockets {
 			if (data.code_name == "MSG")
 				this.update_msg_link(data)
 
-			if (data.code_name == "BLK")
+			if (data.code_name == "BLK"){
 				this.update_block(data)
+			}
 
 			if (data.message)
 			{
@@ -57,6 +60,7 @@ export default class Websockets {
 
 	async update_block(data)
 	{
+		console.log("enter update block")
 		let friend_id = data.sender;
 		if (data.code_value == 1) // blocking someone 
 		{
@@ -67,16 +71,20 @@ export default class Websockets {
 		{
 			this.user.datas.blocked_by = this.user.datas.blocked_by.filter(id => id !== data.sender);
 		}
+		console.log("puis la")
 		this.user.saveDatasToLocalStorage()
 		friends_utils.update_profile_cards_text(this.user)
-        if(location.pathname != '/chatroom/' + friend_id){
-			this.user.router.router(this.user);
-            // this.user.router.navigateTo('/chatroom/' + friend_id, this.user);
-		}
+        // if(location.pathname != '/chatroom/' + friend_id){
+			// this.user.router.router(this.user);
+		console.log("should enter navigate to")
+		this.user.router.navigateTo('/chatroom/' + friend_id, this.user);
+		// }
 		data.link = '/chatroom/' + friend_id;
+
 	}
 
 	update_msg_link(data){
+		console.log("enter update_msg_link")
 		// console.log("entre update msg link")
 		let friend_id = data.sender;
 		data.link = "/chatroom/" + friend_id;
@@ -84,6 +92,7 @@ export default class Websockets {
 
 	print_notification(data)
 	{
+		console.log("enter print_notification")
 		if (location.pathname == data.link){
 			this.count = 0;
 			return;
@@ -123,6 +132,7 @@ export default class Websockets {
 
 	async update_invitation(data)
 	{
+		console.log("enter update_invitation")
 		if (data.code_value == 1) // invitation received
 		{
 			if (!this.user.datas.received_invitations.includes(data.sender))
@@ -139,8 +149,10 @@ export default class Websockets {
 
 		this.user.saveDatasToLocalStorage()
 		friends_utils.update_profile_cards_text(this.user)
-        if(location.pathname == '/home')
-            this.user.router.router(this.user);
+        if(location.pathname == '/home'){
+            // this.user.router.router(this.user);
+			this.user.router.navigateTo('/home', this.user);
+		}
 		/*
 		if((action == "block") && (!user.datas.blocks.includes(friend_id)))
         {
@@ -152,6 +164,7 @@ export default class Websockets {
 
 	async update_status(data)
 	{
+		console.log("update_status")
 		let friend_id = data.sender
 		let friend_status = data.code_value
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);

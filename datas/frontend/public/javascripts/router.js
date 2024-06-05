@@ -24,6 +24,7 @@ export const getParams = match => {
 
 export const navigateTo = (url, user) => {
     if(user.view && user.view.chatSocket != null){
+        console.log("in navigate to")
         user.view.chatSocket.close()
         user.view.chatSocket = null
     }

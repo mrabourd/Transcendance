@@ -168,19 +168,26 @@ export default class extends AbstractView {
 	{
 		// faire un systeme comme dans websocket print_notif pour ajouter autant de matchs
 		// qu'il en existe
-		let response = await this.user.request.get('/api/match/history/'+this.user.datas.id+'/')
+		let URL = '/api/match/history/'+this.user.datas.id+'/';
+		let response = await this.user.request.get(URL);
         if (response.ok)
         {
             let jsonData = await response.json();
 			console.log(jsonData);
+			let newMatch = document.querySelector(".new-match");
+	
+			let matchDate = document.querySelector(".match-date");
+			matchDate.innerHTML = jsonData.date
+	
+			let matchId = document.querySelector(".match-id");
+			matchId.innerHTML = jsonData.id
+
+			let friend = document.querySelector(".friend-username");
+			friend.innerHTML = jsonData.friend
+
+			let victory = document.querySelector(".victory-username");
+			victory.innerHTML = jsonData.victory
 		}
-		let newMatch = document.querySelector(".new-match");
-
-		let matchDate = document.querySelector(".match-date");
-		matchDate.innerHTML = "12-05-2024"
-
-		let matchId = document.querySelector(".match-id");
-		matchId.innerHTML = "001"
 	}
 
 	async fillStats()

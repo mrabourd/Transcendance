@@ -24,6 +24,7 @@ export function is_followed(user, friend_id)
 
 export async function block(user, friend_id, action)
 {
+    console.log("enter block")
     let response = await user.request.get(`/api/users/${action}/${friend_id}/`)
     if (response.status == 200)
     {
@@ -42,7 +43,6 @@ export async function block(user, friend_id, action)
         if ((action == "block" || action == "unblock") && (location.pathname == '/chatroom/' + friend_id)){
             user.router.router(user);
         }
-
     }
 }
 
@@ -253,7 +253,7 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id)
     let existing_thumbnail = document.querySelector(`aside .profile_card[data-friend-id="${friend_id}"]`)
     if (existing_thumbnail)
     {
-        console.log('existing_thumbnail')
+        // console.log('existing_thumbnail')
         return existing_thumbnail.cloneNode(true)
     }
     if (friend == null)
