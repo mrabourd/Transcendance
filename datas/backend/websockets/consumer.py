@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from users.serializers import UserSerializer
 from django.contrib.auth.models import AnonymousUser
+from django.http import JsonResponse, HttpResponse
 #from channels.auth import channel_session_user_from_http, channel_session_user
 from .models import ChatRoom
 from datetime import datetime
@@ -55,6 +56,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		await self.accept()
 		#@channel_session_user
 
+		# if await self.is_blocked(self.user, self.other_user):
+		# 	print("you are blocked")
+		# 	# await self.close()
+		# 	response_content = 'Your friend has blocked you!'
+		# 	return HttpResponse(response_content, status = 200)
+
 	async def disconnect(self, close_code):
 		# Leave room group
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -80,7 +87,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 	@database_sync_to_async
 	def create_notif(self, message):
-		if message == "\n":
+		if message == "\n" or message == "":
 			return
 		notif_message = f'{self.user.username} has sent you message'
 		Notification.objects.create(
@@ -99,9 +106,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 	# Receive message from room group
 	@database_sync_to_async
 	def save_message(self, message):
-
-		if message == "\n":
-			return
 		Message.objects.create(message=message, user=self.user, chat_room=self.chat_room)
 
 		return Message.objects.last()
@@ -109,7 +113,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 	async def chat_message(self, event):
 		message = event["message"]
 		user = event["user"]
-		if message == "\n":
+		if message == "\n" or message == "":
 			return
 
 		# Send message to WebSocket
@@ -120,6 +124,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			"avatar" : user.avatar,
 			"created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 		}))
+
+	# @sync_to_async
+	# def is_blocked(self, user, other_user):
+	# 	return other_user.blocks.filter(pk=user.pk).exists()
 
 
 class GeneralNotificationConsumer(AsyncWebsocketConsumer):

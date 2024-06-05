@@ -28,10 +28,10 @@ export default class extends AbstractView {
 			this.friend_username = friend.username;
 			
 			var chat_with = document.querySelector("#app .chat-with");
-			var nodeFriend = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend.id)
+			var nodeFriend = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend.id);
 			nodeFriend.classList.remove('mb-2', 'col-12');
 			nodeFriend.classList.add('d-flex', 'row','justify-content-end', 'col-8');
-			nodeFriend.querySelector(".dropdown").innerHTML = ''
+			nodeFriend.querySelector(".dropdown").innerHTML = '';
 			friends_utils.update_status_text(nodeFriend)
 
 			// DOM = this.user.DOMMpChatMessage.cloneNode(true)
@@ -42,7 +42,14 @@ export default class extends AbstractView {
 			let historyResponse = await this.user.request.get(`/api/users/chat/messages/history/${this.friend_id}/`);
 			/* TODO -> createChatMessage for each */
 			// this.messageHistory = this.historyJSON(historyResponse);
+
+			// if (friends_utils.is_blocked(this.user, this.friend_id) != undefined){
+			// 	document.querySelector(".message").classList.add("text-secondary")
+			// }
 			this.historyJSON(historyResponse);
+			let canTalk = this.checkIfBlock();
+			if (canTalk == false)
+				return;
 			
 		} catch (err) {
 			console.warn('Something went wrong.', err);
@@ -50,20 +57,40 @@ export default class extends AbstractView {
 
 	}
 
+	checkIfBlock () {
+		const user = this.user;
+		console.log("blocked_by: ", user.datas.blocked_by);
+		console.log("is it blocked by someone?: ", friends_utils.is_blocked_by(user, this.friend_id));
+		if (friends_utils.is_blocked_by(user, this.friend_id) == true ||
+				friends_utils.is_blocked(user, this.friend_id) == true){
+			console.log("you cannot talk to this person");
+			document.getElementById("chat-message-input").classList.add("d-none")
+			document.getElementById("chat-message-submit").classList.add("d-none")
+			// document.querySelector(".message").classList.add("text-secondary")
+			return true;
+		}
+		else {
+			console.log("please talk to this person");
+			document.getElementById("chat-message-input").classList.remove("d-none")
+			document.getElementById("chat-message-submit").classList.remove("d-none")
+			return false;
+		}
+	}
+
 	async addEvents() {
 
-		
 		//console.log('datas',user.datas)
 		console.log("send_message", this.user.datas.id)
-		
+
         /*
         if (this.user.datas.id == friend_id) {
 			return false
 		}
         */
-
 		console.log(this.user.datas.username + ' is connected to the chatroom.');
 		const user = this.user;
+		
+
 		this.chatSocket = new WebSocket(
 			this.user.request.url_wss + '/ws/msg/'+ this.friend_id +'/?token=' + user.request.getJWTtoken()["access"]
 		);
@@ -120,6 +147,7 @@ export default class extends AbstractView {
 		let messageHistory = await history.json();
 		let currentUser = this.user.datas.id;
 		console.log(messageHistory.length);
+	
 
 		if (messageHistory.length > 0){
 			messageHistory.forEach(message => {

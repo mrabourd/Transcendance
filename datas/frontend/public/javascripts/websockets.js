@@ -43,6 +43,9 @@ export default class Websockets {
 			if (data.code_name == "MSG")
 				this.update_msg_link(data)
 
+			if (data.code_name == "BLK")
+				this.update_block(data)
+
 			if (data.message)
 			{
 				this.print_notification(data)
@@ -52,8 +55,29 @@ export default class Websockets {
 		};
     }
 
+	async update_block(data)
+	{
+		let friend_id = data.sender;
+		if (data.code_value == 1) // blocking someone 
+		{
+			if (!this.user.datas.blocks.includes(data.sender))
+				this.user.datas.blocked_by.push(data.sender)
+		}
+		if (data.code_value == 2) // blocked by someone
+		{
+			this.user.datas.blocked_by = this.user.datas.blocked_by.filter(id => id !== data.sender);
+		}
+		this.user.saveDatasToLocalStorage()
+		friends_utils.update_profile_cards_text(this.user)
+        if(location.pathname != '/chatroom/' + friend_id){
+			this.user.router.router(this.user);
+            // this.user.router.navigateTo('/chatroom/' + friend_id, this.user);
+		}
+		data.link = '/chatroom/' + friend_id;
+	}
+
 	update_msg_link(data){
-		console.log("entre update msg link")
+		// console.log("entre update msg link")
 		let friend_id = data.sender;
 		data.link = "/chatroom/" + friend_id;
 	}
@@ -61,7 +85,6 @@ export default class Websockets {
 	print_notification(data)
 	{
 		if (location.pathname == data.link){
-			console.log("on est deja sur la page en question: ", data.link)
 			this.count = 0;
 			return;
 		}

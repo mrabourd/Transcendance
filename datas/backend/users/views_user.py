@@ -30,6 +30,8 @@ from datetime import timedelta
 from django.utils import timezone
 from django.core.mail import send_mail, BadHeaderError
 
+from websockets.models import Message, Notification
+
 import smtplib
 import dns.resolver
 from django.core.mail import EmailMessage
@@ -121,11 +123,27 @@ class FollowUser(APIView):
             
         elif req_type == 'block':
             current_profile.blocks.add(other_profile)
+            notif_message = f'{current_profile.username} has blocked me'
+            create_notif(current_profile, other_profile, 1, notif_message, pk)
             return Response(status=status.HTTP_200_OK)
             
         elif req_type == 'unblock':
             current_profile.blocks.remove(other_profile)
+            notif_message = f'{current_profile.username} has unblocked me'
+            create_notif(current_profile, other_profile, 2, notif_message, pk)
             # other_profile.followers.remove(current_profile)
             return Response(status=status.HTTP_200_OK)
             
 
+def create_notif(current_profile, other_profile, code, notif_message, pk):
+    print("want to send a notif because i blocked someone")
+    Notification.objects.create(
+        type="private",
+        code_name="BLK",
+        code_value=code,
+        message=notif_message,
+        sender=current_profile,
+        receiver=other_profile,
+        # link=f"/chatroom/{str(pk)}"
+        link=None
+    )

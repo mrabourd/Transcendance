@@ -5,15 +5,22 @@ export function is_invited(user,friend_id )
 {
     return user.datas.invitations_sent.find(id => id == friend_id) !== undefined;
 }
+
 export function is_blocked(user, friend_id)
 {
     return user.datas.blocks.find(id => id == friend_id) !== undefined;
+}
+
+export function is_blocked_by(user, friend_id)
+{
+    return user.datas.blocked_by.find(id => id == friend_id) !== undefined;
 }
 
 export function is_followed(user, friend_id)
 {
     return user.datas.follows.find(id => id == friend_id) !== undefined;
 }
+
 
 export async function block(user, friend_id, action)
 {
@@ -32,6 +39,9 @@ export async function block(user, friend_id, action)
             dom.innerHTML = (action == 'block') ? 'unblock' : 'block';
         });
         update_profile_cards_text(user, friend_id)
+        if ((action == "block" || action == "unblock") && (location.pathname == '/chatroom/' + friend_id)){
+            user.router.router(user);
+        }
 
     }
 }
