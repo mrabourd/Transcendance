@@ -34,7 +34,10 @@ User = get_user_model()
 class PongServer:
 	def __init__(self, playerleft=None, playerright=None):
 		self._param = {
-			"status": 0,
+			"infos": {
+				"status":1,
+				"winner":None
+			},
 			"paddles": {
 				"speed":3,
 				"height":50,
@@ -43,13 +46,13 @@ class PongServer:
 			"playerleft": {
 				"y": 25,
 				"score": 0,
-				"player": str(playerleft.id),
+				"player_id": str(playerleft.id),
 				"username": str(playerleft.username)
 			},
 			"playerright": {
 				"y": 25,
 				"score": 0,
-				"player": str(playerright.id),
+				"player_id": str(playerright.id),
 				"username": str(playerright.username)
 			},
 			"ball": {
@@ -61,7 +64,7 @@ class PongServer:
 					"y": random.uniform(-0.5, 0.5),
 				}
 			},
-            "cooldown": 0  # Temps restant avant que la balle puisse détecter une nouvelle collision
+			"cooldown": 0  # Temps restant avant que la balle puisse détecter une nouvelle collision
 		}
 	def reinisialise(self):
 		self._param["playerleft"]["y"] = 25
@@ -121,12 +124,9 @@ class PongServer:
 			print("################## COLLIDE WALL")
 			self.reinisialise()
 			if ball_x <= ball_radius:
-				self._param["playerright"]["score"] += 1
+				self.add_point("playerright")
 			else:
-				self._param["playerleft"]["score"] += 1
-
-			# speed_x = -speed_x + random.uniform(-0.1, 0.1)
-			# speed_x = max(min(speed_x, 0.8), -0.8)
+				self.add_point("playerleft")
 
 		if ball_y <= ball_radius or ball_y >= 100 - ball_radius:
 			print("################## COLLIDE TOP/BOTTOM")
@@ -153,15 +153,29 @@ class PongServer:
 
 	def get_params(self):
 		return self._param
+	
+	def set_status(self, status):
+		self._param["infos"]["status"] = status
+	
+	def get_status(self):
+		return self._param["infos"]["status"]
+
+	def add_point(self, player):
+		self._param[player]["score"] += 1
+		if (self._param[player]["score"] >= 2):
+			self.set_status(2)
 
 	def __str__(self):
 		return str(self._param)
 
 
-
-
 class PongConsumer(AsyncWebsocketConsumer):
 	shared_game = {}
+	GAME_STATUS = {
+		'PENDING' : 0,
+		'PLAYING' : 1,
+		'ENDED' : 2
+	}
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -169,28 +183,22 @@ class PongConsumer(AsyncWebsocketConsumer):
 		self.user = None  # Placeholder for user attribute
 		self.game_task = None  # Task for sending game state at intervals
 
-
+	# recherche si le jeu extiste dans shared_game{}
 	@database_sync_to_async
 	def load_models(self, match_id, playerleft, playerright):
+
 		if match_id in self.shared_game:
 			self._game = self.shared_game[match_id]
+			print("EXISTING MODEL in shared_game with status ", self._game["pong"].get_status())
+
 		else:
-			match = Match.objects.get(pk=match_id)
-			users = match.users.all()
-			if len(users) != 2:
-				raise ValueError("There must be exactly 2 users in a match")
-			
-			# Determine playerleft and playerright based on user IDs
-			playerleft, playerright = sorted(users, key=lambda u: u.id)
-			
+			print("NEW MODEL")
 			self.shared_game[match_id] = {
 				"pong": PongServer(playerleft, playerright),
-				"playerleft":None, 
+				"playerleft":None,
 				"playerright":None
 			}
 			self._game = self.shared_game[match_id]
-
-
 
 	async def connect(self):
 		self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
@@ -203,7 +211,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		self.room_name = f"pong_room_{self.match_id}"
 		self.room_group_name = f"pong_{self.match_id}"
 
-		# Validate the UUID
+		# Validate the match UUID
 		try:
 			uuid_obj = uuid.UUID(self.match_id)
 		except ValueError:
@@ -219,55 +227,73 @@ class PongConsumer(AsyncWebsocketConsumer):
 		existing_users = await database_sync_to_async(list)(self.pong_room.users.all())
 
 		# Join room group
-		await self.channel_layer.group_add(
-			self.room_group_name,
-			self.channel_name
-		)
+		await self.channel_layer.group_add(self.room_group_name,self.channel_name)
 
-		await self.load_models(uuid_obj, existing_users[0].id, existing_users[1].id)
-		role = self.get_player_role()
-		self._game[role] = self.user
+		await self.load_models(uuid_obj, existing_users[0], existing_users[1])
+		self._game[self.get_player_role()] = self.user
 		await self.accept()
 
-		print(f"{role} {self._game[role]}")
-		#print(f"right {self._game["playerright"]}")
 		if self._game["playerleft"] and self._game["playerright"]:
-			self.game_task = asyncio.create_task(self.send_game_state_periodically())
+			status = self._game["pong"].get_status()
+			if (status == self.GAME_STATUS["PENDING"]):
+				self._game["pong"].set_status(self.GAME_STATUS["PLAYING"])
+				self.game_task = asyncio.create_task(self.send_game_state_periodically())
+			else:
+				await self.send_game_state()
+		else:
+			await self.send_game_state()
 	
 	async def disconnect(self, code):
 		# Cancel the background task if it exists
-		#self._game[self.get_player_role()] = None
-		if self.game_task:
-			self.game_task.cancel()
 		await self.channel_layer.group_discard(
 			self.room_group_name,
 			self.channel_name
 		)
+		player_role = self.get_player_role()
+		if player_role:
+			self._game[self.get_player_role()] = None
+			if (self._game["pong"].get_status() == self.GAME_STATUS["PLAYING"]):
+				self._game["pong"].set_status(self.GAME_STATUS["PENDING"])
+			if self.game_task:
+				await self.cancel_game_task()
 
+	async def cancel_game_task(self):
+		self.game_task.cancel()
+		await self.send_game_state()
+		# si le status est ended > enreister dans la BDD
 
 	def get_player_role(self):
 		params = self._game["pong"].get_params()
-		if str(self.user.id) == params["playerleft"]["player"]:
+		if str(self.user.id) == params["playerleft"]["player_id"]:
 			return "playerleft"
-		elif str(self.user.id) == params["playerright"]["player"]:
+		elif str(self.user.id) == params["playerright"]["player_id"]:
 			return "playerright"
 		else:
 			return None
 
 	#@channel_session_user
 	async def receive(self, text_data):
-		text_data_json = json.loads(text_data)
-		message = text_data_json["message"]
-
-		if (message == "moveup" and self.get_player_role()):
-			self._game["pong"].moveUp(self.get_player_role())
-		elif self.get_player_role():
-			self._game["pong"].moveDown(self.get_player_role())
+		if self.get_player_role():
+			text_data_json = json.loads(text_data)
+			message = text_data_json["message"]
+			if message == "moveup":
+				self._game["pong"].moveUp(self.get_player_role())
+			else:
+				self._game["pong"].moveDown(self.get_player_role())
 
 	async def send_game_state_periodically(self):
-		while True:
-			await asyncio.sleep(0.05)  # Interval in seconds
+		status = self._game["pong"].get_status()
+		await self.send_game_state()
+		if (status != self.GAME_STATUS["PLAYING"]):
+			await self.cancel_game_task()
+			pass
+		while True and status == self.GAME_STATUS["PLAYING"]:
+			await asyncio.sleep(0.02)  # Interval in seconds
 			await self.send_game_state()
+			status = self._game["pong"].get_status()
+			if (status != self.GAME_STATUS["PLAYING"]):
+				await self.cancel_game_task()
+				break
 
 	async def send_game_state(self):
 		game_params = await self._game["pong"].update_ball_position()

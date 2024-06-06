@@ -52,6 +52,16 @@ export default class extends AbstractPong {
 		let canvas = this._canvas
 		context.clearRect(0, 0, canvas.width, canvas.height);
 
+		console.log(this._game["infos"]["status"])
+		if (this._game["infos"]["status"] != 1)
+		{
+			// background
+			context.fillStyle = 'red';
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			return 
+		}
+
+
 		// background
 		context.fillStyle = 'black';
 		context.fillRect(0, 0, canvas.width, canvas.height);
