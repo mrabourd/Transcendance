@@ -342,20 +342,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 			self.match.status = game_params["infos"]["status"]
 			self.match_point_1.points = game_params["playerleft"]["score"]
 			self.match_point_2.points = game_params["playerright"]["score"]
-			# if (game_params["playerleft"]["score"] > game_params["playerright"]["score"]):
-			# 	self.match_point_1.result = "win"
-			# 	self.match_point_2.result = "loss"
-			# 	# print("winner playerleft: ", game_params["playerleft"])
-			# 	# print("score playerleft ", game_params["playerleft"]["score"])
-
-			# else:
-			# 	self.match_point_2.result = "win"
-			# 	self.match_point_1.result = "loss"
-			# 	# print("winner playerright: ", game_params["playerright"])
-			# 	# print("score playerright: ", game_params["playerright"]["score"])
-
-			# print("result 1: ", self.match_point_1.alias, self.match_point_1.result)
-			# print("result 2: ", self.match_point_2.alias, self.match_point_2.result)
 			
 			await database_sync_to_async(self.match.save)()
 			await database_sync_to_async(self.match_point_1.save)()

@@ -108,28 +108,17 @@ class MatchHistory(APIView):
 		lost_matches_count = 0
 
 		for match in matches_with_user_points:
-			# Supposons que vous avez des instances de MatchPoints nommées match_point_1 et match_point_2
 			match_point_1 = match.match_points.get(user=current_user)
 			match_point_2 = match.match_points.exclude(user=current_user).first()
 			
-			# Appel de la fonction theWinnerIs pour obtenir le gagnant
 			winner = theWinnerIs(match_point_1.alias, match_point_2.alias, match_point_1.points, match_point_2.points)
 
-			# Incrémenter les compteurs en fonction du gagnant
 			if winner == match_point_1.alias:
 				won_matches_count += 1
 			elif winner == match_point_2.alias:
 				lost_matches_count += 1
 
 		number_of_matches = matches_with_user_points.count()
-
-		# won_matches_count = matches_with_user_points.filter(match_points__result='win').distinct().count()
-
-		# # Compter le nombre de matchs perdus
-		# lost_matches_count = matches_with_user_points.filter(match_points__result='loss').distinct().count()
-		
-		print("won_matches_count", won_matches_count)
-		print("lost_matches_count", lost_matches_count)
 
 		serializer = MatchSerializer(matches_with_user_points, many=True)
 		matchs = serializer.data
@@ -145,5 +134,4 @@ class MatchHistory(APIView):
 			"matchs": matchs
 		}
 
-		# Sérialiser les résultats
 		return JsonResponse(match_stat, safe=False, status=200)
