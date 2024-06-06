@@ -164,7 +164,7 @@ class PongServer:
 
 	def add_point(self, player):
 		self._param[player]["score"] += 1
-		if (self._param[player]["score"] >= 1):
+		if (self._param[player]["score"] >= 5):
 			self.set_status(2)
 
 	def __str__(self):
@@ -192,15 +192,19 @@ class PongConsumer(AsyncWebsocketConsumer):
 		if match_id in self.shared_game:
 			self._game = self.shared_game[match_id]
 			print("EXISTING MODEL in shared_game with status ", self._game["pong"].get_status())
-
 		else:
-			print("NEW MODEL")
+			# get db infos 
+
 			self.shared_game[match_id] = {
 				"pong": PongServer(playerleft, playerright),
-				"playerleft":None,
+				"playerleft":None, #check connection of players
 				"playerright":None
 			}
 			self._game = self.shared_game[match_id]
+			self._game["pong"].set_status(self.match.status)
+
+			print("New MODEL with status ", self._game["pong"].get_status())
+
 
 	async def connect(self):
 		self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
@@ -210,7 +214,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			await self.close()
 			return
 
-		self.room_name = f"pong_room_{self.match_id}"
+		self.room_name = f"match_{self.match_id}"
 		self.room_group_name = f"pong_{self.match_id}"
 
 		# Validate the match UUID
@@ -221,31 +225,25 @@ class PongConsumer(AsyncWebsocketConsumer):
 			return  # Close the connection if UUID is invalid
 
 		try:
-			self.pong_room = await database_sync_to_async(get_object_or_404)(Match, match_id=uuid_obj)
+			self.match = await database_sync_to_async(get_object_or_404)(Match, match_id=uuid_obj)
 		except Http404:
 			await self.close()
 			return  # Close the connection if Match_id is invalid
 
-		existing_users = await database_sync_to_async(list)(self.pong_room.match_points.all())
-		match_point_1 = existing_users[0]
-		match_point_2 = existing_users[1]
-		print("existing_users ", existing_users)
-		print("match_point_1 ", match_point_1)
-		print("match_point_1.alias ", match_point_1.alias)
-		print("match_point_1.my_user_id ", match_point_1.my_user_id)
-		#print("match_point_1.user ", match_point_1.user)
-		#user_1= await database_sync_to_async(get_object_or_404)(User, user=match_point_1.user)
-		#user_1 = await sync_to_async(get_object_or_404)(User, user=match_point_1.user)
-		user_1 =  await database_sync_to_async(get_object_or_404)(User, id=uuid.UUID(match_point_1.my_user_id))
-		print("user_1", user_1)
+		existing_users = await database_sync_to_async(list)(self.match.match_points.all().order_by('my_user_id'))
+		self.match_point_1 = existing_users[0]
+		self.match_point_2 = existing_users[1]
+		user_1 =  await database_sync_to_async(get_object_or_404)(User, id=uuid.UUID(self.match_point_1.my_user_id))
+		user_2 =  await database_sync_to_async(get_object_or_404)(User, id=uuid.UUID(self.match_point_2.my_user_id))
 
-		user_2 =  await database_sync_to_async(get_object_or_404)(User, id=uuid.UUID(match_point_2.my_user_id))
-		print("user_2", user_2)
 		# Join room group
 		await self.channel_layer.group_add(self.room_group_name,self.channel_name)
 
 		await self.load_models(uuid_obj, user_1, user_2)
 		self._game[self.get_player_role()] = self.user
+
+		#print("roles : playerleft ", self._game["playerleft"])
+		#print("roles : playerright ", self._game["playerright"])
 		await self.accept()
 
 		if self._game["playerleft"] and self._game["playerright"]:
@@ -260,6 +258,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 	
 	async def disconnect(self, code):
 		# Cancel the background task if it exists
+		await self.save_game_state()
 		await self.channel_layer.group_discard(
 			self.room_group_name,
 			self.channel_name
@@ -295,6 +294,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		status = self._game["pong"].get_status()
 		await self.send_game_state()
 		if (status != self.GAME_STATUS["PLAYING"]):
+			await self.save_game_state()
 			await self.cancel_game_task()
 			pass
 		while True and status == self.GAME_STATUS["PLAYING"]:
@@ -302,6 +302,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			await self.send_game_state()
 			status = self._game["pong"].get_status()
 			if (status != self.GAME_STATUS["PLAYING"]):
+				await self.save_game_state()
 				await self.cancel_game_task()
 				break
 
@@ -333,14 +334,13 @@ class PongConsumer(AsyncWebsocketConsumer):
 		print("####################### save_game_state #1")
 
 		try:
-			match = self.pong_room
-			print("save_game_state #2", match)
-			match.status = game_params["infos"]["status"]
-			await database_sync_to_async(match.save)()
-			print("save_game_state #3", match.status)
-
-
+			print("save_game_state #2", self.match)
 			game_params = self._game["pong"].get_params()
+			self.match.status = game_params["infos"]["status"]
+			await database_sync_to_async(self.match.save)()
+			print("save_game_state #3", self.match.status)
+
+
 			# Update or create MatchPoints for playerleft
 
 			print("uppdate game score for playerleft", game_params["playerleft"]["id"], game_params["playerleft"]["score"])
