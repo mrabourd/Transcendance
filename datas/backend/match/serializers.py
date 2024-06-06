@@ -23,13 +23,13 @@ class MatchPointsSerializer(serializers.ModelSerializer):
         fields = ['user_id', 'points', 'alias']
 
 class MatchSerializer(serializers.ModelSerializer):
-    players = MatchPointsSerializer(many=True, read_only=True)
+    match_points = MatchPointsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Match
-        fields = ['match_id', 'status', 'tournament', 'created_at', 'players']
+        fields = ['match_id', 'status', 'tournament', 'created_at', 'match_points']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['players'] = MatchPointsSerializer(instance.players_set.all(), many=True).data
+        representation['match_points'] = MatchPointsSerializer(instance.match_points.all(), many=True).data
         return representation

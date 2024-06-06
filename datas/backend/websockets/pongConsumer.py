@@ -4,7 +4,9 @@ import json
 import uuid
 import asyncio
 import random
+from django.db import transaction
 from channels.db import database_sync_to_async
+from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -46,13 +48,13 @@ class PongServer:
 			"playerleft": {
 				"y": 25,
 				"score": 0,
-				"player_id": str(playerleft.id),
+				"id": str(playerleft.id),
 				"username": str(playerleft.username)
 			},
 			"playerright": {
 				"y": 25,
 				"score": 0,
-				"player_id": str(playerright.id),
+				"id": str(playerright.id),
 				"username": str(playerright.username)
 			},
 			"ball": {
@@ -162,7 +164,7 @@ class PongServer:
 
 	def add_point(self, player):
 		self._param[player]["score"] += 1
-		if (self._param[player]["score"] >= 2):
+		if (self._param[player]["score"] >= 1):
 			self.set_status(2)
 
 	def __str__(self):
@@ -224,12 +226,25 @@ class PongConsumer(AsyncWebsocketConsumer):
 			await self.close()
 			return  # Close the connection if Match_id is invalid
 
-		existing_users = await database_sync_to_async(list)(self.pong_room.users.all())
+		existing_users = await database_sync_to_async(list)(self.pong_room.match_points.all())
+		match_point_1 = existing_users[0]
+		match_point_2 = existing_users[1]
+		print("existing_users ", existing_users)
+		print("match_point_1 ", match_point_1)
+		print("match_point_1.alias ", match_point_1.alias)
+		print("match_point_1.my_user_id ", match_point_1.my_user_id)
+		#print("match_point_1.user ", match_point_1.user)
+		#user_1= await database_sync_to_async(get_object_or_404)(User, user=match_point_1.user)
+		#user_1 = await sync_to_async(get_object_or_404)(User, user=match_point_1.user)
+		user_1 =  await database_sync_to_async(get_object_or_404)(User, id=uuid.UUID(match_point_1.my_user_id))
+		print("user_1", user_1)
 
+		user_2 =  await database_sync_to_async(get_object_or_404)(User, id=uuid.UUID(match_point_2.my_user_id))
+		print("user_2", user_2)
 		# Join room group
 		await self.channel_layer.group_add(self.room_group_name,self.channel_name)
 
-		await self.load_models(uuid_obj, existing_users[0], existing_users[1])
+		await self.load_models(uuid_obj, user_1, user_2)
 		self._game[self.get_player_role()] = self.user
 		await self.accept()
 
@@ -257,16 +272,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 			if self.game_task:
 				await self.cancel_game_task()
 
-	async def cancel_game_task(self):
-		self.game_task.cancel()
-		await self.send_game_state()
-		# si le status est ended > enreister dans la BDD
-
 	def get_player_role(self):
 		params = self._game["pong"].get_params()
-		if str(self.user.id) == params["playerleft"]["player_id"]:
+		if str(self.user.id) == params["playerleft"]["id"]:
 			return "playerleft"
-		elif str(self.user.id) == params["playerright"]["player_id"]:
+		elif str(self.user.id) == params["playerright"]["id"]:
 			return "playerright"
 		else:
 			return None
@@ -306,10 +316,38 @@ class PongConsumer(AsyncWebsocketConsumer):
 				"user": self.user.id  # Convert user to a serializable type
 			}
 		)
-
+	
 	async def pong_datas(self, event):
 		game = event["game"]
 		#Send message to WebSocket
 		await self.send(text_data=game)
 
+	async def cancel_game_task(self):
+		self.game_task.cancel()
+		print("cancel_game_task, try to save")
+		await self.send_game_state()
+		# si le status est ended > enreister dans la BDD
 
+
+	async def save_game_state(self):
+		print("####################### save_game_state #1")
+
+		try:
+			match = self.pong_room
+			print("save_game_state #2", match)
+			match.status = game_params["infos"]["status"]
+			await database_sync_to_async(match.save)()
+			print("save_game_state #3", match.status)
+
+
+			game_params = self._game["pong"].get_params()
+			# Update or create MatchPoints for playerleft
+
+			print("uppdate game score for playerleft", game_params["playerleft"]["id"], game_params["playerleft"]["score"])
+			print("uppdate game score for playerright", game_params["playerright"]["id"], game_params["playerright"]["score"])
+
+			# Update match status
+
+		except Match.DoesNotExist:
+			print("Match not found")
+			return
