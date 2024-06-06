@@ -247,8 +247,10 @@ export default class extends AbstractView {
 				newMatch.appendChild(player2);
 				newMatch.appendChild(scorePlayer2);
 				newMatch.appendChild(winner);
-
+				
+				// tbody.insertBefore(newMatch, tbody.firstChild);
 				tbody.appendChild(newMatch);
+				// tbody.parentNode.insertBefore(newMatch, tbody.nextSibling);
 			});
 		}
 	}

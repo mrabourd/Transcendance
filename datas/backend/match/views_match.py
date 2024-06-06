@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from django.db import IntegrityError
-from django.db.models import Q
+from django.db.models import Q, Count
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -85,49 +85,16 @@ def createMatch(user, tournament, player1, player2):
 	return match
 # return HttpResponse("Invalid request type.", status=400)
 
+def theWinnerIs(p1, p2, score1, score2):
+	if score1 > score2:
+		winner = p1
+		loser = p2
+	elif score1 < score2:
+		winner = p2
+		loser = p1
+	return winner
 
 class MatchHistory(APIView):
-
-	# def get(self, request, id):
-
-	# 	stat = {
-	# 		'total': '6',
-	# 		'win': '5',
-	# 		'lost': '1'
-	# 	}
-	# 	match = [
-	# 		{
-	# 		'date': '21-04-2024',
-	# 		'player_1': 'toto',
-	# 		'player_2': 'me',
-	# 		'score_player_1': '5',
-	# 		'score_player_2': '2',
-	# 		'victory': 'toto',
-	# 		},
-	# 		{
-	# 		'date': '22-04-2024',
-	# 		'player_1': 'titi',
-	# 		'player_2': 'me',
-	# 		'score_player_1': '2',
-	# 		'score_player_2': '5',
-	# 		'victory': 'me',
-	# 		},
-	# 		{
-	# 		'date': '23-04-2024',
-	# 		'player_1': 'titi',
-	# 		'player_2': 'me',
-	# 		'score_player_1': '2',
-	# 		'score_player_2': '5',
-	# 		'victory': 'me',
-	# 		}
-	# 	]
-	# 	match_stat = {
-	# 		"stats": [],
-	# 		"matchs": match
-
-	# 	}
-
-	# 	return Response(match_stat)
 
 	def get(self, request, id):
 		current_user = User.objects.get(id=id)
@@ -136,12 +103,22 @@ class MatchHistory(APIView):
 
 		# Filtrer les matchs pour lesquels l'utilisateur actuel a des points de match
 		matches_with_user_points = matches.filter(match_points__user=current_user).distinct()
+
+		won_matches_count = 0
+		lost_matches_count = 0
+
+		for match in matches_with_user_points:
+			match_point_1 = match.match_points.get(user=current_user)
+			match_point_2 = match.match_points.exclude(user=current_user).first()
+			
+			winner = theWinnerIs(match_point_1.alias, match_point_2.alias, match_point_1.points, match_point_2.points)
+
+			if winner == match_point_1.alias:
+				won_matches_count += 1
+			elif winner == match_point_2.alias:
+				lost_matches_count += 1
+
 		number_of_matches = matches_with_user_points.count()
-
-		won_matches_count = matches_with_user_points.filter(match_points__result='win').distinct().count()
-
-		# Compter le nombre de matchs perdus
-		lost_matches_count = matches_with_user_points.filter(match_points__result='loss').distinct().count()
 
 		serializer = MatchSerializer(matches_with_user_points, many=True)
 		matchs = serializer.data
@@ -157,5 +134,4 @@ class MatchHistory(APIView):
 			"matchs": matchs
 		}
 
-		# Sérialiser les résultats
 		return JsonResponse(match_stat, safe=False, status=200)

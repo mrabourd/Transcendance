@@ -22,7 +22,6 @@ class MatchPoints(models.Model):
     points = models.IntegerField()
     my_user_id = models.TextField(max_length=100, blank=True)
     alias = models.TextField(max_length=50, blank=True)
-    result = models.CharField(max_length=10, choices=[('win', 'Win'), ('loss', 'Loss')], default='loss')
 
 class Match(models.Model):
     match_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
