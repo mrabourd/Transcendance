@@ -163,12 +163,28 @@ export default class extends AbstractView {
 		*/
 	}
 
+	formatDate = (isoDate) => {
+		// Créer un objet Date à partir de la chaîne de date ISO
+		const date = new Date(isoDate);
+	
+		// Extraire les différentes parties de la date
+		const day = String(date.getUTCDate()).padStart(2, '0'); // Jour (DD)
+		const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Mois (MM)
+		const year = String(date.getUTCFullYear()).slice(2); // Année (YY)
+		const hours = String(date.getUTCHours()).padStart(2, '0'); // Heure (HH)
+		const minutes = String(date.getUTCMinutes()).padStart(2, '0'); // Minute (MM)
+	
+		// Formater la date selon le format souhaité
+		let newDate = `${day}-${month}-${year} ${hours}:${minutes}`;
+		return newDate;
+	}
 
 	async fillHistory()
 	{
 		// faire un systeme comme dans websocket print_notif pour ajouter autant de matchs
 		// qu'il en existe
-		let URL = '/api/match/history/'+this.user.datas.id+'/';
+		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
+
 		let response = await this.user.request.get(URL);
 
         if (response.ok)
@@ -189,29 +205,49 @@ export default class extends AbstractView {
 				let player1 = document.createElement('td');
 				player1.classList.add('player1');
 				
-				let player2 = document.createElement('td');
-				player2.classList.add('player2');
-
 				let scorePlayer1 = document.createElement('td');
 				scorePlayer1.classList.add('scorePlayer1');
-
+				
+				let player2 = document.createElement('td');
+				player2.classList.add('player2');
+				
 				let scorePlayer2 = document.createElement('td');
 				scorePlayer2.classList.add('scorePlayer2');
 
 				let winner = document.createElement('td');
 				winner.classList.add('winner');
 
-				matchDate.innerHTML = match.date;
-				player1.innerHTML = match.player_1;
-				player2.innerHTML = match.player_2;
-				scorePlayer1.innerHTML = match.score_player_1;
-				scorePlayer2.innerHTML = match.score_player_2;
-				winner.innerHTML = match.victory;
+				let p1 = match.match_points[0].points;
+				let p2 = match.match_points[1].points;
+
+				matchDate.innerHTML = this.formatDate(match.created_at);
+				player1.innerHTML = match.match_points[0].alias;
+				player2.innerHTML = match.match_points[1].alias;
+				scorePlayer1.innerHTML = match.match_points[0].points;
+				scorePlayer2.innerHTML = match.match_points[1].points;
+				if (p1 > p2){
+					if (match.match_points[0].alias == this.UserDatas.username){
+						winner.classList.add('text-success');
+					}
+					else {
+						winner.classList.add('text-danger');
+					}
+					winner.innerHTML = match.match_points[0].alias;
+				}
+				else{
+					if (match.match_points[1].alias == this.UserDatas.username){
+						winner.classList.add('text-success');
+					}
+					else {
+						winner.classList.add('text-danger');
+					}
+					winner.innerHTML = match.match_points[1].alias;
+				}
 
 				newMatch.appendChild(matchDate);
 				newMatch.appendChild(player1);
-				newMatch.appendChild(player2);
 				newMatch.appendChild(scorePlayer1);
+				newMatch.appendChild(player2);
 				newMatch.appendChild(scorePlayer2);
 				newMatch.appendChild(winner);
 

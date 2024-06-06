@@ -88,68 +88,57 @@ def createMatch(user, tournament, player1, player2):
 
 class MatchHistory(APIView):
 
-	# def current_profile(self):
-	# 	try:
-	# 		return self.request.data.get('me')
-	# 	except User.DoesNotExist:
-	# 		raise Http404
-			
-	# def other_profile(self, pk):
-	# 	try:
-	# 		return User.objects.get(id = pk)
-	# 	except User.DoesNotExist:
-	# 		raise Http404
+	# def get(self, request, id):
+
+	# 	stat = {
+	# 		'total': '6',
+	# 		'win': '5',
+	# 		'lost': '1'
+	# 	}
+	# 	match = [
+	# 		{
+	# 		'date': '21-04-2024',
+	# 		'player_1': 'toto',
+	# 		'player_2': 'me',
+	# 		'score_player_1': '5',
+	# 		'score_player_2': '2',
+	# 		'victory': 'toto',
+	# 		},
+	# 		{
+	# 		'date': '22-04-2024',
+	# 		'player_1': 'titi',
+	# 		'player_2': 'me',
+	# 		'score_player_1': '2',
+	# 		'score_player_2': '5',
+	# 		'victory': 'me',
+	# 		},
+	# 		{
+	# 		'date': '23-04-2024',
+	# 		'player_1': 'titi',
+	# 		'player_2': 'me',
+	# 		'score_player_1': '2',
+	# 		'score_player_2': '5',
+	# 		'victory': 'me',
+	# 		}
+	# 	]
+	# 	match_stat = {
+	# 		"stats": [],
+	# 		"matchs": match
+
+	# 	}
+
+	# 	return Response(match_stat)
 
 	def get(self, request, id):
-		# pk = id
-		# other_profile = self.other_profile(pk)
-		# current_profile = request.user
-		# # current_profile[0] = 'username'
-		# # other_profile[0] = 'username'
+		# user = User.objects.get(id=id)
 
-		# match1 = createMatch(current_profile, None, current_profile, other_profile)
-		# # match2 = createMatch(id, None, id, "002")
+		# matchs_participated = Match.objects.filter(Q(match_points__user=user) | Q(match_points__my_user_id=user.id)).distinct()
+
 		stat = {
 			'total': '6',
 			'win': '5',
 			'lost': '1'
 		}
-		match = [
-			{
-			'date': '21-04-2024',
-			'player_1': 'toto',
-			'player_2': 'me',
-			'score_player_1': '5',
-			'score_player_2': '2',
-			'victory': 'toto',
-			},
-			{
-			'date': '22-04-2024',
-			'player_1': 'titi',
-			'player_2': 'me',
-			'score_player_1': '2',
-			'score_player_2': '5',
-			'victory': 'me',
-			},
-			{
-			'date': '23-04-2024',
-			'player_1': 'titi',
-			'player_2': 'me',
-			'score_player_1': '2',
-			'score_player_2': '5',
-			'victory': 'me',
-			}
-		]
-		match_stat = {
-			"stats": [],
-			"matchs": match
-
-		}
-		# user = User.objects.get(id=id)
-		# print("user: ", user)
-
-		# matchs_participated = Match.objects.filter(Q(match_pointsuser=user) | Q(match_pointsmy_user_id=user.id))
-		# print("matchs paarticipated: ", matchs_participated)
 
 		# for match in matchs_participated:
 		# 	print("Match ID:", match.match_id)
@@ -159,6 +148,23 @@ class MatchHistory(APIView):
 		# 		print("- My User ID:", participant.my_user_id)
 		# 		print("- Alias:", participant.alias)
 		# 	print("-----------------------------------------")
-		# renvoyer les deux id
-		# match1.match_id + match2.match_id
-		return Response(match_stat)
+
+
+		# return Response(match_stat)
+
+		current_user = User.objects.get(id=id)
+		
+		matches = Match.objects.filter(status=2)
+
+		# Filtrer les matchs pour lesquels l'utilisateur actuel a des points de match
+		matches_with_user_points = matches.filter(match_points__user=current_user).distinct()
+		serializer = MatchSerializer(matches_with_user_points, many=True)
+		matchs = serializer.data
+		
+		match_stat = {
+			"stats": [],
+			"matchs": matchs
+		}
+
+		# Sérialiser les résultats
+		return JsonResponse(match_stat, safe=False, status=200)
