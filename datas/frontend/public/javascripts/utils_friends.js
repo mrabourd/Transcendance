@@ -24,7 +24,7 @@ export function is_followed(user, friend_id)
 
 export async function block(user, friend_id, action)
 {
-    console.log("enter block")
+    // console.log("enter block")
     let response = await user.request.get(`/api/users/${action}/${friend_id}/`)
     if (response.status == 200)
     {
@@ -58,7 +58,7 @@ export async function invite(user, friend_id, action)
 
         }else if (action == 'cancel'){
             user.datas.status = USER_STATUS["ONLINE"]
-            console.log("CANCEL invitation", friend_id)
+            // console.log("CANCEL invitation", friend_id)
             user.datas.invitations_sent = user.datas.invitations_sent.filter(id => id !== friend_id);
 
         }else if (action == 'deny' || action == 'accept' ){

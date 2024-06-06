@@ -120,7 +120,6 @@ export default class extends AbstractView {
 			if(!this.UserDatas)
 				return;
 			const friends = this.UserDatas.follows;
-			console.log('friends :', friends)
 			if (!friends)
 				return
 			friends.forEach(async friend_id => {
@@ -181,15 +180,13 @@ export default class extends AbstractView {
 
 	async fillHistory()
 	{
-		// faire un systeme comme dans websocket print_notif pour ajouter autant de matchs
-		// qu'il en existe
 		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
 
-		let response = await this.user.request.get(URL);
+		let response_matches_stats = await this.user.request.get(URL);
 
-        if (response.ok)
+        if (response_matches_stats.ok)
         {
-			let match_stat = await response.json();
+			let match_stat = await response_matches_stats.json();
 			let matchs = match_stat.matchs;
 			
 			let tbody = document.querySelector(".table");
@@ -258,15 +255,24 @@ export default class extends AbstractView {
 
 	async fillStats()
 	{
+		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
 
-		/*
-		uid = (this.params.user_id) ? this.params.user_id : this.user.datas.id
-		let response = await this.user.request.get('/api/users/stats/'+uid+'/')
-		if (response.ok)
-		{
-			let jsonData = await response.json();
+		let response_matches_stats = await this.user.request.get(URL);
+
+        if (response_matches_stats.ok)
+        {
+			let match_stat = await response_matches_stats.json();
+			let stats = match_stat.stats;
+
+			let nbMatchs = document.querySelector(".nb-matchs");
+			let wonMatch = document.querySelector(".won-match");
+			let lostMatch = document.querySelector(".lost-match");
+
+			nbMatchs.innerHTML = stats.total;
+			wonMatch.innerHTML = stats.win;
+			lostMatch.innerHTML = stats.lost;
+
 		}
-		*/
 	}
 
 	async fillProfile()

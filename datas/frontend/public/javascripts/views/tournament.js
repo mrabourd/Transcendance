@@ -111,6 +111,7 @@ export default class extends AbstractView {
         let action = "create";
         let picks = [];
 		let p1 = document.querySelector('#app input#player1').value;
+        // p1.classList.add("readonly")
 		let p2 = document.querySelector('#app input#player2').value;
 		let p3 = document.querySelector('#app input#player3').value;
 		let p4 = document.querySelector('#app input#player4').value;
