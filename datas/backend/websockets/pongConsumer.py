@@ -48,14 +48,14 @@ class PongServer:
 			"playerleft": {
 				"y": 25,
 				"score": 0,
-				"id": str(playerleft.id),
-				"username": str(playerleft.username)
+				"id": str(playerleft.my_user_id),
+				"username": str(playerleft.alias)
 			},
 			"playerright": {
 				"y": 25,
 				"score": 0,
-				"id": str(playerright.id),
-				"username": str(playerright.username)
+				"id": str(playerright.my_user_id),
+				"username": str(playerright.alias)
 			},
 			"ball": {
 				"x": 50,
@@ -162,9 +162,12 @@ class PongServer:
 	def get_status(self):
 		return self._param["infos"]["status"]
 
+	def set_player_point(self, player, score):
+		self._param[player]["score"] = score
+
 	def add_point(self, player):
 		self._param[player]["score"] += 1
-		if (self._param[player]["score"] >= 5):
+		if (self._param[player]["score"] >= 3):
 			self.set_status(2)
 
 	def __str__(self):
@@ -202,6 +205,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 			}
 			self._game = self.shared_game[match_id]
 			self._game["pong"].set_status(self.match.status)
+			self._game["pong"].set_player_point("playerleft", playerleft.points)
+			self._game["pong"].set_player_point("playerright", playerright.points)
 
 			print("New MODEL with status ", self._game["pong"].get_status())
 
@@ -239,7 +244,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		# Join room group
 		await self.channel_layer.group_add(self.room_group_name,self.channel_name)
 
-		await self.load_models(uuid_obj, user_1, user_2)
+		await self.load_models(uuid_obj, self.match_point_1, self.match_point_2)
 		self._game[self.get_player_role()] = self.user
 
 		#print("roles : playerleft ", self._game["playerleft"])
@@ -337,7 +342,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 			print("save_game_state #2", self.match)
 			game_params = self._game["pong"].get_params()
 			self.match.status = game_params["infos"]["status"]
+			self.match_point_1.points = game_params["playerleft"]["score"]
+			self.match_point_2.points = game_params["playerright"]["score"]
 			await database_sync_to_async(self.match.save)()
+			await database_sync_to_async(self.match_point_1.save)()
+			await database_sync_to_async(self.match_point_2.save)()
 			print("save_game_state #3", self.match.status)
 
 
