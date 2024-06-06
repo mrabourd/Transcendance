@@ -22,6 +22,7 @@ class Subscribe(APIView):
 	# Cette méthode gère les requêtes POST
 	def post(self, request):
 		current_user = request.user
+		print(">>>>>>>>>>>>>>>> Subscribe")
 		# Try to find another user with status WAITING_PLAYER
 		waiting_user = User.objects.filter(status=User.USER_STATUS['WAITING_PLAYER']).exclude(id=current_user.id).first()
 		if waiting_user:
@@ -32,6 +33,17 @@ class Subscribe(APIView):
 			# Retrieve match ID
 			match_id = match.match_id
 			waiting_user.SetStatus(User.USER_STATUS['ONLINE'])
+			notif_message = f'We found a random opponant for you: {current_user.username}'
+			Notification.objects.create(
+				type="private",
+				code_name="PLY",
+				code_value=1,
+				message=notif_message,
+				sender=current_user,
+				receiver=waiting_user,
+				link=f"/play/online/{match_id}"
+			)
+			#send a notification waiting_user 
 			# Response with match ID
 			return JsonResponse({'message': 'Match created!', 'match_id': match_id}, status=201)
 

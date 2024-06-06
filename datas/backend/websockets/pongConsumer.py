@@ -247,8 +247,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 		await self.load_models(uuid_obj, self.match_point_1, self.match_point_2)
 		self._game[self.get_player_role()] = self.user
 
-		#print("roles : playerleft ", self._game["playerleft"])
-		#print("roles : playerright ", self._game["playerright"])
+		print("roles : playerleft ", self._game["playerleft"])
+		print("roles : playerright ", self._game["playerright"])
 		await self.accept()
 
 		if self._game["playerleft"] and self._game["playerright"]:
