@@ -8,12 +8,26 @@
         <link rel="stylesheet" href="/stylesheets/style.css">
         <script type="module" src="/javascripts/index.js"></script>
     </head>
-<body class="m-5">
-
-    
-    <div class="stats tab-pane">
-    Statistics
-    </div>
-
-</body>
+    <body class="m-5">
+        <div class="stats tab-pane">
+            <table id="pool" class="table">
+                <thead>
+                    <tr>
+                    <!-- <th scope="col">stat</th> -->
+                    <th scope="col">Number of matches:</th>
+                    <th scope="col">Won matches</th>
+                    <th scope="col">Lost matches</th>
+                    </tr>
+                </thead>
+                    <tbody>
+                <tr class="new-stat">
+                <td class="nb-matchs"></td>
+                <td class="won-match"></td>
+                <td class="lost-match"></td>
+                </tr>
+                
+            </tbody>
+            </table>
+        </div>
+    </body>
 </html>

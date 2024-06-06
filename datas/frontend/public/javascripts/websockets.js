@@ -26,8 +26,8 @@ export default class Websockets {
 		// on receiving message on group
 		this.notifySocket.onmessage = async (e) => {
 			const data = JSON.parse(e.data);
-			console.log("data.sender: ", data.sender)
-			console.log("data.code_name: ", data.code_name)
+			// console.log("data.sender: ", data.sender)
+			// console.log("data.code_name: ", data.code_name)
 			if(data.error && data.error == 'token_not_valid')
 			{
 				let RefreshResponse = await this.user.request.refreshJWTtoken();
@@ -60,7 +60,7 @@ export default class Websockets {
 
 	async update_block(data)
 	{
-		console.log("enter update block")
+		// console.log("enter update block")
 		let friend_id = data.sender;
 		if (data.code_value == 1) // blocking someone 
 		{
@@ -71,7 +71,6 @@ export default class Websockets {
 		{
 			this.user.datas.blocked_by = this.user.datas.blocked_by.filter(id => id !== data.sender);
 		}
-		console.log("puis la")
 		this.user.saveDatasToLocalStorage()
 		friends_utils.update_profile_cards_text(this.user)
         if(location.pathname == '/chatroom/' + friend_id){
@@ -83,15 +82,14 @@ export default class Websockets {
 	}
 
 	update_msg_link(data){
-		console.log("enter update_msg_link")
-		// console.log("entre update msg link")
+		// console.log("enter update_msg_link")
 		let friend_id = data.sender;
 		data.link = "/chatroom/" + friend_id;
 	}
 
 	print_notification(data)
 	{
-		console.log("enter print_notification")
+		// console.log("enter print_notification")
 		if (location.pathname == data.link){
 			this.count = 0;
 			return;
@@ -163,7 +161,7 @@ export default class Websockets {
 
 	async update_status(data)
 	{
-		console.log("update_status")
+		// console.log("update_status")
 		let friend_id = data.sender
 		let friend_status = data.code_value
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);

@@ -130,39 +130,30 @@ class MatchHistory(APIView):
 	# 	return Response(match_stat)
 
 	def get(self, request, id):
-		# user = User.objects.get(id=id)
-
-		# matchs_participated = Match.objects.filter(Q(match_points__user=user) | Q(match_points__my_user_id=user.id)).distinct()
-
-		stat = {
-			'total': '6',
-			'win': '5',
-			'lost': '1'
-		}
-
-		# for match in matchs_participated:
-		# 	print("Match ID:", match.match_id)
-		# 	print("Participants:")
-		# 	for participant in match.match_points.all():
-		# 		print("- User:", participant.user)
-		# 		print("- My User ID:", participant.my_user_id)
-		# 		print("- Alias:", participant.alias)
-		# 	print("-----------------------------------------")
-
-
-		# return Response(match_stat)
-
 		current_user = User.objects.get(id=id)
 		
 		matches = Match.objects.filter(status=2)
 
 		# Filtrer les matchs pour lesquels l'utilisateur actuel a des points de match
 		matches_with_user_points = matches.filter(match_points__user=current_user).distinct()
+		number_of_matches = matches_with_user_points.count()
+
+		won_matches_count = matches_with_user_points.filter(match_points__result='win').distinct().count()
+
+		# Compter le nombre de matchs perdus
+		lost_matches_count = matches_with_user_points.filter(match_points__result='loss').distinct().count()
+
 		serializer = MatchSerializer(matches_with_user_points, many=True)
 		matchs = serializer.data
 		
+		stat = {
+			'total': number_of_matches,
+			'win': won_matches_count,
+			'lost': lost_matches_count
+		}
+
 		match_stat = {
-			"stats": [],
+			"stats": stat,
 			"matchs": matchs
 		}
 
