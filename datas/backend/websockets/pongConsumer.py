@@ -238,8 +238,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 		existing_users = await database_sync_to_async(list)(self.match.match_points.all().order_by('my_user_id'))
 		self.match_point_1 = existing_users[0]
 		self.match_point_2 = existing_users[1]
-		user_1 =  await database_sync_to_async(get_object_or_404)(User, id=uuid.UUID(self.match_point_1.my_user_id))
-		user_2 =  await database_sync_to_async(get_object_or_404)(User, id=uuid.UUID(self.match_point_2.my_user_id))
 
 		# Join room group
 		await self.channel_layer.group_add(self.room_group_name,self.channel_name)
