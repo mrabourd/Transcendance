@@ -27,8 +27,8 @@ class Subscribe(APIView):
 		waiting_user = User.objects.filter(status=User.USER_STATUS['WAITING_PLAYER']).exclude(id=current_user.id).first()
 		if waiting_user:
 			# Create a match object
-			player1 = ['username', current_user]
-			player2 = ['username', waiting_user]
+			player1 = ['username', current_user, current_user.username]
+			player2 = ['username', waiting_user, waiting_user.username]
 			match = createMatch(current_user, None, player1, player2)
 			# Retrieve match ID
 			match_id = match.match_id
@@ -144,8 +144,8 @@ class Invite(APIView):
 
 			invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
 			
-			player1 = ['username', user]
-			player2 = ['username', invitation_sender]
+			player1 = ['username', user, user.username]
+			player2 = ['username', invitation_sender, invitation_sender.username]
 			match = createMatch(user, None, player1, player2)
 			match_id = match.match_id
 

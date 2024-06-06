@@ -28,7 +28,7 @@ export default class extends AbstractView {
         await this.add_pending_matches()
     }
 
-    addEvents () {
+    async addEvents () {
         // WAITING_PLAYER
         let dom
         let response 
@@ -50,7 +50,6 @@ export default class extends AbstractView {
                 if (response.status == 201)
                 {
                     let JSONResponse = await response.json()
-                    console.warn(JSONResponse)
                     let match_id = JSONResponse['match_id']
                     this.user.datas.status = USER_STATUS["PLAYING"];
                     this.user.router.navigateTo(`/play/online/${match_id}`, this.user)
@@ -75,17 +74,32 @@ export default class extends AbstractView {
         })
     }
 
-        dom = document.querySelector('.tournament a')
-        if (this.user.datas.status == USER_STATUS["WAITING_TOURNAMENT"])
-            dom.innerHTML = 'View my tournament page'
-        else
-            dom.innerHTML = 'Create a tournament'
-        dom.addEventListener('click',  async e => {
-            e.preventDefault();
-            this.user.router.navigateTo('/tournament', this.user)
-        })
+        // TOURNAMENT MANAGEMENT 
+        response = await this.user.request.get('/api/match/tournament/list/')
+        let destination = document.querySelector('#app .tournament')
+        let link
+            let JSONResponse = await response.json()
+            JSONResponse.forEach(tournament => {
+                link = document.createElement('div')
+                link.classList.add("mr-2", "btn", "btn-primary", "btn-lg")
+                link.innerHTML = tournament["name"]
+                link.addEventListener('click',  async e => {
+                    e.preventDefault();
+                    console.log("yeah")
+                    this.user.router.navigateTo(`/tournament/${tournament["tournament_id"]}`, this.user)
+                })
+                destination.appendChild(link)
+            }); 
 
-
+            link = document.createElement('div')
+            link.classList.add("btn", "btn-primary", "btn-lg")
+            link.innerHTML = "create a tournament"
+            link.addEventListener('click',  async e => {
+                e.preventDefault();
+                this.user.router.navigateTo('/tournament', this.user)
+            })
+            destination.appendChild(link)
+        
     }
 
     async add_pending_matches ()
@@ -128,10 +142,6 @@ export default class extends AbstractView {
                     e.preventDefault();
                     this.user.router.navigateTo(`/play/online/${match['match_id']}`, this.user)
                 });
-
-
-
-                //newLi.innerHTML = `match ${match['match_id']} : ${match['players'][0]['alias']} vs ${match['players'][1]['alias']}`
                 newLi.appendChild(nodePlayer1);
                 newLi.appendChild(VS);
                 newLi.appendChild(nodePlayer2);
@@ -144,6 +154,7 @@ export default class extends AbstractView {
             throw e; // Re-throw the error after logging it
         }
     }
+
 
     /***  INVITATIONS RECEIVED ***/
     add_invitations_received (){

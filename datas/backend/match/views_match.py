@@ -61,7 +61,7 @@ def createMatch(user, tournament, player1, player2):
 		match_point1 = MatchPoints.objects.create(
 			match=match, 
 			my_user_id=str(player1[1].id), 
-			alias=player1[1].username, 
+			alias=player1[2], 
 			user=player1[1], 
 			points=0)
 	else:
@@ -73,7 +73,7 @@ def createMatch(user, tournament, player1, player2):
 		match_point2 = MatchPoints.objects.create(
 			match=match,
 			my_user_id=str(player2[1].id), 
-			alias=player2[1].username,
+			alias=player2[2], 
 			user=player2[1],
 			points=0)
 	else:

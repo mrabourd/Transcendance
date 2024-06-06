@@ -24,7 +24,14 @@ User = get_user_model()
 # @method_decorator(csrf_protect, name='dispatch')
 class TournamentView(APIView):
 	permission_classes = [IsAuthenticated]
-
+	def get(self, request, req_type):
+		if (req_type == "list"):
+			tournaments = Tournament.objects.filter(user=request.user, status=0)
+		else:
+			tournaments = Tournament.objects.filter(tournament_id=req_type)
+		serializer = TournamentSerializer(tournaments, many=True)
+		return JsonResponse(serializer.data, safe=False, status=200)
+	
 	def post(self, request, req_type):
 		user = request.user
 		body_data = json.loads(request.body.decode('utf-8'))
@@ -46,7 +53,7 @@ class TournamentView(APIView):
 			# user.SetStatus(User.USER_STATUS['WAITING_TOURNAMENT'])
 			print(f'tournament_name ${tournament_name} tournament_creator = ${user}')
 
-			tournament = Tournament.objects.create(name=tournament_name, user=user, status=2)
+			tournament = Tournament.objects.create(name=tournament_name, user=user, status=0)
 			# Creer une entree dans la table match (status = in_progress)
 			# creer deux entree dans la table match_points (match_id, user_id)
 			# recuperer l'id du match pour le renvoyer
@@ -55,6 +62,9 @@ class TournamentView(APIView):
 
 			# creer les deux matchs ici
 			print(players[0], players[1])
+			for i in range(len(players) - 1):
+				if (players[i][0] == "username"):
+					players[i][1] = user
 
 			match1 = createMatch(user, tournament, players[0], players[1])
 			match2 = createMatch(user, tournament, players[2], players[3])

@@ -246,9 +246,18 @@ export async function update_status_text(profile_card)
     dom.removeAttribute('class')
     dom.classList.add(color)
 }
-
-export async function create_thumbnail(nodeToCopy, user, friend, friend_id)
+export async function create_anonymous_thumbnail(nodeToCopy, user, alias)
 {
+    const nodeCopy = nodeToCopy.cloneNode(true);
+    nodeCopy.querySelector(".username").innerHTML = alias ? alias : "Anonymous"
+    nodeCopy.querySelector("img.avatar").src = '/avatars/default.png'
+    return nodeCopy;
+}
+
+export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alias="")
+{
+    if (!friend_id)
+        return create_anonymous_thumbnail(nodeToCopy, user, alias)
     // clone existing tumbnail if exists
     let existing_thumbnail = document.querySelector(`aside .profile_card[data-friend-id="${friend_id}"]`)
     if (existing_thumbnail)

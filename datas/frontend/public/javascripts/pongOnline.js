@@ -44,8 +44,8 @@ export default class extends AbstractPong {
 	async print_players(){
 		if (document.querySelector('#app .scores .playerleft').innerHTML == "")
 		{
-			let player_left_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, this._game["playerleft"]["id"])
-			let player_right_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, this._game["playerright"]["id"])
+			let player_left_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, this._game["playerleft"]["id"], this._game["playerleft"]["username"])
+			let player_right_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, this._game["playerright"]["id"], this._game["playerleft"]["username"])
 			if (document.querySelector('#app .scores .playerleft').innerHTML == "")
 				{
 					document.querySelector('#app .scores .playerleft').appendChild(player_left_thumb)
@@ -57,7 +57,6 @@ export default class extends AbstractPong {
 		}
 	}
 	print_scores = () => {
-
 		document.querySelector('#app .scores .playerleft .dropdown').innerHTML = this._game["playerleft"]["score"]
 		document.querySelector('#app .scores .playerright .dropdown').innerHTML = this._game["playerright"]["score"]
 	}

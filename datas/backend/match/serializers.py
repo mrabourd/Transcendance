@@ -9,12 +9,6 @@ from django.core.exceptions import ObjectDoesNotExist
 User = get_user_model() # Get reference to the model
 
 
-class TournamentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tournament
-        fields = ['tournament_id', 'name', 'status', 'user', 'created_at']
-        read_only_fields = ['tournament_id', 'created_at']
-
 class MatchPointsSerializer(serializers.ModelSerializer):
     user_id = serializers.PrimaryKeyRelatedField(source='user', read_only=True)
 
@@ -33,3 +27,12 @@ class MatchSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['match_points'] = MatchPointsSerializer(instance.match_points.all(), many=True).data
         return representation
+
+class TournamentSerializer(serializers.ModelSerializer):
+    matches = MatchSerializer(many=True, read_only=True, source='match_set')
+
+    class Meta:
+        model = Tournament
+        fields = ['tournament_id', 'name', 'status', 'user', 'created_at', 'matches']
+        read_only_fields = ['tournament_id', 'created_at']
+        

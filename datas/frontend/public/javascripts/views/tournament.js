@@ -18,30 +18,64 @@ export default class extends AbstractView {
             let doc = parser.parseFromString(html, 'text/html');
             let body = doc.querySelector('#app');
             DOM.innerHTML = body.innerHTML;
-            
-            
         }).catch(function (err) {
             // There was an error
             console.warn('Something went wrong.', err);
         });
-        document.getElementById("createTournament").classList.add("d-none");
         document.querySelector('#app table.table').classList.add("d-none");
+
     }
 
-    addEvents () {
-		document.querySelector('#app p.lead span.btn-create-tournament').addEventListener('click', async (event) =>  {
-			console.log("this.user.datas.status: ", this.user.datas.status);
-			event.preventDefault();
-			// if (this.user.datas.status == 'online'){
-				// console.log("this.user.datas.status: ", this.user.datas.status);
-				this.enterNames();
-			// }
-			// else {
-			// 	let errDiv = document.querySelector("#errorFeedback");
-			// 	errDiv.classList.remove("d-none")
-			// 	errDiv.innerHTML = 'You are not allowed to create a tournament due to your status!';
-			// }
-		})
+    async addEvents () {
+        if (this.params.tournament_id)
+        {
+            let response = await this.user.request.get(`/api/match/tournament/${this.params.tournament_id}/`)
+            if(response.ok)
+            {
+                let tr
+                let td
+                let link
+                let id_match = 0
+                document.querySelector('#app table.table').classList.remove("d-none");
+                document.querySelector('#app #createTournament').remove();
+
+                let JSONResponse = await response.json()
+                document.querySelector('#app h1.tournament_name').innerHTML = JSONResponse[0]['name']
+                document.querySelector('#app p.tournament_info').innerHTML = JSONResponse[0]['status']
+                JSONResponse[0]["matches"].forEach(match => {
+                    id_match++;
+
+                    tr = document.createElement("tr")
+                    td = document.createElement("td")
+                    td.innerHTML = id_match
+                    tr.appendChild(td)
+
+                    match["match_points"].forEach(player => {
+                        td = document.createElement("td")
+                        td.innerHTML = player["alias"]
+                        tr.appendChild(td)
+                    })
+                    td = document.createElement("td")
+                    link = document.createElement("a")
+                    link.classList.add("mr-2", "btn", "btn-primary", "btn-lg")
+                    link.innerHTML = "Play Match " + id_match
+                    link.addEventListener('click',  async e => {
+                        e.preventDefault();
+                        this.user.router.navigateTo(`/play/online/${match["match_id"]}`, this.user)
+                    })
+                    td.appendChild(link)
+                    tr.appendChild(td)
+                    document.querySelector('#app tbody.matchs').appendChild(tr)
+                })
+                console.log(JSONResponse);
+
+            }
+        }
+        else
+        {
+            this.enterNames();
+        }
+        
     }
 
     displayPlayers = async (picks) => {
@@ -115,7 +149,7 @@ export default class extends AbstractView {
 		let p2 = document.querySelector('#app input#player2').value;
 		let p3 = document.querySelector('#app input#player3').value;
 		let p4 = document.querySelector('#app input#player4').value;
-		let players = [[p1, "username"], [p2, "alias"], [p3, "alias"], [p4, "alias"]];
+		let players = [["username", p1, p1], ["alias", p2, p2], ["alias", p3, p3], ["alias", p4, p4]];
 		picks = await this.matchmaking(players);
 		console.log("picks: ", picks);
 
@@ -136,11 +170,11 @@ export default class extends AbstractView {
             console.log("user: ", this.user);
 			document.querySelector('#app #match1-button').addEventListener('click', async (event) =>  {
 				event.preventDefault();
-				router.navigateTo('/play/' + JSONresponse.match1, this.user);
+				router.navigateTo('/play/online/' + JSONresponse.match1, this.user);
 			})
             document.querySelector('#app #match2-button').addEventListener('click', async (event) =>  {
 				event.preventDefault();
-				router.navigateTo('/play/' + JSONresponse.match2, this.user);
+				router.navigateTo('/play/online/' + JSONresponse.match2, this.user);
 			})
 
         }
