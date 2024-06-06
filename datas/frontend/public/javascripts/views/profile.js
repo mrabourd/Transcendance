@@ -247,7 +247,8 @@ export default class extends AbstractView {
 				newMatch.appendChild(player2);
 				newMatch.appendChild(scorePlayer2);
 				newMatch.appendChild(winner);
-
+				
+				// tbody.insertBefore(newMatch, tbody.firstChild);
 				tbody.appendChild(newMatch);
 			});
 		}
@@ -267,6 +268,10 @@ export default class extends AbstractView {
 			let nbMatchs = document.querySelector(".nb-matchs");
 			let wonMatch = document.querySelector(".won-match");
 			let lostMatch = document.querySelector(".lost-match");
+
+			console.log("won: ", stats.win);
+			console.log("lost: ", stats.lost);
+
 
 			nbMatchs.innerHTML = stats.total;
 			wonMatch.innerHTML = stats.win;
