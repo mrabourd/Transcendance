@@ -1,4 +1,5 @@
 import AbstractPong from "./AbstractPong.js";
+import * as friends_utils from "./utils_friends.js"
 
 const PLAYER_HEIGHT = 100;
 
@@ -32,35 +33,68 @@ export default class extends AbstractPong {
 				return;
 			}
 			this._game = data
-
+			await this.print_players();
 			this.draw();
 			this.print_scores();
             //console.log(`ball [${this._game["ball"]["x"]}][${this._game["ball"]["y"]}]`)
             //console.log('player right :', data.player_right.y)
 		}
+
     }
+	async print_players(){
+		if (document.querySelector('#app .scores .playerleft').innerHTML == "")
+		{
+			let player_left_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, this._game["playerleft"]["id"])
+			let player_right_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, this._game["playerright"]["id"])
+			if (document.querySelector('#app .scores .playerleft').innerHTML == "")
+				{
+					document.querySelector('#app .scores .playerleft').appendChild(player_left_thumb)
+					document.querySelector('#app .scores .playerright').appendChild(player_right_thumb)
+					// If Anonymous
+					document.querySelector('#app .scores .playerleft .username').innerHTML = this._game["playerleft"]["username"]
+					document.querySelector('#app .scores .playerright .username').innerHTML = this._game["playerright"]["username"]
+				}
+		}
+	}
 	print_scores = () => {
-		document.querySelector('#app .scores .playerleft .username').innerHTML = this._game["playerleft"]["username"]
-		document.querySelector('#app .scores .playerleft .score').innerHTML = this._game["playerleft"]["score"]
 
-		document.querySelector('#app .scores .playerright .username').innerHTML = this._game["playerright"]["username"]
-		document.querySelector('#app .scores .playerright .score').innerHTML = this._game["playerright"]["score"]
+		document.querySelector('#app .scores .playerleft .dropdown').innerHTML = this._game["playerleft"]["score"]
+		document.querySelector('#app .scores .playerright .dropdown').innerHTML = this._game["playerright"]["score"]
+	}
 
+	print_winner = (context, canvas) => {
+		let winner
+		if (this._game["playerleft"]["score"] > this._game["playerright"]["score"])
+			winner = this._game["playerleft"]["username"]
+		else
+			winner = this._game["playerright"]["username"]
+		// Dessiner le texte
+		context.fillText(`The winner is ${winner}`, canvas.width / 2, canvas.height / 2);
+	}
+	print_ping_player = (context, canvas) => {
+		context.fillText(`Ping your opponent`, canvas.width / 2, canvas.height / 2);
 	}
 	draw = () => {
 		let context = this._canvas.getContext('2d');
 		let canvas = this._canvas
 		context.clearRect(0, 0, canvas.width, canvas.height);
 
-		console.log(this._game["infos"]["status"])
 		if (this._game["infos"]["status"] != 1)
 		{
-			// background
-			context.fillStyle = 'red';
+			context.fillStyle = '#CCCCCC';
 			context.fillRect(0, 0, canvas.width, canvas.height);
+			context.fillStyle = '#000000'; // Couleur du texte
+			context.font = '48px Arial'; // Police et taille du texte
+			context.textAlign = 'center'; // Alignement du texte
+			context.textBaseline = 'middle'; // Alignement vertical du texte
+			if (this._game["infos"]["status"] == 2) // winner
+				this.print_winner(context, canvas)
+			else
+				this.print_ping_player(context, canvas)
+
+		   
 			return 
 		}
-
 
 		// background
 		context.fillStyle = 'black';
@@ -126,24 +160,4 @@ export default class extends AbstractPong {
 			'message': "movedowm"
 		}));
 	}
-/*
-	
-	leftPaddleMoveUp() {
-		console.log("up")
-		if (this._game.playerleft.y + PLAYER_HEIGHT > this._canvas.height){
-			this._game.playerleft.y = this._canvas.height - PLAYER_HEIGHT;
-		}
-		this._game.playerleft.y += 10;
-		this.setPlayerLeftValues(this._game.playerleft.y);
-	}
-	
-	leftPaddleMoveDown() {
-		console.log("down")
-		if (this._game.playerleft.y + PLAYER_HEIGHT > this._canvas.height){
-			this._game.playerleft.y = this._canvas.height - PLAYER_HEIGHT;
-		}
-		this._game.playerleft.y -= 10;
-		this.setPlayerLeftValues(this._game.playerleft.y);
-	}   
-*/
 }

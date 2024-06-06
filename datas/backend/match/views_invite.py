@@ -136,8 +136,6 @@ class Invite(APIView):
 			player2 = ['username', invitation_sender]
 			match = createMatch(user, None, player1, player2)
 			match_id = match.match_id
-			user.SetStatus(User.USER_STATUS['PLAYING'])
-			invitation_sender.SetStatus(User.USER_STATUS['PLAYING'])
 
 			# Envoyer une notification / invitation acceptee + match_id + lien
 			notif_message = f'{user.username} has accepted {invitation_sender.username} invitation'

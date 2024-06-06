@@ -13,22 +13,19 @@
     
 <div id="app">
 	<h1>Play</h1>
-	<!-- <ul> -->
-		<!-- <li><button id="start-game">Start game</button></li>
-		<li><button id="stop-game">Stop game</button></li> -->
+	
 	<p class="play row justify-content-center">
 		<a class="btn btn-primary btn-sm col-2" id="start-game" role="button"></a>
-	<!-- </p>
-	<p> -->
 		<a class="btn btn-primary btn-sm col-2" id="stop-game" role="button"></a>
 	</p>
+	
+	<div class="scores row justify-content-around">
+		<div class="col-6 playerleft"></div>
+		<div class="col-6 playerright"></div>
+	</div>
 	<div class="row justify-content-evenly">
 	<!-- </ul> -->
 		<canvas id="canvas" width="600" height="300" class="img-fluid col-12"></canvas>   
-	</div>
-	<div class="scores row justify-content-around">
-		<div class="col-6 playerleft"><span class="username"></span> : <em class="score">0</em></div>
-		<div class="col-6 playerright"><span class="username"></span> : <em class="score">0</em></div>
 	</div>
 	<div id="winner" class="row justify-content-center text-success d-none"></div> 
 
