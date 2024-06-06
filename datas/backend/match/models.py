@@ -15,25 +15,27 @@ class Tournament(models.Model):
     
     def __str__(self):
         return self.name
+class MatchPoints(models.Model):
+    #match = models.ForeignKey(Match, null=True, blank=True, on_delete=models.CASCADE)
+    #match = models.ForeignKey(Match, null=True, blank=True, on_delete=models.CASCADE, related_name='players')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
+    points = models.IntegerField()
+    my_user_id = models.TextField(max_length=100, blank=True)
+    alias = models.TextField(max_length=50, blank=True)
 
 class Match(models.Model):
     match_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tournament = models.ForeignKey(Tournament, null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     status = models.IntegerField(default=0)
-    users = models.ManyToManyField(User)
+    #users = models.ManyToManyField(User)
+    match_points = models.ManyToManyField(MatchPoints)
 
     @property
     def players_set(self):
-        return self.players.all()
+        return self.match_points.all()
 
 
-class MatchPoints(models.Model):
-    #match = models.ForeignKey(Match, null=True, blank=True, on_delete=models.CASCADE)
-    match = models.ForeignKey(Match, null=True, blank=True, on_delete=models.CASCADE, related_name='players')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
-    points = models.IntegerField()
-    alias = models.TextField(max_length=50, blank=True)
 
     #def __str__(self):
         #return f'MatchPoints {self.pk} - Match {self.match.pk} - User {self.user.username}'

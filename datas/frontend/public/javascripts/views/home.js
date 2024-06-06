@@ -101,12 +101,12 @@ export default class extends AbstractView {
                 var newLi = document.createElement('li')
                 newLi.classList.add('row', 'col-12');
 
-                var nodePlayer1 = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  match['players'][0]['user_id'])
+                var nodePlayer1 = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  match['match_points'][0]['user_id'])
                 nodePlayer1.classList.remove('col-12')
                 nodePlayer1.classList.add('col-md-4')
                 nodePlayer1.querySelector(".dropdown").innerHTML = ''
                 friends_utils.update_status_text(nodePlayer1)
-                var nodePlayer2 = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  match['players'][1]['user_id'])
+                var nodePlayer2 = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  match['match_points'][1]['user_id'])
                 nodePlayer2.classList.remove('col-12')
                 nodePlayer2.classList.add('col-md-4')
                 nodePlayer2.querySelector(".dropdown").innerHTML = ''

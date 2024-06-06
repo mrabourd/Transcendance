@@ -43,7 +43,7 @@ class MatchList(APIView):
 			matches = Match.objects()
 
 		# Filtrer les matchs pour lesquels l'utilisateur actuel a des points de match
-		matches_with_user_points = matches.filter(players__user=current_user).distinct()
+		matches_with_user_points = matches.filter(match_points__user=current_user).distinct()
 
 		# Sérialiser les résultats
 		serializer = MatchSerializer(matches_with_user_points, many=True)
@@ -57,18 +57,30 @@ def createMatch(user, tournament, player1, player2):
 	# user en user ou en alias, a checker
 	#for player in player1:
 	if player1[0] == 'username':
-		match_point1 = MatchPoints.objects.create(match=match, alias=player1[1].username, user=player1[1], points=0)
-		match.users.add(player1[1])
+		match_point1 = MatchPoints.objects.create(
+			match=match, 
+			my_user_id=str(player1[1].id), 
+			alias=player1[1].username, 
+			user=player1[1], 
+			points=0)
 	else:
 		match_point1 = MatchPoints.objects.create(match=match, alias=player1[1], points=0)
+	
 
 	#for player in player2:
 	if player2[0] == 'username':
-		match_point2 = MatchPoints.objects.create(match=match, alias=player2[1].username, user=player2[1], points=0)
-		match.users.add(player2[1])
+		match_point2 = MatchPoints.objects.create(
+			match=match,
+			my_user_id=str(player2[1].id), 
+			alias=player2[1].username,
+			user=player2[1],
+			points=0)
 	else:
 		match_point2 = MatchPoints.objects.create(match=match, alias=player2[1], points=0)
 	# renvoyer l'id du match:
+	
+	match.match_points.add(match_point1)
+	match.match_points.add(match_point2)
 	return match
 # return HttpResponse("Invalid request type.", status=400)
 
