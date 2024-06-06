@@ -39,7 +39,7 @@ class MatchList(APIView):
 
 		# Filtrer les matchs dont le statut est 0
 		if req_type == 'pending':
-			matches = Match.objects.filter(status=0)
+			matches = Match.objects.exclude(status=2)
 		else:
 			matches = Match.objects()
 

@@ -51,8 +51,9 @@ export default class extends AbstractView {
                 {
                     let JSONResponse = await response.json()
                     console.warn(JSONResponse)
-                    match_id = JSONResponse['match_id']
+                    let match_id = JSONResponse['match_id']
                     this.user.datas.status = USER_STATUS["PLAYING"];
+                    this.user.router.navigateTo(`/play/online/${match_id}`, this.user)
                 }else if (response.status == 200)
                 {
                     e.target.innerHTML = 'Unsubscribe from waiting list'
