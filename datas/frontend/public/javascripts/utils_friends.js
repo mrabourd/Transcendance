@@ -41,7 +41,7 @@ export async function block(user, friend_id, action)
         });
         update_profile_cards_text(user, friend_id)
         if ((action == "block" || action == "unblock") && (location.pathname == '/chatroom/' + friend_id)){
-            user.router.router(user);
+            user.router.navigateTo('/chatroom/' + friend_id, user);
         }
     }
 }

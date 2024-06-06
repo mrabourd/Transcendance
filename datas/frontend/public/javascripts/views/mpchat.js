@@ -87,34 +87,37 @@ export default class extends AbstractView {
 		const user = this.user;
 		
 
-		this.chatSocket = new WebSocket(
-			this.user.request.url_wss + '/ws/msg/'+ this.friend_id +'/?token=' + user.request.getJWTtoken()["access"]
-		);
-
-		// on socket open
-		this.chatSocket.onopen = (e) => {
-			console.log('Socket between ' + user.datas.id + ' and ' + this.friend_id + ' successfully connected.');
-        };
-        this.chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
+		if (this.chatSocket == null) {
+			this.chatSocket = new WebSocket(
+				this.user.request.url_wss + '/ws/msg/'+ this.friend_id +'/?token=' + user.request.getJWTtoken()["access"]
+			);
 
 
-		// on socket close
-		this.chatSocket.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-			console.log("data.message: ", data.message)
-			console.log("data.id: ", data.id)
-			if (data.message == `\n`){
-				return;
-			}
-			else{
-				this.createChatMessage(data, this.user.datas.id, 1);
-			}
-			//const chatText = document.querySelector('#chat-text-left').innerHTML;
-			//document.querySelector('#chat-text-left').innerHTML = chatText + data.created_at + '<br>' + data.username + ' : ' + data.message;
+			// on socket open
+			this.chatSocket.onopen = (e) => {
+				console.log('Socket between ' + user.datas.id + ' and ' + this.friend_id + ' successfully connected.');
+			};
+			this.chatSocket.onclose = function(e) {
+				console.error('Chat socket closed unexpectedly');
+			};
 
-        };
+
+			// on socket close
+			this.chatSocket.onmessage = (e) => {
+				const data = JSON.parse(e.data);
+				console.log("data.message: ", data.message)
+				console.log("data.id: ", data.id)
+				if (data.message == `\n`){
+					return;
+				}
+				else{
+					this.createChatMessage(data, this.user.datas.id, 1);
+				}
+				//const chatText = document.querySelector('#chat-text-left').innerHTML;
+				//document.querySelector('#chat-text-left').innerHTML = chatText + data.created_at + '<br>' + data.username + ' : ' + data.message;
+
+			};
+		}
 
 
         document.querySelector('#chat-message-input').focus();

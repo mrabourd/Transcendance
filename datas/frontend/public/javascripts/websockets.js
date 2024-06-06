@@ -74,11 +74,10 @@ export default class Websockets {
 		console.log("puis la")
 		this.user.saveDatasToLocalStorage()
 		friends_utils.update_profile_cards_text(this.user)
-        // if(location.pathname != '/chatroom/' + friend_id){
-			// this.user.router.router(this.user);
-		console.log("should enter navigate to")
-		this.user.router.navigateTo('/chatroom/' + friend_id, this.user);
-		// }
+        if(location.pathname == '/chatroom/' + friend_id){
+			this.user.router.navigateTo('/chatroom/' + friend_id, this.user);
+		}
+		// this.user.router.navigateTo('/chatroom/' + friend_id, this.user);
 		data.link = '/chatroom/' + friend_id;
 
 	}

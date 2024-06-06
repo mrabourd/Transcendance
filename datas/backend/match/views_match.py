@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from django.db import IntegrityError
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -108,12 +109,28 @@ class MatchHistory(APIView):
 
 		# match1 = createMatch(current_profile, None, current_profile, other_profile)
 		# # match2 = createMatch(id, None, id, "002")
+
 		match = {
 			'date': '21-04-2024',
 			'id': '0001',
 			'friend': 'toto',
 			'victory': 'toto',
 		}
+
+		# user = User.objects.get(id=id)
+		# print("user: ", user)
+
+		# matchs_participated = Match.objects.filter(Q(match_pointsuser=user) | Q(match_pointsmy_user_id=user.id))
+		# print("matchs paarticipated: ", matchs_participated)
+
+		# for match in matchs_participated:
+		# 	print("Match ID:", match.match_id)
+		# 	print("Participants:")
+		# 	for participant in match.match_points.all():
+		# 		print("- User:", participant.user)
+		# 		print("- My User ID:", participant.my_user_id)
+		# 		print("- Alias:", participant.alias)
+		# 	print("-----------------------------------------")
 		# renvoyer les deux id
 		# match1.match_id + match2.match_id
 		return Response(match)
