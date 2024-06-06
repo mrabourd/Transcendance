@@ -170,23 +170,53 @@ export default class extends AbstractView {
 		// qu'il en existe
 		let URL = '/api/match/history/'+this.user.datas.id+'/';
 		let response = await this.user.request.get(URL);
+
         if (response.ok)
         {
-            let jsonData = await response.json();
-			console.log(jsonData);
-			let newMatch = document.querySelector(".new-match");
-	
-			let matchDate = document.querySelector(".match-date");
-			matchDate.innerHTML = jsonData.date
-	
-			let matchId = document.querySelector(".match-id");
-			matchId.innerHTML = jsonData.id
+			let match_stat = await response.json();
+			let matchs = match_stat.matchs;
+			
+			let tbody = document.querySelector(".table");
+			
+			matchs.forEach(async match => {
+				
+				let newMatch = document.createElement('tr');
+				newMatch.classList.add('new-match');
 
-			let friend = document.querySelector(".friend-username");
-			friend.innerHTML = jsonData.friend
+				let matchDate = document.createElement('td');
+				matchDate.classList.add('match-date');
 
-			let victory = document.querySelector(".victory-username");
-			victory.innerHTML = jsonData.victory
+				let player1 = document.createElement('td');
+				player1.classList.add('player1');
+				
+				let player2 = document.createElement('td');
+				player2.classList.add('player2');
+
+				let scorePlayer1 = document.createElement('td');
+				scorePlayer1.classList.add('scorePlayer1');
+
+				let scorePlayer2 = document.createElement('td');
+				scorePlayer2.classList.add('scorePlayer2');
+
+				let winner = document.createElement('td');
+				winner.classList.add('winner');
+
+				matchDate.innerHTML = match.date;
+				player1.innerHTML = match.player_1;
+				player2.innerHTML = match.player_2;
+				scorePlayer1.innerHTML = match.score_player_1;
+				scorePlayer2.innerHTML = match.score_player_2;
+				winner.innerHTML = match.victory;
+
+				newMatch.appendChild(matchDate);
+				newMatch.appendChild(player1);
+				newMatch.appendChild(player2);
+				newMatch.appendChild(scorePlayer1);
+				newMatch.appendChild(scorePlayer2);
+				newMatch.appendChild(winner);
+
+				tbody.appendChild(newMatch);
+			});
 		}
 	}
 

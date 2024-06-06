@@ -109,14 +109,42 @@ class MatchHistory(APIView):
 
 		# match1 = createMatch(current_profile, None, current_profile, other_profile)
 		# # match2 = createMatch(id, None, id, "002")
-
-		match = {
-			'date': '21-04-2024',
-			'id': '0001',
-			'friend': 'toto',
-			'victory': 'toto',
+		stat = {
+			'total': '6',
+			'win': '5',
+			'lost': '1'
 		}
+		match = [
+			{
+			'date': '21-04-2024',
+			'player_1': 'toto',
+			'player_2': 'me',
+			'score_player_1': '5',
+			'score_player_2': '2',
+			'victory': 'toto',
+			},
+			{
+			'date': '22-04-2024',
+			'player_1': 'titi',
+			'player_2': 'me',
+			'score_player_1': '2',
+			'score_player_2': '5',
+			'victory': 'me',
+			},
+			{
+			'date': '23-04-2024',
+			'player_1': 'titi',
+			'player_2': 'me',
+			'score_player_1': '2',
+			'score_player_2': '5',
+			'victory': 'me',
+			}
+		]
+		match_stat = {
+			"stats": [],
+			"matchs": match
 
+		}
 		# user = User.objects.get(id=id)
 		# print("user: ", user)
 
@@ -133,4 +161,4 @@ class MatchHistory(APIView):
 		# 	print("-----------------------------------------")
 		# renvoyer les deux id
 		# match1.match_id + match2.match_id
-		return Response(match)
+		return Response(match_stat)
