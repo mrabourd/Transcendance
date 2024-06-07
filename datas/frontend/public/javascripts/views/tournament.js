@@ -161,28 +161,12 @@ export default class extends AbstractView {
         let response = await this.user.request.post(`/api/match/tournament/${action}/`, RQ_BODY)
         if (response.status == 200)
 			{
-			let JSONresponse = await response.json();
-			console.log("response: ", JSONresponse);
-			// let users = ["username", "alias", "alias", "alias"];
-			this.displayPlayers(picks);
+			let tournament_id = await response.json();
+			console.log("response: ", tournament_id);
+            this.user.router.navigateTo(`/tournament/${tournament_id}`, this.user)
+			// let users = ["username", "alias", "alias", "alias"]; 
+            }
 
-			// choper les 2 matchs id dans JSONresponse
-            console.log("user: ", this.user);
-			document.querySelector('#app #match1-button').addEventListener('click', async (event) =>  {
-				event.preventDefault();
-				router.navigateTo('/play/online/' + JSONresponse.match1, this.user);
-			})
-            document.querySelector('#app #match2-button').addEventListener('click', async (event) =>  {
-				event.preventDefault();
-				router.navigateTo('/play/online/' + JSONresponse.match2, this.user);
-			})
-
-        }
-        else if (response.status == 401) {
-            errDiv.classList.remove("d-none")
-            errDiv.innerHTML = 'You are not allowed to create a tournament due to your status!';
-            return;
-        }
     }
 
     enterNames = () => { 

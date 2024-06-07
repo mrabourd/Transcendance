@@ -58,7 +58,6 @@ class TournamentView(APIView):
 			# creer deux entree dans la table match_points (match_id, user_id)
 			# recuperer l'id du match pour le renvoyer
 
-			serializer = TournamentSerializer(tournament)
 
 			# creer les deux matchs ici
 			print(players[0], players[1])
@@ -69,15 +68,10 @@ class TournamentView(APIView):
 			match1 = createMatch(user, tournament, players[0], players[1])
 			match2 = createMatch(user, tournament, players[2], players[3])
 
-			print("match1: ", match1)
-			
-			matchs = {
-				'match1': match1.match_id,
-				'match2': match2.match_id,
-			}
+
 			# renvoyer les deux id
 			# match1.match_id + match2.match_id
-			return Response(matchs)
+			return Response(tournament.tournament_id)
 			
 			# response_data = {'message': 'tournament created', 'tournament_name': tournament_name, 'tournament_id'}
 			# return JsonResponse(response_data)
