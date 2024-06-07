@@ -167,7 +167,7 @@ class PongServer:
 
 	def add_point(self, player):
 		self._param[player]["score"] += 1
-		if (self._param[player]["score"] >= 3):
+		if (self._param[player]["score"] >= 11):
 			self.set_status(2)
 
 	def __str__(self):
@@ -199,6 +199,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			# get db infos 
 
 			self.shared_game[match_id] = {
+				"type": "local",
 				"pong": PongServer(playerleft, playerright),
 				"playerleft":None, #check connection of players
 				"playerright":None
@@ -238,13 +239,24 @@ class PongConsumer(AsyncWebsocketConsumer):
 		existing_users = await database_sync_to_async(list)(self.match.match_points.all().order_by('my_user_id'))
 		self.match_point_1 = existing_users[0]
 		self.match_point_2 = existing_users[1]
-
+		#print("match_point_1 user", self.match_point_1.user)
+		#print("match_point_2 user", self.match_point_2.user)
+		print("match_point_1 my_user_id", self.match_point_1.my_user_id)
+		print("match_point_2 my_user_id", self.match_point_2.my_user_id)
 		# Join room group
 		await self.channel_layer.group_add(self.room_group_name,self.channel_name)
-
 		await self.load_models(uuid_obj, self.match_point_1, self.match_point_2)
-		self._game[self.get_player_role()] = self.user
-
+		
+		if ( self.match_point_1.my_user_id == "" and self.match_point_2.my_user_id == ""):
+			self._game["playerleft"] = self.user
+			self._game["playerright"] = self.user
+		elif ( self.match_point_1.my_user_id == "" or self.match_point_2.my_user_id == ""):
+			self._game[self.get_player_role()] = self.user
+			self._game[self.get_opponent_role()] = self.user
+			self._game["type"] = "remote"
+		else :
+			self._game[self.get_player_role()] = self.user
+			self._game["type"] = "remote"
 		print("roles : playerleft ", self._game["playerleft"])
 		print("roles : playerright ", self._game["playerright"])
 		await self.accept()
@@ -275,6 +287,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 				await self.cancel_game_task()
 
 	def get_player_role(self):
+		if self._game["type"] != "remote":
+			return "playerright" 
 		params = self._game["pong"].get_params()
 		if str(self.user.id) == params["playerleft"]["id"]:
 			return "playerleft"
@@ -282,16 +296,29 @@ class PongConsumer(AsyncWebsocketConsumer):
 			return "playerright"
 		else:
 			return None
+	def get_opponent_role(self):
+		if self._game["type"] != "remote":
+			return "playerleft" 
+		params = self._game["pong"].get_params()
+		if str(self.user.id) == params["playerleft"]["id"]:
+			return "playerright"
+		elif str(self.user.id) == params["playerright"]["id"]:
+			return "playerleft"
+		else:
+			return None
 
 	#@channel_session_user
 	async def receive(self, text_data):
 		if self.get_player_role():
-			text_data_json = json.loads(text_data)
-			message = text_data_json["message"]
-			if message == "moveup":
+			player_move = json.loads(text_data)
+			if player_move['up']:
 				self._game["pong"].moveUp(self.get_player_role())
-			else:
+			elif player_move['down']:
 				self._game["pong"].moveDown(self.get_player_role())
+			if player_move['opp_up']:
+				self._game["pong"].moveUp(self.get_opponent_role())
+			elif player_move['opp_down']:
+				self._game["pong"].moveDown(self.get_opponent_role())
 
 	async def send_game_state_periodically(self):
 		status = self._game["pong"].get_status()

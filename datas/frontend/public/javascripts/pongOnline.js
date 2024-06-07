@@ -8,6 +8,13 @@ export default class extends AbstractPong {
 	constructor(canvas, user, match_id) {
 		super(canvas);
         this.user = user
+		this.player_move =
+		{
+			"opp_up" : false,
+			"opp_down": false,
+			"up" : false,
+			"down": false
+		}
         this.match_id = match_id
     }
 	
@@ -124,39 +131,34 @@ export default class extends AbstractPong {
 	
 
 	movePaddles() {
+
 		window.addEventListener("keydown", async (e) => {
-			if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+			if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
 				e.preventDefault();
 			}
 		}, false);
         if (this.currentKeysDown.includes('ArrowUp')) {
-			this.rightPaddleMoveUp();
+			this.player_move['up'] = true
+			this.player_move['down'] = false
 		} else if (this.currentKeysDown.includes('ArrowDown')) {
-			this.rightPaddleMoveDown();
+			this.player_move['down'] = true
+			this.player_move['up'] = false
+		}else{
+			this.player_move['down'] = false
+			this.player_move['up'] = false			
 		}
-	}
-	
-	rightPaddleMoveUp() {
-		console.log("up")
-		if(this._game.playerright.y < PLAYER_HEIGHT / 2){
-			this._game.playerright.y = 0;
+
+        if (this.currentKeysDown.includes('s')) {
+			this.player_move['opp_up'] = true
+			this.player_move['opp_down'] = false
+		} else if (this.currentKeysDown.includes('w')) {
+			this.player_move['opp_down'] = true
+			this.player_move['opp_up'] = false
+		}else{
+			this.player_move['opp_down'] = false
+			this.player_move['opp_up'] = false			
 		}
-		this._game.playerright.y -= 10;
-		this.setPlayerRightValues(this._game.playerright.y);
-		this.PongSocket.send(JSON.stringify({
-			'message': "moveup"
-		}));
-	}
-	
-	rightPaddleMoveDown() {
-		console.log("down")
-		if (this._game.playerright.y + PLAYER_HEIGHT > this._canvas.height){
-			this._game.playerright.y = this._canvas.height - PLAYER_HEIGHT;
-		}
-		this._game.playerright.y += 10;
-		this.setPlayerRightValues(this._game.playerright.y);
-		this.PongSocket.send(JSON.stringify({
-			'message': "movedowm"
-		}));
+		this.PongSocket.send(JSON.stringify(this.player_move))
+
 	}
 }
