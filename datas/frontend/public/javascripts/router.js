@@ -87,9 +87,6 @@ export const router = async (user) => {
     user.view = new match.route.view(getParams(match));
     user.view.user = user;
 
-
-
-
     await user.view.getHtml(document.querySelector("#app"));
     await user.view.fillHtml();
     await user.view.addEvents();

@@ -15,6 +15,7 @@ from django.contrib.auth.models import AnonymousUser
 
 #from channels.auth import channel_session_user_from_http, channel_session_user
 from match.models import Match, MatchPoints
+from match.views_tournament import CreateThirdMatch
 from websockets.models import ChatRoom
 from .pong import Game, Player
 
@@ -167,7 +168,7 @@ class PongServer:
 
 	def add_point(self, player):
 		self._param[player]["score"] += 1
-		if (self._param[player]["score"] >= 11):
+		if (self._param[player]["score"] >= 3):
 			self.set_status(2)
 
 	def __str__(self):
@@ -235,6 +236,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 		except Http404:
 			await self.close()
 			return  # Close the connection if Match_id is invalid
+		
+		print("self.match.tournament_id : ", self.match.tournament_id)
+		if (self.match.tournament_id): 
+			await database_sync_to_async(CreateThirdMatch)(tournament_id=self.match.tournament_id)
 
 		existing_users = await database_sync_to_async(list)(self.match.match_points.all().order_by('my_user_id'))
 		self.match_point_1 = existing_users[0]
@@ -373,16 +378,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 			await database_sync_to_async(self.match.save)()
 			await database_sync_to_async(self.match_point_1.save)()
 			await database_sync_to_async(self.match_point_2.save)()
-			print("save_game_state #3", self.match.status)
-
-
-			# Update or create MatchPoints for playerleft
-
-			print("uppdate game score for playerleft", game_params["playerleft"]["id"], game_params["playerleft"]["score"])
-			print("uppdate game score for playerright", game_params["playerright"]["id"], game_params["playerright"]["score"])
-
-			# Update match status
-
+			print("self.match.tournament_id : ", self.match.tournament_id)
+			if (self.match.tournament_id): 
+				await database_sync_to_async(CreateThirdMatch)(self.match.tournament_id)
 		except Match.DoesNotExist:
 			print("Match not found")
 			return

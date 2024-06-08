@@ -3,15 +3,10 @@ import Request from "./request.js";
 import * as router from "./router.js";
 import * as friends_utils from "./utils_friends.js"
 
-//window.addEventListener("popstate", router.router);
-/* GESTION DE l'HISTORIQUE DE NAVIGATION */
-
 document.addEventListener("DOMContentLoaded", async() => {
 
     let RequestInstance = await Request.create();
     const user = new User(RequestInstance);
-
-
     const result = await user.checkLocalStorage();
     
     document.body.addEventListener("click", e => {
