@@ -23,8 +23,6 @@ export const getParams = match => {
 };
 
 
-/* GESTION DE l'HISTORIQUE DE NAVIGATION */
-
 export const navigateTo = (url, user) => {
     if(user.view && user.view.chatSocket != null){
         console.log("in navigate to")
@@ -35,7 +33,7 @@ export const navigateTo = (url, user) => {
         user.view.PongSocket.close()
         user.view.PongSocket = null
     }
-    history.pushState(null, null, url);
+    history.pushState({ page: url }, null, url);
     router(user);
 };
 

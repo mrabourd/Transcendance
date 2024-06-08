@@ -3,7 +3,8 @@ import Request from "./request.js";
 import * as router from "./router.js";
 import * as friends_utils from "./utils_friends.js"
 
-window.addEventListener("popstate", router.router);
+//window.addEventListener("popstate", router.router);
+/* GESTION DE l'HISTORIQUE DE NAVIGATION */
 
 document.addEventListener("DOMContentLoaded", async() => {
 
@@ -32,7 +33,14 @@ document.addEventListener("DOMContentLoaded", async() => {
     user.router = router
     router.router(user);
 
-
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.page) {
+            router.router(user)
+        } else {
+            // Gérer l'état null ou une URL non reconnue
+            router.navigateTo("/home", user)
+        }
+    });
 
     let observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
