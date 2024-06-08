@@ -102,9 +102,20 @@ export default class extends AbstractView {
 		if (!this.is_user_page())
 			document.querySelector(".mt-2.image-upload").innerHTML = "";
 		this.fillProfile()
-		this.fillStats()
-		this.fillHistory()
 		this.fillFollowed()
+
+		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
+		let response = await this.user.request.get(URL);
+        if (response.ok)
+        {
+			let JSONResponse = await response.json();
+			this.matches_stat = JSONResponse.matches_stat;
+			this.matches_history = JSONResponse.matches_history;
+			this.tournaments_history = JSONResponse.tournaments_history;
+
+			this.fillStats()
+			this.fillHistory()
+		}
 	}
 
 	async fillFollowed()
@@ -180,17 +191,9 @@ export default class extends AbstractView {
 
 	async fillHistory()
 	{
-		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
 
-		let response_matches_stats = await this.user.request.get(URL);
-
-        if (response_matches_stats.ok)
-        {
-			let match_stat = await response_matches_stats.json();
-			let matchs = match_stat.matchs;
-			
-			let tbody = document.querySelector(".table");
-			
+			let matchs = this.matches_history;
+			let tbody = document.querySelector(".table.matches_history");
 			matchs.forEach(async match => {
 				
 				let newMatch = document.createElement('tr');
@@ -201,29 +204,18 @@ export default class extends AbstractView {
 
 				let player1 = document.createElement('td');
 				player1.classList.add('player1');
-				
-				let scorePlayer1 = document.createElement('td');
-				scorePlayer1.classList.add('scorePlayer1');
-				
 				let player2 = document.createElement('td');
 				player2.classList.add('player2');
-				
-				let scorePlayer2 = document.createElement('td');
-				scorePlayer2.classList.add('scorePlayer2');
-
 				let winner = document.createElement('td');
 				winner.classList.add('winner');
-
 				let p1 = match.match_points[0].points;
 				let p2 = match.match_points[1].points;
 
 				matchDate.innerHTML = this.formatDate(match.created_at);
-				player1.innerHTML = match.match_points[0].alias;
-				player2.innerHTML = match.match_points[1].alias;
-				scorePlayer1.innerHTML = match.match_points[0].points;
-				scorePlayer2.innerHTML = match.match_points[1].points;
+				player1.innerHTML = `${match.match_points[0].alias} [${match.match_points[0].points}]`;
+				player2.innerHTML = `${match.match_points[1].alias} [${match.match_points[1].points}]`;
 				if (p1 > p2){
-					if (match.match_points[0].alias == this.UserDatas.username){
+					if (match.match_points[0].user_id == this.UserDatas.id){
 						winner.classList.add('text-success');
 					}
 					else {
@@ -232,7 +224,7 @@ export default class extends AbstractView {
 					winner.innerHTML = match.match_points[0].alias;
 				}
 				else{
-					if (match.match_points[1].alias == this.UserDatas.username){
+					if (match.match_points[1].user_id == this.UserDatas.id){
 						winner.classList.add('text-success');
 					}
 					else {
@@ -243,38 +235,61 @@ export default class extends AbstractView {
 
 				newMatch.appendChild(matchDate);
 				newMatch.appendChild(player1);
-				newMatch.appendChild(scorePlayer1);
 				newMatch.appendChild(player2);
-				newMatch.appendChild(scorePlayer2);
 				newMatch.appendChild(winner);
 				
 				// tbody.insertBefore(newMatch, tbody.firstChild);
 				tbody.appendChild(newMatch);
 				// tbody.parentNode.insertBefore(newMatch, tbody.nextSibling);
 			});
-		}
+
+			/* TOURNAMENTS HISTORY */ 
+			tbody = document.querySelector(".table.tournaments_history");
+			this.tournaments_history.forEach(async tournament => {
+				let tr = document.createElement('tr');
+				let date = document.createElement('td');
+				let name = document.createElement('td');
+				let players = document.createElement('td');
+				let link = document.createElement('td');
+				
+				date.innerHTML = this.formatDate(tournament.created_at);
+				name.innerHTML = `${tournament.name}`;
+				players.innerHTML = '['
+				let i = 0 
+				tournament.unique_aliases.forEach(async alias => {
+					players.innerHTML +=  `${alias}`;
+					players.innerHTML += (i != 3) ? '/' : ''
+					i++
+				});
+				players.innerHTML += ']'
+
+                let link_bt = document.createElement('button')
+                link_bt.classList.add("btn", "btn-secondary")
+				link_bt.setAttribute('type', 'button');
+                link_bt.innerText = "see"
+                link_bt.addEventListener('click',  async e => {
+                    e.preventDefault();
+                    this.user.router.navigateTo(`/tournament/${tournament["tournament_id"]}`, this.user)
+                })
+				link.appendChild(link_bt)
+
+				tr.appendChild(date)
+				tr.appendChild(name)
+				tr.appendChild(players)
+				tr.appendChild(link)
+				tbody.appendChild(tr)
+			});
 	}
 
 	async fillStats()
 	{
-		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
-
-		let response_matches_stats = await this.user.request.get(URL);
-
-        if (response_matches_stats.ok)
-        {
-			let match_stat = await response_matches_stats.json();
-			let stats = match_stat.stats;
-
-			let nbMatchs = document.querySelector(".nb-matchs");
-			let wonMatch = document.querySelector(".won-match");
-			let lostMatch = document.querySelector(".lost-match");
-
-			nbMatchs.innerHTML = stats.total;
-			wonMatch.innerHTML = stats.win;
-			lostMatch.innerHTML = stats.lost;
-
-		}
+		let stats = this.matches_stat;
+		let nbMatchs = document.querySelector(".nb-matchs");
+		let wonMatch = document.querySelector(".won-match");
+		let lostMatch = document.querySelector(".lost-match");
+		nbMatchs.innerHTML = stats.total;
+		wonMatch.innerHTML = stats.win;
+		lostMatch.innerHTML = stats.lost;
 	}
 
 	async fillProfile()

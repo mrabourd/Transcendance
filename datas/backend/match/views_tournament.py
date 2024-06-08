@@ -20,32 +20,63 @@ import json
 import requests
 User = get_user_model()
 
-def CreateThirdMatch(tournament_id):
-	print("CreateThirdMatch")
+def CreateThirdMatch(user, tournament_id=None):
+	tournament = Tournament.objects.filter(tournament_id=tournament_id).first()
+
+
+	tournament_matches = Match.objects.filter(tournament_id=tournament_id)
+	total_match = tournament_matches.count()
+
 	tournament_matches = Match.objects.filter(tournament_id=tournament_id, status=2)
 	print(f"tournament_matches: {list(tournament_matches)}")
-
+	finished_match = tournament_matches.count()
 	
-	number_of_results = tournament_matches.count()
-	if number_of_results == 2:
+	if finished_match == 3:
+		# Tournament is ended
+		# ToDo > get the tournament winner (?)
+		tournament.status = 2
+		tournament.save()
+		return
+
+	first_player = None
+	second_player = None
+
+	if finished_match == 2 and total_match == 2:
 		# Fetch the first and second matches
 		first_match = tournament_matches[0] if tournament_matches.count() > 0 else None
 		second_match = tournament_matches[1] if tournament_matches.count() > 1 else None
-
+		
 		if first_match:
 			first_match_points = first_match.match_points.all()
-			print(f"First match points: {list(first_match_points)}")
-		else:
-			print("No first match found.")
+			if first_match_points[0].points > first_match_points[1].points:
+				first_player = first_match_points[0]
+			else:
+				first_player = first_match_points[1]
 
 		if second_match:
 			second_match_points = second_match.match_points.all()
-			print(f"Second match points: {list(second_match_points)}")
-		else:
-			print("No second match found.")
-	# player_1[0] = "alias / username" # type
-	# player_1[1] = "user_alias" # or User
-	# player_1[2] = "user_alias" # or User
+			if second_match_points[0].points > second_match_points[1].points:
+				second_player = second_match_points[0]
+			else:
+				second_player = second_match_points[1]
+
+		player1 = None
+		player2 = None
+
+		if first_player:
+			if first_player.user:
+				player1 = ["username", first_player.user, first_player.alias]
+			else:
+				player1 = ["alias", first_player.alias, first_player.alias]
+
+		if second_player:
+			if second_player.user:
+				player2 = ["username", second_player.user, second_player.alias]
+			else:
+				player2 = ["alias", second_player.alias, second_player.alias]
+
+		if player1 and player2:
+			match = createMatch(user, tournament, player1, player2)
 
 # @method_decorator(csrf_protect, name='dispatch')
 class TournamentView(APIView):

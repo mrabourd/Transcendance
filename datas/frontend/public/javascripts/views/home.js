@@ -85,7 +85,6 @@ export default class extends AbstractView {
                 link.innerHTML = tournament["name"]
                 link.addEventListener('click',  async e => {
                     e.preventDefault();
-                    console.log("yeah")
                     this.user.router.navigateTo(`/tournament/${tournament["tournament_id"]}`, this.user)
                 })
                 destination.appendChild(link)

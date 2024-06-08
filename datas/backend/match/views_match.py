@@ -12,8 +12,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from websockets.models import Notification
-from .models import Match, MatchPoints
-from .serializers import MatchSerializer
+from .models import Match, MatchPoints, Tournament
+from .serializers import MatchSerializer,TournamentSerializer
+
 import json
 import requests
 # Create your views here.
@@ -123,6 +124,14 @@ class MatchHistory(APIView):
 		serializer = MatchSerializer(matches_with_user_points, many=True)
 		matchs = serializer.data
 		
+
+
+
+
+		tournaments = Tournament.objects.filter(user=request.user)
+		serializer = TournamentSerializer(tournaments, many=True)
+		tournaments_list = serializer.data
+	
 		stat = {
 			'total': number_of_matches,
 			'win': won_matches_count,
@@ -130,8 +139,9 @@ class MatchHistory(APIView):
 		}
 
 		match_stat = {
-			"stats": stat,
-			"matchs": matchs
+			"matches_stat": stat,
+			"matches_history": matchs,
+			"tournaments_history":tournaments_list
 		}
 
 		return JsonResponse(match_stat, safe=False, status=200)

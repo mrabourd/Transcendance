@@ -239,7 +239,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		
 		print("self.match.tournament_id : ", self.match.tournament_id)
 		if (self.match.tournament_id): 
-			await database_sync_to_async(CreateThirdMatch)(tournament_id=self.match.tournament_id)
+			await database_sync_to_async(CreateThirdMatch)(user=self.user, tournament_id=self.match.tournament_id)
 
 		existing_users = await database_sync_to_async(list)(self.match.match_points.all().order_by('my_user_id'))
 		self.match_point_1 = existing_users[0]
@@ -380,7 +380,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			await database_sync_to_async(self.match_point_2.save)()
 			print("self.match.tournament_id : ", self.match.tournament_id)
 			if (self.match.tournament_id): 
-				await database_sync_to_async(CreateThirdMatch)(self.match.tournament_id)
+				await database_sync_to_async(CreateThirdMatch)(self.user, self.match.tournament_id)
 		except Match.DoesNotExist:
 			print("Match not found")
 			return
