@@ -40,23 +40,30 @@ export async function print(user)
             console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
             throw e; // Re-throw the error after logging it
         }
-		let detination_online = document.querySelector('aside .online ul.userList')
-		if (!detination_online.hasChildNodes())
-		{
-			response = await user.request.get('/api/users/list/online/')
-			if (response.status == 200)
+
+
+		try {
+			let detination_online = document.querySelector('aside .online ul.userList')
+			if (!detination_online.hasChildNodes())
 			{
-				const friends = await response.json();
-				friends.forEach(async friend => {
-					if (friend.username === "root" || friend.username === user.datas.username)
-						return;
-					test = detination_online.querySelector(`.profile_card[data-friend-id="${friend.id}"]`);
-					if (test)
-						return;
-					nodeCopy = await friends_utils.create_thumbnail(user.DOMProfileCard, user, friend, friend.id)
-					detination_online.append(nodeCopy);
-				})
+				response = await user.request.get('/api/users/list/online/')
+				if (response && response.status == 200)
+				{
+					const friends = await response.json();
+					friends.forEach(async friend => {
+						if (friend.username === "root" || friend.username === user.datas.username)
+							return;
+						test = detination_online.querySelector(`.profile_card[data-friend-id="${friend.id}"]`);
+						if (test)
+							return;
+						nodeCopy = await friends_utils.create_thumbnail(user.DOMProfileCard, user, friend, friend.id)
+						detination_online.append(nodeCopy);
+					})
+				}
 			}
+		} catch (e) {
+			console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
+			throw e; // Re-throw the error after logging it
 		}
 		/*
 		let detination_all = document.querySelector('aside .all ul.userList')

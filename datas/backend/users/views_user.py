@@ -55,7 +55,6 @@ class UsersAPIView(APIView):
             return Response({"error": "Aucun utilisateur trouvé."}, status=204)
         # Renvoie une réponse avec le code d'état 200 (OK)
         serializer = self.serializer_class(users, many=True)
-
         return Response(serializer.data, status=200)
 
 
