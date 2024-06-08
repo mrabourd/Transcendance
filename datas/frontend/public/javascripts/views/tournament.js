@@ -18,44 +18,68 @@ export default class extends AbstractView {
             let doc = parser.parseFromString(html, 'text/html');
             let body = doc.querySelector('#app');
             DOM.innerHTML = body.innerHTML;
+            document.querySelector('#app table.table').classList.add("d-none");
         }).catch(function (err) {
             // There was an error
             console.warn('Something went wrong.', err);
         });
-        document.querySelector('#app table.table').classList.add("d-none");
-
     }
 
     async addEvents () {
         if (this.params.tournament_id)
+            this.display_tournament_infos(this.params.tournament_id)
+        else
+            this.display_tournament_form();        
+    }
+
+    async display_tournament_infos(id_tournament){
+        let response = await this.user.request.get(`/api/match/tournament/${this.params.tournament_id}/`)
+        if(response.ok)
         {
-            let response = await this.user.request.get(`/api/match/tournament/${this.params.tournament_id}/`)
-            if(response.ok)
-            {
-                let tr
-                let td
-                let link
-                let id_match = 0
-                document.querySelector('#app table.table').classList.remove("d-none");
-                document.querySelector('#app #createTournament').remove();
-
-                let JSONResponse = await response.json()
-                document.querySelector('#app h1.tournament_name').innerHTML = JSONResponse[0]['name']
-                document.querySelector('#app p.tournament_info').innerHTML = JSONResponse[0]['status']
-                JSONResponse[0]["matches"].forEach(match => {
-                    id_match++;
-
-                    tr = document.createElement("tr")
+            let tr
+            let td
+            let link
+            let id_match = 0
+            let id_player = 0
+            document.querySelector('#app table.tournament_matchs').classList.remove("d-none");
+            document.querySelector('#app form.create_tournament').remove()
+            let JSONResponse = await response.json()
+            document.querySelector('#app h1.tournament_name').innerHTML = JSONResponse[0]['name']
+            document.querySelector('#app p.tournament_info').innerHTML = JSONResponse[0]['status']
+            this.setTitle(JSONResponse[0]['name']);
+            JSONResponse[0]["matches"].forEach(match => {
+                id_match++;
+                tr = document.createElement("tr")
+                td = document.createElement("td")
+                td.innerHTML = id_match
+                tr.appendChild(td)
+                id_player = 0
+                match["match_points"].forEach(player => {
                     td = document.createElement("td")
-                    td.innerHTML = id_match
+                    td.classList.add("player_" + id_player)
+                    td.innerHTML = `${player["alias"]} [${player["points"]}]`
                     tr.appendChild(td)
+                    id_player++;
+                })
 
-                    match["match_points"].forEach(player => {
-                        td = document.createElement("td")
-                        td.innerHTML = player["alias"]
-                        tr.appendChild(td)
-                    })
-                    td = document.createElement("td")
+                td = document.createElement("td")
+                if (match["status"] == 2) // ended
+                {
+                    if (match["match_points"][0]["points"] > match["match_points"][1]["points"])
+                    {
+                        tr.querySelector(".player_0").classList.add("text-success")
+                        tr.querySelector(".player_1").classList.add("text-danger")
+                    }
+                    else
+                    {
+                        tr.querySelector(".player_1").classList.add("text-success")
+                        tr.querySelector(".player_0").classList.add("text-danger")
+
+                    }
+                    td.innerHTML = 'ended'
+                }
+                else
+                {
                     link = document.createElement("a")
                     link.classList.add("mr-2", "btn", "btn-primary", "btn-lg")
                     link.innerHTML = "Play Match " + id_match
@@ -64,30 +88,23 @@ export default class extends AbstractView {
                         this.user.router.navigateTo(`/play/online/${match["match_id"]}`, this.user)
                     })
                     td.appendChild(link)
-                    tr.appendChild(td)
-                    document.querySelector('#app tbody.matchs').appendChild(tr)
-                })
-                console.log(JSONResponse);
-
-            }
+                } 
+                tr.appendChild(td)
+                document.querySelector('#app tbody.matchs').appendChild(tr)
+           
+           
+            })
         }
-        else
-        {
-            this.enterNames();
-        }
-        
     }
 
-    displayPlayers = async (picks) => {
-		// let tournament_name = JSONresponse.name;
-
-        document.querySelector('#app table.table').classList.remove("d-none");
-
-        document.querySelector('#app td.player1-match').innerHTML = picks[0][0];
-        document.querySelector('#app td.player2-match').innerHTML = picks[1][0];
-        document.querySelector('#app td.player3-match').innerHTML = picks[2][0];
-        document.querySelector('#app td.player4-match').innerHTML = picks[3][0];
-
+    display_tournament_form = () => { 
+        document.querySelector("#app form.create_tournament").classList.remove("d-none")
+        document.querySelector('#app input#player1').value = this.user.datas.username;
+        document.querySelector('#app div.col-12 button#matchmaking').addEventListener('click', async (event) =>  {
+            event.preventDefault();
+            this.createTournament();
+        })
+        
     }
 
     matchmaking = async (players) => {
@@ -127,7 +144,7 @@ export default class extends AbstractView {
         return picks;
     }
 
-    createTable = async () => {
+    createTournament = async () => {
         let errDiv = document.querySelector("#errorFeedback");
         
         let nametournament = document.querySelector('#app input#name-tournament').value;
@@ -145,37 +162,21 @@ export default class extends AbstractView {
         let action = "create";
         let picks = [];
 		let p1 = document.querySelector('#app input#player1').value;
-        // p1.classList.add("readonly")
 		let p2 = document.querySelector('#app input#player2').value;
 		let p3 = document.querySelector('#app input#player3').value;
 		let p4 = document.querySelector('#app input#player4').value;
 		let players = [["username", p1, p1], ["alias", p2, p2], ["alias", p3, p3], ["alias", p4, p4]];
 		picks = await this.matchmaking(players);
-		console.log("picks: ", picks);
-
 		let RQ_BODY = {
 			'name': nametournament,
 			'players': picks
 		}
-		
         let response = await this.user.request.post(`/api/match/tournament/${action}/`, RQ_BODY)
-        if (response.status == 200)
-			{
+        if (response.status == 200){
 			let tournament_id = await response.json();
-			console.log("response: ", tournament_id);
             this.user.router.navigateTo(`/tournament/${tournament_id}`, this.user)
-			// let users = ["username", "alias", "alias", "alias"]; 
-            }
-
+        }
     }
 
-    enterNames = () => { 
-        document.getElementById("createTournament").classList.remove("d-none")
-        document.querySelector('#app input#player1').value = this.user.datas.username;
-        document.querySelector('#app div.col-12 button#matchmaking').addEventListener('click', async (event) =>  {
-            event.preventDefault();
-            this.createTable();
-        })
-        
-    }
+
 }

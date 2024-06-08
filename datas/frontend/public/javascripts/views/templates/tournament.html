@@ -15,8 +15,8 @@
             <h1 class="tournament_name display-4">Create a tournament!</h1>
             <p class="tournament_info lead">Click on the button below to create a tournament.</p>
             <hr class="my-4">
-			<div id="errorFeedback" class="alert alert-danger d-none"></div>
-            <div id="createTournament" class="form-tournament">  
+            <form class="create_tournament d-none">  
+				<div id="errorFeedback" class="alert alert-danger d-none"></div>
 				<div class="col-md-6">
 					<label for="name-tournament" class="form-label row justify-content-center">Tournament name:</label>
 					<input type="text" class="form-control" id="name-tournament" aria-describedby="name-tournamentFeedback" required>
@@ -47,15 +47,14 @@
 				<div class="col-12">
 					<button class="btn btn-primary" type="submit" id="matchmaking">Matchmaking</button>
 				</div>
-          </div>
-
-			<table id="pool" class="table">
+          </form>
+			<table class="table tournament_matchs">
 				<thead>
 					<tr>
 						<th scope="col">Id</th>
 						<th scope="col">Player #1</th>
 						<th scope="col">Player #2</th>
-						<th scope="col">Play!</th>
+						<th scope="col">Results</th>
 					</tr>
 				</thead>
 				<tbody class="matchs"></tbody>
