@@ -166,6 +166,7 @@ export default class extends AbstractView {
 	displayRight = (data, time, text, DOM) => {
 
 		let chatbox = document.querySelector("#app .overflow-scroll");
+		// document.querySelector(".chat_message").
 
 		time.classList.add('d-flex', 'flex-row', 'justify-content-end')
 		text.classList.add('d-flex', 'flex-row', 'justify-content-end')
