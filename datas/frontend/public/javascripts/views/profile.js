@@ -114,7 +114,7 @@ export default class extends AbstractView {
 			return response.text();
 		}).then( async (html) => {
 			let dest_container = document.querySelector('main .followed ul')
-	
+			
 			if (dest_container.hasChildNodes())
 				return ;
 			if(!this.UserDatas)
@@ -122,6 +122,7 @@ export default class extends AbstractView {
 			const friends = this.UserDatas.follows;
 			if (!friends)
 				return
+			// console.log("friends ", friends)
 			friends.forEach(async friend_id => {
 				const nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend_id);
 				dest_container.appendChild(nodeCopy);
