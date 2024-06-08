@@ -60,9 +60,10 @@ export default class extends AbstractView {
         });
     }
 
-    async login42() {
+    login42 = async () => {
         console.log("call API 42 now")
-        const url42 = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-32b19fff9e0bdc8b9a6274453ce546cef0f304df7e01d5b7d3be2cac715fa306&redirect_uri=https%3A%2F%${this.user.request.host}%3A8483%2Flogin42&response_type=code`
+        // console.log("this.user.request.host: ", this.user.request.host)
+        const url42 = `https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-32b19fff9e0bdc8b9a6274453ce546cef0f304df7e01d5b7d3be2cac715fa306&redirect_uri=https%3A%2F%2F${this.user.request.host}%3A8483%2Flogin42&response_type=code`
         window.open(url42, "_self");
     };
         // sur le post : code 429 = trop de requetes a la fois --> timer pour que ralentisse // ou spammer jusqu'a ce qu'il accepte

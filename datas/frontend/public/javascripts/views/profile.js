@@ -84,7 +84,7 @@ export default class extends AbstractView {
 		});
 
 		if (this.is_user_page())
-			this.UserDatas = this.user.datas
+			this.UserDatas = this.user.datas;
 		else
 		{
 			var elements = document.querySelectorAll('input, textarea');
@@ -125,7 +125,7 @@ export default class extends AbstractView {
 			return response.text();
 		}).then( async (html) => {
 			let dest_container = document.querySelector('main .followed ul')
-	
+			
 			if (dest_container.hasChildNodes())
 				return ;
 			if(!this.UserDatas)
@@ -133,6 +133,7 @@ export default class extends AbstractView {
 			const friends = this.UserDatas.follows;
 			if (!friends)
 				return
+			// console.log("friends ", friends)
 			friends.forEach(async friend_id => {
 				const nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend_id);
 				dest_container.appendChild(nodeCopy);
@@ -296,6 +297,11 @@ export default class extends AbstractView {
 	{
 		if(!this.UserDatas)
 			return;
+		for (let key in this.UserDatas) {
+			if (this.UserDatas.hasOwnProperty(key) && typeof this.UserDatas[key] === 'string') {
+				this.UserDatas[key] = this.UserDatas[key].replace(/[()',]/g, "");
+			}
+		}
 		document.querySelector(".user_username").innerHTML = this.UserDatas.username;
 		document.querySelector(".id").innerHTML = this.UserDatas.id;
 		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ?  this.UserDatas.avatar : "/avatars/default.png";

@@ -29,7 +29,7 @@ export default class extends AbstractView {
 			
 			var chat_with = document.querySelector("#app .chat-with");
 			var nodeFriend = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend.id);
-			nodeFriend.classList.remove('mb-2', 'col-12');
+			// nodeFriend.classList.remove('mb-2', 'col-12');
 			nodeFriend.classList.add('d-flex', 'row','justify-content-end', 'col-8');
 			nodeFriend.querySelector(".dropdown").innerHTML = '';
 			friends_utils.update_status_text(nodeFriend)
