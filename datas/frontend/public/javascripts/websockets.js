@@ -89,7 +89,7 @@ export default class Websockets {
 
 	print_notification(data)
 	{
-		// console.log("enter print_notification")
+		console.log("enter print_notification : data", data)
 		if (location.pathname == data.link){
 			this.count = 0;
 			return;

@@ -77,6 +77,17 @@ def CreateThirdMatch(user, tournament_id=None):
 
 		if player1 and player2:
 			match = createMatch(user, tournament, player1, player2)
+			notif_message = f'play the last match of the tournament {tournament.name}'
+			if match:
+				Notification.objects.create(
+				type="private",
+				code_name="TRN",
+				code_value=1,
+				message=notif_message,
+				sender=user,
+				receiver=user,
+				link=f"/play/online/{match.match_id}"
+			)
 
 # @method_decorator(csrf_protect, name='dispatch')
 class TournamentView(APIView):
