@@ -59,6 +59,7 @@ def login42Callback(request):
 	av_1 = user_response_json['image']
 	av_2 = av_1['versions']
 	avatar_url = av_2['small']
+	print("avatar_url: ", avatar_url)
 
 	user_id_42 = user_response_json['id']
 

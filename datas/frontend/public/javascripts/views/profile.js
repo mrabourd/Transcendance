@@ -84,7 +84,7 @@ export default class extends AbstractView {
 		});
 
 		if (this.is_user_page())
-			this.UserDatas = this.user.datas
+			this.UserDatas = this.user.datas;
 		else
 		{
 			var elements = document.querySelectorAll('input, textarea');
@@ -282,6 +282,11 @@ export default class extends AbstractView {
 	{
 		if(!this.UserDatas)
 			return;
+		for (let key in this.UserDatas) {
+			if (this.UserDatas.hasOwnProperty(key) && typeof this.UserDatas[key] === 'string') {
+				this.UserDatas[key] = this.UserDatas[key].replace(/[()',]/g, "");
+			}
+		}
 		document.querySelector(".user_username").innerHTML = this.UserDatas.username;
 		document.querySelector(".id").innerHTML = this.UserDatas.id;
 		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ?  this.UserDatas.avatar : "/avatars/default.png";
