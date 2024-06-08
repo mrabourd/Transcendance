@@ -60,7 +60,7 @@ export default class extends AbstractView {
             else
                 throw new Error('Network response was not ok.');
         })
-        .then(([jsonData, ok, status]) => {
+        .then(async ([jsonData, ok, status]) => {
             if (!ok)
             {
                 for (const key in jsonData) {
@@ -73,7 +73,7 @@ export default class extends AbstractView {
             {
                 let username = document.getElementById("username").value
                 let password = document.getElementById("password").value
-                let response = this.user.login(username, password);
+                let response = await this.user.login(username, password);
                 return response;
             }
         })
