@@ -45,15 +45,15 @@ export const router = async (user) => {
         { id:1, path: "/login2FA", view: login2FA },
         { id:2, path: "/register", view: register },
         { id:3, path: "/home", view: home },
-        { id:4, path: "/profile", view: profile },
+        { id:5, path: "/profile/:user_id/:tab", view: profile },
         { id:5, path: "/profile/:user_id", view: profile },
         { id:6, path: "/tournament", view: tournament },
         { id:6, path: "/tournament/:tournament_id", view: tournament },
         { id:7, path: "/contact", view: contact },
         { id:8, path: "/chatroom", view: chatroom },
 		{ id:8, path: "/chatroom/:friend_id", view: mpchat},
-        { id:9, path: "/play/:adversaire/:match_id", view: play },
-        { id:10, path: "/play/:adversaire", view: play }
+        { id:10, path: "/play/:match_id", view: play },
+        { id:10, path: "/play", view: play }
     ];
 
     // Test each route for potential match

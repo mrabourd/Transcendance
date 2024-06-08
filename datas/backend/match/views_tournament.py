@@ -19,75 +19,76 @@ from users.models import User  # Import your User model
 import json
 import requests
 User = get_user_model()
-
 def CreateThirdMatch(user, tournament_id=None):
-	tournament = Tournament.objects.filter(tournament_id=tournament_id).first()
+    tournament = Tournament.objects.filter(tournament_id=tournament_id).first()
+    
+    if not tournament:
+        print("Tournament not found")
+        return
+    
+    tournament_matches = Match.objects.filter(tournament_id=tournament_id)
+    total_match = tournament_matches.count()
 
+    tournament_matches_finished = Match.objects.filter(tournament_id=tournament_id, status=2)
+    print(f"tournament_matches_finished: {list(tournament_matches_finished)}")
+    finished_match = tournament_matches_finished.count()
+    
+    if finished_match == 3:
+        # Tournament is ended
+        # TODO: get the tournament winner
+        tournament.status = 2
+        tournament.save()
+        return
 
-	tournament_matches = Match.objects.filter(tournament_id=tournament_id)
-	total_match = tournament_matches.count()
+    first_player = None
+    second_player = None
 
-	tournament_matches = Match.objects.filter(tournament_id=tournament_id, status=2)
-	print(f"tournament_matches: {list(tournament_matches)}")
-	finished_match = tournament_matches.count()
-	
-	if finished_match == 3:
-		# Tournament is ended
-		# ToDo > get the tournament winner (?)
-		tournament.status = 2
-		tournament.save()
-		return
+    if finished_match == 2 and total_match == 2:
+        # Fetch the first and second matches
+        first_match = tournament_matches_finished[0] if tournament_matches_finished.count() > 0 else None
+        second_match = tournament_matches_finished[1] if tournament_matches_finished.count() > 1 else None
 
-	first_player = None
-	second_player = None
+        if first_match:
+            first_match_points = first_match.match_points.all()
+            if first_match_points and len(first_match_points) >= 2:
+                first_player = first_match_points[0] if first_match_points[0].points > first_match_points[1].points else first_match_points[1]
 
-	if finished_match == 2 and total_match == 2:
-		# Fetch the first and second matches
-		first_match = tournament_matches[0] if tournament_matches.count() > 0 else None
-		second_match = tournament_matches[1] if tournament_matches.count() > 1 else None
-		
-		if first_match:
-			first_match_points = first_match.match_points.all()
-			if first_match_points[0].points > first_match_points[1].points:
-				first_player = first_match_points[0]
-			else:
-				first_player = first_match_points[1]
+        if second_match:
+            second_match_points = second_match.match_points.all()
+            if second_match_points and len(second_match_points) >= 2:
+                second_player = second_match_points[0] if second_match_points[0].points > second_match_points[1].points else second_match_points[1]
 
-		if second_match:
-			second_match_points = second_match.match_points.all()
-			if second_match_points[0].points > second_match_points[1].points:
-				second_player = second_match_points[0]
-			else:
-				second_player = second_match_points[1]
+        player1 = None
+        player2 = None
 
-		player1 = None
-		player2 = None
+        if first_player:
+            if first_player.user:
+                player1 = ["username", first_player.user, first_player.alias]
+            else:
+                player1 = ["alias", first_player.alias, first_player.alias]
 
-		if first_player:
-			if first_player.user:
-				player1 = ["username", first_player.user, first_player.alias]
-			else:
-				player1 = ["alias", first_player.alias, first_player.alias]
+        if second_player:
+            if second_player.user:
+                player2 = ["username", second_player.user, second_player.alias]
+            else:
+                player2 = ["alias", second_player.alias, second_player.alias]
 
-		if second_player:
-			if second_player.user:
-				player2 = ["username", second_player.user, second_player.alias]
-			else:
-				player2 = ["alias", second_player.alias, second_player.alias]
-
-		if player1 and player2:
-			match = createMatch(user, tournament, player1, player2)
-			notif_message = f'play the last match of the tournament {tournament.name}'
-			if match:
-				Notification.objects.create(
-				type="private",
-				code_name="TRN",
-				code_value=1,
-				message=notif_message,
-				sender=user,
-				receiver=user,
-				link=f"/play/online/{match.match_id}"
-			)
+        if player1 and player2:
+            match = createMatch(user, tournament, player1, player2)
+            if match:
+                notif_message = f'Play the last match of the tournament {tournament.name}'
+                try:
+                    Notification.objects.create(
+                        type="private",
+                        code_name="TRN",
+                        code_value=1,
+                        message=notif_message,
+                        sender=user,
+                        receiver=user,
+                        link=f"/play/{match.match_id}"
+                    )
+                except Exception as e:
+                    print(f"Error creating notification: {e}")
 
 # @method_decorator(csrf_protect, name='dispatch')
 class TournamentView(APIView):

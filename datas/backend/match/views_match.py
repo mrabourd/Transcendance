@@ -32,6 +32,14 @@ User = get_user_model()
 
 
 
+class CreateLocalMatch(APIView):
+	def get(self, request):
+		current_user = request.user
+		player1 = ["username", current_user, current_user.username]
+		player2 = ["alias", 'Anonymous', 'Anonymous']
+		match = createMatch(current_user, None, player1, player2)
+		return Response({"match_id": match.match_id}, status=status.HTTP_200_OK)
+
 
 class MatchList(APIView):
 	# Cette méthode gère les requêtes POST
@@ -100,7 +108,7 @@ class MatchHistory(APIView):
 	def get(self, request, id):
 		current_user = User.objects.get(id=id)
 		
-		matches = Match.objects.filter(status=2)
+		matches = Match.objects.filter(status=2).order_by('created_at')
 
 		# Filtrer les matchs pour lesquels l'utilisateur actuel a des points de match
 		matches_with_user_points = matches.filter(match_points__user=current_user).distinct()
@@ -128,7 +136,7 @@ class MatchHistory(APIView):
 
 
 
-		tournaments = Tournament.objects.filter(user=request.user)
+		tournaments = Tournament.objects.filter(user=request.user).order_by('created_at')
 		serializer = TournamentSerializer(tournaments, many=True)
 		tournaments_list = serializer.data
 	

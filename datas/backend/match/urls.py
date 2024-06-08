@@ -2,11 +2,12 @@ from django.urls import path
 # from . import views
 from rest_framework.urlpatterns import format_suffix_patterns
 from match.views_invite import Subscribe, Unsubscribe, Invite
-from match.views_match import MatchList, MatchHistory
+from match.views_match import MatchList, MatchHistory, CreateLocalMatch
 from match.views_tournament import TournamentView
 import uuid
 
 urlpatterns = [
+    path('create/', CreateLocalMatch.as_view(),name='subscribe'),
     path('subscribe/', Subscribe.as_view(),name='subscribe'),
     path('unsubscribe/', Unsubscribe.as_view(),name='subscribe'),
     path('list/<str:req_type>/', MatchList.as_view(),name='invite'),

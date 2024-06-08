@@ -200,7 +200,7 @@ from datetime import timedelta
 SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
     'ROTATE_REFRESH_TOKENS': True,
-
+    'AUTH_COOKIE_PATH' : '/',
   # It will work instead of the default serializer(TokenObtainPairSerializer).
   	"TOKEN_OBTAIN_SERIALIZER": "users.serializers.CustomTokenObtainPairSerializer",
 	"USER_ID_FIELD": "id",

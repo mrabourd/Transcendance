@@ -111,7 +111,7 @@ class FollowUser(APIView):
 		
 		if req_type == 'follow':
 			if current_profile.follows.filter(pk = other_profile.id).exists():
-			    return Response({"Following Fail" : "You can not follow this profile because you are already following this user!"},status=status.HTTP_400_BAD_REQUEST)
+				return Response({"Following Fail" : "You can not follow this profile because you are already following this user!"},status=status.HTTP_400_BAD_REQUEST)
 			current_profile.follows.add(other_profile)
 			return Response(status=status.HTTP_200_OK) 
 		

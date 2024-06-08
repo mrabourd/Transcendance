@@ -9,11 +9,7 @@ export function print(user)
 			{ path: "/home", libelle: "home" },
 			{ path: "/profile", libelle: "profile" },
 			{ path: "/tournament", libelle: "tournament" },
-			{ path: "/play", libelle: "play",
-			sousmenu: [{path: "/vs_computer", libelle: "play with robot"},
-			{path: "/vs_player", libelle: "play with player" },
-			{path: "/online", libelle: "play online" }]
-			}
+			{ path: "/play", libelle: "play"}
 		];
 	}else{
 		routes = [
@@ -30,26 +26,7 @@ export function print(user)
 
 	routes.forEach(route => {
 
-		if (route.libelle == "play")
-		{
-			li = document.createElement("li");
-			li.classList.add(`"nav-link-` + route.libelle);
-			li.setAttribute("id", route.libelle);
-
-			li.innerHTML = `<div class="dropdown">
-			<button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
-			  play
-			</button>
-			<ul class="dropdown-menu" id="sousmenu">
-				<li><a class="dropdown-item" id=link-` + route.sousmenu[0].libelle + ` aria-current="page" href="` + route.path + route.sousmenu[0].path + `" data-link>`+route.sousmenu[0].libelle+`</a></li>
-				<li><a class="dropdown-item" id=link-` + route.sousmenu[1].libelle + ` aria-current="page" href="` + route.path + route.sousmenu[1].path + `" data-link>`+route.sousmenu[1].libelle+`</a></li>
-				<li><a class="dropdown-item" id=link-` + route.sousmenu[2].libelle + ` aria-current="page" href="` + route.path + route.sousmenu[2].path + `" data-link>`+route.sousmenu[2].libelle+`</a></li>
-			</ul>
-		  </div>`;
-
-			document.querySelector("header nav ul").appendChild(li);
-		}
-		else {
+		
 			li = document.createElement("li");
 			li.classList.add(`"nav-link-` + route.libelle);
 			li.setAttribute("id", route.libelle);
@@ -58,7 +35,7 @@ export function print(user)
 
 			document.querySelector(".user").classList.add("d-none");
 			document.querySelector(".notif").classList.add("d-none");
-		}
+		
 
 	});
 

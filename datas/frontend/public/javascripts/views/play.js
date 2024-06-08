@@ -28,62 +28,41 @@ export default class extends AbstractView {
     }
 
 	addEvents () {
-		let canvas = document.getElementById('canvas');
 
-		// function resizeCanvas() {
-		// 	canvas.width = window.innerWidth;
-		// 	canvas.height = window.innerHeight;
-		// }
-			
-		// window.addEventListener("resize", resizeCanvas);
-
-		document.querySelector('#start-game').innerHTML = "Start game";
-		document.querySelector('#stop-game').innerHTML = "Stop game";
-
-		if (this.params.adversaire === "vs_computer"){
-			this.pong = new pongComputer(canvas);
-		}
-		else if (this.params.adversaire === "vs_player"){
-			this.pong = new pongPlayer(canvas);
-		}
-		else {
+		if (this.params.match_id)
+		{
+			let canvas = document.getElementById('canvas');
+			canvas.classList.remove('d-none')
 			this.pong = new pongOnline(canvas, this.user, this.match_id);
 			this.pong.connect();
 			this.PongSocket = this.pong.PongSocket
+			
+			document.addEventListener("keydown", (event) => {
+				if (!this.pong.currentKeysDown.includes(event.key)) {
+					this.pong.currentKeysDown.push(event.key);
+				}
+				this.pong.movePaddles();
+			})
+			document.addEventListener("keyup", (event) => {
+				this.pong.currentKeysDown.splice(this.pong.currentKeysDown.indexOf(event.key), 1)
+				this.pong.movePaddles();
+			})
 		}
-		
-
-
-
-		document.addEventListener("keydown", (event) => {
-			if (!this.pong.currentKeysDown.includes(event.key)) {
-				this.pong.currentKeysDown.push(event.key);
-			}
-			this.pong.movePaddles();
-		})
-		
-
-
-		document.addEventListener("keyup", (event) => {
-			this.pong.currentKeysDown.splice(this.pong.currentKeysDown.indexOf(event.key), 1)
-			this.pong.movePaddles();
-		})
-
-
-		document.querySelector('#start-game').addEventListener('click',(e) =>
+		else
 		{
-			if (e.target.innerHTML =="Pause game") {
-				this.pong.pause();
-				e.target.innerHTML = "Start game";
-			}
-			else{
-				this.pong.start();
-				e.target.innerHTML = "Pause game";
-			}
-		});
+			let button = document.querySelector('#app button.redirection')
+			button.textContent = "Play Locally with a friend"
+			button.addEventListener('click',  async e => {
+				e.preventDefault();
+				let response = await this.user.request.get("/api/match/create/")
+				if (response.ok)
+				{
+					let JSONResponse = await response.json();
+					this.user.router.navigateTo('/play/' + JSONResponse.match_id, this.user)
+				}
+			})
+			button.classList.remove("d-none")
+		}
 
-		document.querySelector('#stop-game').addEventListener('click', this.pong.stop);
-		
     }
-
 }

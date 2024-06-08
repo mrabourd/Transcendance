@@ -7,6 +7,7 @@ export default class extends AbstractView {
 		super(params);
 		this.setTitle("Profile");
 		const UserDatas = null;
+		console.log("params", this.params)
 	}
 	
 	is_user_page()
@@ -316,6 +317,17 @@ export default class extends AbstractView {
 	async addEvents () {
 
 		// TABS
+		if (this.params.tab)
+		{
+			document.querySelectorAll('.nav.nav-tabs li a').forEach(element => {
+				element.classList.remove('active');
+			});
+			document.querySelectorAll('.tab-content .tab-pane').forEach(element => {
+				element.classList.remove('active');
+			});
+			document.querySelector('.nav.nav-tabs li[data-target="' + this.params.tab + '"] a').classList.add('active')
+			document.querySelector('.tab-content .tab-pane.' + this.params.tab).classList.add('active')
+		}
 		document.querySelectorAll('.nav.nav-tabs li').forEach(element => {
 			element.addEventListener("click", e => {
 				e.preventDefault();
@@ -333,6 +345,7 @@ export default class extends AbstractView {
 		});
 
 
+
 		// USER PROFILE FORM
 		if (this.is_user_page())
 		{
@@ -342,9 +355,6 @@ export default class extends AbstractView {
 				document.querySelector("#status").innerText = "reading URL";
 				this.readURL(document.getElementById("fileInput"));
 			});
-
-
-
 			document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
 				input.addEventListener("focusout", form.checkBlankField);
 			});
@@ -354,9 +364,7 @@ export default class extends AbstractView {
 				event.preventDefault();
 				
 				if (!this.checkAllFields())
-					return false;
-	
-				
+					return false;				
 				let RQ_Body = {
 					avatar: document.querySelector("#avatar").src,
 					username: document.querySelector("#username").value,

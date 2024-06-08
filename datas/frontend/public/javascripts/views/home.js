@@ -52,7 +52,7 @@ export default class extends AbstractView {
                     let JSONResponse = await response.json()
                     let match_id = JSONResponse['match_id']
                     this.user.datas.status = USER_STATUS["PLAYING"];
-                    this.user.router.navigateTo(`/play/online/${match_id}`, this.user)
+                    this.user.router.navigateTo(`/play/${match_id}`, this.user)
                 }else if (response.status == 200)
                 {
                     e.target.innerHTML = 'Unsubscribe from waiting list'
@@ -139,7 +139,7 @@ export default class extends AbstractView {
 
                 play_button.addEventListener('click', async (e) => {
                     e.preventDefault();
-                    this.user.router.navigateTo(`/play/online/${match['match_id']}`, this.user)
+                    this.user.router.navigateTo(`/play/${match['match_id']}`, this.user)
                 });
                 newLi.appendChild(nodePlayer1);
                 newLi.appendChild(VS);

@@ -76,7 +76,7 @@ export async function invite(user, friend_id, action)
         if (action == 'accept')
         {
             let JSONresponse = await response.json();
-            user.router.navigateTo('/play/online/' + JSONresponse.match_id, user);
+            user.router.navigateTo('/play/' + JSONresponse.match_id, user);
         }
     }
 }

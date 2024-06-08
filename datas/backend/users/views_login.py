@@ -40,6 +40,8 @@ User = get_user_model()
 
 class GetCSRFTokenView(APIView):
 	def get(self, request, *args, **kwargs):
+		path = settings.SIMPLE_JWT.get('AUTH_COOKIE_PATH', '/')
+		print(f" ##################333333 SIMPLE_JWT settings: {settings.SIMPLE_JWT}")
 		response = JsonResponse({"message": "New Token"}, status=200)
 		csrf_token = request.headers.get("api-csrftoken")
 		csrf_cookie = request.META.get("CSRF_COOKIE")

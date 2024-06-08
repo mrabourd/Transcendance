@@ -43,8 +43,6 @@ export default class extends AbstractPong {
 			await this.print_players();
 			this.draw();
 			this.print_scores();
-            //console.log(`ball [${this._game["ball"]["x"]}][${this._game["ball"]["y"]}]`)
-            //console.log('player right :', data.player_right.y)
 		}
 
     }
@@ -74,11 +72,30 @@ export default class extends AbstractPong {
 			winner = this._game["playerleft"]["username"]
 		else
 			winner = this._game["playerright"]["username"]
-		// Dessiner le texte
 		context.fillText(`The winner is ${winner}`, canvas.width / 2, canvas.height / 2);
+		let button = document.querySelector('#app button.redirection')
+		console.log(this._game)
+		if (this._game["infos"]["tournament_id"])
+		{
+			button.textContent = "View Tournament page"
+			button.addEventListener('click',  async e => {
+				e.preventDefault();
+				this.user.router.navigateTo(`/tournament/${this._game["infos"]["tournament_id"]}`, this.user)
+			})
+		}
+		else
+		{
+			button.textContent = "View my history page"
+			button.addEventListener('click',  async e => {
+				e.preventDefault();
+				this.user.router.navigateTo(`/profile/${this.user.datas.id}/history`, this.user)
+			})
+		}
+		button.classList.remove('d-none')
+
 	}
 	print_ping_player = (context, canvas) => {
-		context.fillText(`Ping your opponent`, canvas.width / 2, canvas.height / 2);
+		context.fillText(`Your opponent is not here`, canvas.width / 2, canvas.height / 2);
 	}
 	draw = () => {
 		let context = this._canvas.getContext('2d');
@@ -97,8 +114,6 @@ export default class extends AbstractPong {
 				this.print_winner(context, canvas)
 			else
 				this.print_ping_player(context, canvas)
-
-		   
 			return 
 		}
 
@@ -149,11 +164,11 @@ export default class extends AbstractPong {
 		}
 
         if (this.currentKeysDown.includes('s')) {
-			this.player_move['opp_up'] = true
-			this.player_move['opp_down'] = false
-		} else if (this.currentKeysDown.includes('w')) {
-			this.player_move['opp_down'] = true
 			this.player_move['opp_up'] = false
+			this.player_move['opp_down'] = true
+		} else if (this.currentKeysDown.includes('w')) {
+			this.player_move['opp_down'] = false
+			this.player_move['opp_up'] = true
 		}else{
 			this.player_move['opp_down'] = false
 			this.player_move['opp_up'] = false			

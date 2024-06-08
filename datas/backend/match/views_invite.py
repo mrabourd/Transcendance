@@ -41,7 +41,7 @@ class Subscribe(APIView):
 				message=notif_message,
 				sender=current_user,
 				receiver=waiting_user,
-				link=f"/play/online/{match_id}"
+				link=f"/play/{match_id}"
 			)
 			#send a notification waiting_user 
 			# Response with match ID
@@ -158,7 +158,7 @@ class Invite(APIView):
 				message=notif_message,
 				sender=user,
 				receiver=invitation_sender,
-				link=f"/play/online/{str(match_id)}"
+				link=f"/play/{str(match_id)}"
 			)
 
 			# supprimer l'invitation 

@@ -85,7 +85,7 @@ export default class extends AbstractView {
                     link.innerHTML = "Play Match " + id_match
                     link.addEventListener('click',  async e => {
                         e.preventDefault();
-                        this.user.router.navigateTo(`/play/online/${match["match_id"]}`, this.user)
+                        this.user.router.navigateTo(`/play/${match["match_id"]}`, this.user)
                     })
                     td.appendChild(link)
                 } 
