@@ -42,7 +42,7 @@ export default class extends AbstractView {
             let id_match = 0
             let id_player = 0
             document.querySelector('#app table.tournament_matchs').classList.remove("d-none");
-            document.querySelector('#app form.create_tournament').remove()
+            // document.querySelector('#app form.create_tournament').remove("d-none")
             let JSONResponse = await response.json()
             document.querySelector('#app h1.tournament_name').innerHTML = JSONResponse[0]['name']
             document.querySelector('#app p.tournament_info').innerHTML = JSONResponse[0]['status']
@@ -148,7 +148,11 @@ export default class extends AbstractView {
         let errDiv = document.querySelector("#errorFeedback");
         
         let nametournament = document.querySelector('#app input#name-tournament').value;
-        if (nametournament == ""){
+        let p1 = document.querySelector('#app input#player1').value;
+		let p2 = document.querySelector('#app input#player2').value;
+		let p3 = document.querySelector('#app input#player3').value;
+		let p4 = document.querySelector('#app input#player4').value;
+        if (nametournament == "" || p1 == "" || p2 == "" || p3 == "" || p4 == ""){
             errDiv.classList.remove("d-none")
             errDiv.innerHTML = 'An error occured! Please fill all the fields...';
             return;
@@ -161,10 +165,7 @@ export default class extends AbstractView {
 
         let action = "create";
         let picks = [];
-		let p1 = document.querySelector('#app input#player1').value;
-		let p2 = document.querySelector('#app input#player2').value;
-		let p3 = document.querySelector('#app input#player3').value;
-		let p4 = document.querySelector('#app input#player4').value;
+		
 		let players = [["username", p1, p1], ["alias", p2, p2], ["alias", p3, p3], ["alias", p4, p4]];
 		picks = await this.matchmaking(players);
 		let RQ_BODY = {

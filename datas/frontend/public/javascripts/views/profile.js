@@ -26,9 +26,11 @@ export default class extends AbstractView {
 	async getHtml(DOM) {
 		await fetch('/template/profile').then(function (response) {
 			// The API call was successful!
+			console.log("response: ", response)
 			return response.text();
 		}).then(async html =>  {
 			// This is the HTML from our response as a text string
+			console.log("coco")
 			let parser = new DOMParser();
 			let doc = parser.parseFromString(html, 'text/html');
 			let body = doc.querySelector('#app');

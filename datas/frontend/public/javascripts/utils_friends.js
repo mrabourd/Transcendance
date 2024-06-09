@@ -87,6 +87,7 @@ export async function follow(user, friend_id, action)
     if (response.status == 200)
     {
         // UPDATE LOCAL STORAGE
+        console.log("response: ", response);
         if((action == "follow") && (!user.datas.follows.includes(friend_id)))
         {
             user.datas.follows.push(friend_id);

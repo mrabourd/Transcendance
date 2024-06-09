@@ -49,6 +49,10 @@ export default class Websockets {
 				this.update_block(data)
 			}
 
+			if (data.code_name == "FLW"){
+				this.update_follow(data)
+			}
+
 			if (data.message)
 			{
 				this.print_notification(data)
@@ -57,6 +61,30 @@ export default class Websockets {
 			
 		};
     }
+
+	async update_follow(data)
+	{
+		// console.log("enter update block")
+		let friend_id = data.sender;
+		if (data.code_value == 1) // following someone 
+		{
+			if (!this.user.datas.follows.includes(data.sender))
+				this.user.datas.followed_by.push(data.sender)
+			document.querySelector(".follow").innerHTML = "unfollow"
+		}
+		if (data.code_value == 2) // unfollowing someone
+		{
+			this.user.datas.followed_by = this.user.datas.followed_by.filter(id => id !== data.sender);
+			console.log("this.user.datas.followed_by: ", this.user.datas.followed_by);
+		}
+		this.user.saveDatasToLocalStorage()
+		friends_utils.update_profile_cards_text(this.user)
+        if(location.pathname == '/profile/' + friend_id){
+			this.user.router.navigateTo('/profile/' + friend_id, this.user);
+		}
+		// this.user.router.navigateTo('/profile/' + friend_id, this.user);
+		data.link = '/profile/' + friend_id;
+	}
 
 	async update_block(data)
 	{
@@ -78,7 +106,6 @@ export default class Websockets {
 		}
 		// this.user.router.navigateTo('/chatroom/' + friend_id, this.user);
 		data.link = '/chatroom/' + friend_id;
-
 	}
 
 	update_msg_link(data){

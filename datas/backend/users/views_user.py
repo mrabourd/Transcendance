@@ -108,22 +108,33 @@ class FollowUser(APIView):
 		
 		current_profile = request.user
 		other_profile = self.other_profile(pk)
+		response_data = {}
 		
 		if req_type == 'follow':
 			if current_profile.follows.filter(pk = other_profile.id).exists():
 				return Response({"Following Fail" : "You can not follow this profile because you are already following this user!"},status=status.HTTP_400_BAD_REQUEST)
 			current_profile.follows.add(other_profile)
-			return Response(status=status.HTTP_200_OK) 
+			# return Response(status=status.HTTP_200_OK) 
+			notif_message = f'{current_profile.username} is following me'
+			notification = create_notif(current_profile, other_profile, 1, notif_message, "FLW", pk)
+			response_data = {'message': 'Followed successfully!'}
+			return JsonResponse(response_data)
 		
 		elif req_type == 'unfollow':
 			current_profile.follows.remove(other_profile)
-			return Response(status=status.HTTP_200_OK)
+			# return Response(status=status.HTTP_200_OK)
+			notif_message = f'{current_profile.username} has unfollowed me'
+			notification = create_notif(current_profile, other_profile, 2, notif_message, "FLW", pk)
+			response_data = {'message': 'Unfollowed successfully!'}
+			return JsonResponse(response_data)
 
 
 		elif req_type == 'block':
+			if current_profile.blocks.filter(pk = other_profile.id).exists():
+				return Response({"Blocking Fail" : "You can not block this profile because you are already blocking this user!"},status=status.HTTP_400_BAD_REQUEST)
 			current_profile.blocks.add(other_profile)
 			notif_message = f'{current_profile.username} has blocked me'
-			notification = create_notif(current_profile, other_profile, 1, notif_message, pk)
+			notification = create_notif(current_profile, other_profile, 1, notif_message, "BLK", pk)
 			response_data = {'message': 'You were blocked!'}
 			# return Response(status=status.HTTP_200_OK)
 			return JsonResponse(response_data)
@@ -131,18 +142,17 @@ class FollowUser(APIView):
 		elif req_type == 'unblock':
 			current_profile.blocks.remove(other_profile)
 			notif_message = f'{current_profile.username} has unblocked me'
-			notification = create_notif(current_profile, other_profile, 2, notif_message, pk)
+			notification = create_notif(current_profile, other_profile, 2, notif_message, "BLK", pk)
 			# other_profile.followers.remove(current_profile)
 			response_data = {'message': 'You were unblocked!'}
 			# return Response(status=status.HTTP_200_OK)
 			return JsonResponse(response_data)
             
 
-def create_notif(current_profile, other_profile, code, notif_message, pk):
-	print("want to send a notif because i blocked someone")
+def create_notif(current_profile, other_profile, code, notif_message, name, pk):
 	Notification.objects.create(
 		type="private",
-		code_name="BLK",
+		code_name=name,
 		code_value=code,
 		message=notif_message,
 		sender=current_profile,
