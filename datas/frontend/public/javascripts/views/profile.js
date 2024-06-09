@@ -26,7 +26,6 @@ export default class extends AbstractView {
 	async getHtml(DOM) {
 		await fetch('/template/profile').then(function (response) {
 			// The API call was successful!
-			console.log("response: ", response)
 			return response.text();
 		}).then(async html =>  {
 			// This is the HTML from our response as a text string
@@ -96,8 +95,16 @@ export default class extends AbstractView {
 				element.classList.add('form-control-plaintext');
 			});
 			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
-			if (response.ok)
+			if (response.ok){
 				this.UserDatas = await response.json();
+				console.log("this.UserDatas: ", this.UserDatas)
+				for (let key in this.UserDatas) {
+					if (this.UserDatas.hasOwnProperty(key) && typeof this.UserDatas[key] === 'string') {
+						this.UserDatas[key] = this.UserDatas[key].replace(/[()',]/g, "");
+					}
+				}
+
+			}
 		}
 	}
 
@@ -300,11 +307,7 @@ export default class extends AbstractView {
 	{
 		if(!this.UserDatas)
 			return;
-		for (let key in this.UserDatas) {
-			if (this.UserDatas.hasOwnProperty(key) && typeof this.UserDatas[key] === 'string') {
-				this.UserDatas[key] = this.UserDatas[key].replace(/[()',]/g, "");
-			}
-		}
+
 		document.querySelector(".user_username").innerHTML = this.UserDatas.username;
 		document.querySelector(".id").innerHTML = this.UserDatas.id;
 		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ?  this.UserDatas.avatar : "/avatars/default.png";

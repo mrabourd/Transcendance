@@ -37,6 +37,11 @@ export default class extends AbstractView {
 		let get_token_path = await this.user.request.post("/api/users/auth/intra_callback/", data);
 		if (get_token_path.ok){
 			const jsonData = await get_token_path.json();
+			for (let key in jsonData.user) {
+				if (jsonData.user.hasOwnProperty(key) && typeof jsonData.user[key] === 'string') {
+					jsonData.user[key] = jsonData.user[key].replace(/[()',]/g, "");
+				}
+			}
 
 			if (jsonData.error)
             {

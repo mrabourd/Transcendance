@@ -68,14 +68,16 @@ export default class Websockets {
 		let friend_id = data.sender;
 		if (data.code_value == 1) // following someone 
 		{
-			if (!this.user.datas.follows.includes(data.sender))
+			if (!this.user.datas.follows.includes(data.sender)){
 				this.user.datas.followed_by.push(data.sender)
-			document.querySelector(".follow").innerHTML = "unfollow"
+				document.querySelector(".follow").innerHTML = "unfollow"
+
+			}
 		}
 		if (data.code_value == 2) // unfollowing someone
 		{
 			this.user.datas.followed_by = this.user.datas.followed_by.filter(id => id !== data.sender);
-			console.log("this.user.datas.followed_by: ", this.user.datas.followed_by);
+			// console.log("user: ", this.user.datas, "followed by: ", this.user.datas.followed_by);
 		}
 		this.user.saveDatasToLocalStorage()
 		friends_utils.update_profile_cards_text(this.user)
@@ -116,7 +118,7 @@ export default class Websockets {
 
 	print_notification(data)
 	{
-		console.log("enter print_notification : data", data)
+		// console.log("enter print_notification : data", data)
 		if (location.pathname == data.link){
 			this.count = 0;
 			return;
