@@ -59,6 +59,17 @@ class UsersAPIView(APIView):
 
 
 class UserDetail(APIView):
+
+	# def current_profile(self):
+	# 	try:
+	# 		return self.request.data.get('me')
+	# 	except User.DoesNotExist:
+	# 		raise Http404
+			
+	# def other_profiles(self, current_user):
+	# 	online_users = User.objects.filter(status=User.USER_STATUS['ONLINE']).exclude(id=current_user.id).distinct()
+	# 	return online_users
+
 	def get_user(self, id):
 		return get_object_or_404(User, id=id)
 
@@ -74,8 +85,12 @@ class UserDetail(APIView):
 		#response['Access-Control-Allow-Credentials'] = 'true'
 		return response
 
+
 	def put(self, request, id, format=None):
-		user = self.get_user(id)
+		pk = id
+		user = request.user
+		other_profiles = User.objects.filter(status=User.USER_STATUS['ONLINE']).exclude(id=user.id).all()
+
 		if user.id != request.user.id:
 			return Response(status=status.HTTP_401_UNAUTHORIZED)
 		
@@ -83,6 +98,11 @@ class UserDetail(APIView):
 		if serializer.is_valid():
 			serializer.save()
 			serializer = UserSerializer(user)
+			notif_message = f'{user.username} has changed some infos'
+			for online in other_profiles:
+				notification = create_notif(user, online, 1, notif_message, "PFL", pk)
+			response_data = serializer.data
+			# return JsonResponse(response_data)
 			return Response(serializer.data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -90,11 +110,11 @@ class UserDetail(APIView):
 class FollowUser(APIView):
 	permission_classes = [IsAuthenticated]
 
-	def current_profile(self):
-		try:
-			return self.request.data.get('me')
-		except User.DoesNotExist:
-			raise Http404
+	# def current_profile(self):
+	# 	try:
+	# 		return self.request.data.get('me')
+	# 	except User.DoesNotExist:
+	# 		raise Http404
 			
 	def other_profile(self, pk):
 		try:
