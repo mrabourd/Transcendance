@@ -7,15 +7,15 @@ export default class extends AbstractView {
 		super(params);
 		this.setTitle("Profile");
 		const UserDatas = null;
-		console.log("params", this.params)
 	}
 	
 	is_user_page()
 	{
 		if (this.params.user_id)
 		{
-			if (this.params.user_id == this.user.datas.id)
+			if (this.params.user_id == this.user.datas.id){
 				return true
+			}
 			else
 				return false
 		}
@@ -29,7 +29,6 @@ export default class extends AbstractView {
 			return response.text();
 		}).then(async html =>  {
 			// This is the HTML from our response as a text string
-			console.log("coco")
 			let parser = new DOMParser();
 			let doc = parser.parseFromString(html, 'text/html');
 			let body = doc.querySelector('#app');
@@ -85,8 +84,11 @@ export default class extends AbstractView {
 			console.warn('Something went wrong.', err);
 		});
 
-		if (this.is_user_page())
+
+		if (this.is_user_page()){
 			this.UserDatas = this.user.datas;
+			console.log("this.UserDatas lastname: ", this.UserDatas.last_name)
+		}
 		else
 		{
 			var elements = document.querySelectorAll('input, textarea');
@@ -97,13 +99,6 @@ export default class extends AbstractView {
 			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
 			if (response.ok){
 				this.UserDatas = await response.json();
-				console.log("this.UserDatas: ", this.UserDatas)
-				for (let key in this.UserDatas) {
-					if (this.UserDatas.hasOwnProperty(key) && typeof this.UserDatas[key] === 'string') {
-						this.UserDatas[key] = this.UserDatas[key].replace(/[()',]/g, "");
-					}
-				}
-
 			}
 		}
 	}
@@ -310,12 +305,12 @@ export default class extends AbstractView {
 
 		document.querySelector(".user_username").innerHTML = this.UserDatas.username;
 		document.querySelector(".id").innerHTML = this.UserDatas.id;
-		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ?  this.UserDatas.avatar : "/avatars/default.png";
-		document.querySelector(".tab-pane.profile #username").value =  this.UserDatas.username;
-		document.querySelector(".tab-pane.profile #first_name").value =  this.UserDatas.first_name;
-		document.querySelector(".tab-pane.profile #last_name").value =  this.UserDatas.last_name;
-		document.querySelector(".tab-pane.profile #email").value =  this.UserDatas.email;
-		document.querySelector(".tab-pane.profile #biography").value =  this.UserDatas.biography;
+		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ? this.UserDatas.avatar : "/avatars/default.png";
+		document.querySelector(".tab-pane.profile #username").value = this.UserDatas.username;
+		document.querySelector(".tab-pane.profile #first_name").value = this.UserDatas.first_name;
+		document.querySelector(".tab-pane.profile #last_name").value = this.UserDatas.last_name;
+		document.querySelector(".tab-pane.profile #email").value = this.UserDatas.email;
+		document.querySelector(".tab-pane.profile #biography").value = this.UserDatas.biography;
 	}
 
 

@@ -59,17 +59,12 @@ def login42Callback(request):
 	av_1 = user_response_json['image']
 	av_2 = av_1['versions']
 	avatar_url = av_2['small']
-	print("avatar_url: ", avatar_url)
 
 	user_id_42 = user_response_json['id']
 
 	if check_user_existence(user_id_42):
 		user = User.objects.get(id_42=user_id_42)
-		user.username=user_response_json['login'],
-		user.first_name=user_response_json['first_name'],
-		user.last_name=user_response_json['last_name'],
-		user.email=user_response_json['email'],
-		user.avatar=avatar_url,
+
 	else:
 		user = User.objects.create_user(
 			id_42=user_id_42,

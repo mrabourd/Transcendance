@@ -59,32 +59,32 @@ class UsersAPIView(APIView):
 
 
 class UserDetail(APIView):
-    def get_user(self, id):
-        return get_object_or_404(User, id=id)
+	def get_user(self, id):
+		return get_object_or_404(User, id=id)
 
-    def get(self, request, id, format=None):
-        user = self.get_user(id)
-        serializer = UserSerializer(user)
-        response_data = serializer.data
-        
-        response = JsonResponse(response_data, safe=False)
-        #response['X-CSRFToken'] = get_token(request)
-        #response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
-        #response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
-        #response['Access-Control-Allow-Credentials'] = 'true'
-        return response
+	def get(self, request, id, format=None):
+		user = self.get_user(id)
+		serializer = UserSerializer(user)
+		response_data = serializer.data
+		
+		response = JsonResponse(response_data, safe=False)
+		#response['X-CSRFToken'] = get_token(request)
+		#response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
+		#response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
+		#response['Access-Control-Allow-Credentials'] = 'true'
+		return response
 
-    def put(self, request, id, format=None):
-        user = self.get_user(id)
-        if user.id != request.user.id:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-        
-        serializer = UpdateUserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            serializer = UserSerializer(user)
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	def put(self, request, id, format=None):
+		user = self.get_user(id)
+		if user.id != request.user.id:
+			return Response(status=status.HTTP_401_UNAUTHORIZED)
+		
+		serializer = UpdateUserSerializer(user, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			serializer = UserSerializer(user)
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FollowUser(APIView):

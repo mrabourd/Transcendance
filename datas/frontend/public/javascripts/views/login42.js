@@ -13,9 +13,7 @@ export default class extends AbstractView {
 
 	async  addEvents () {
 		console.log("enter 42 login now")
-		// this.user.rmLocalDatas();
-		// this.user.request.rmJWTtoken()
-		// this.user.request.rmCsrfToken()
+
 
 		// CODE DANS l'URL
 		var queryString = window.location.search;
@@ -29,7 +27,6 @@ export default class extends AbstractView {
 			paramsObj[key] = value;
 		});
 		var code42 = paramsObj['code'];
-		console.log("code: ", code42);
 
 		let data = {
 			'code': code42,
