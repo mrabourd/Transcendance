@@ -12,8 +12,6 @@ export default class extends AbstractView {
 
 
 	async  addEvents () {
-		console.log("enter 42 login now")
-
 
 		// CODE DANS l'URL
 		var queryString = window.location.search;

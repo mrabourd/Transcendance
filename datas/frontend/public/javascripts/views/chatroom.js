@@ -31,7 +31,7 @@ export default class extends AbstractView {
         };
 
         chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
+            // TODO reconnect chatSocket
         };
 
         document.querySelector('#chat-message-input').focus();
@@ -50,24 +50,4 @@ export default class extends AbstractView {
             messageInputDom.value = '';
         };
 	}
-
-/*     addEvents () {
-        const webSocket = new WebSocket('ws://127.0.0.1:8443/ws/msg/');
-        webSocket.onmessage = (event) => {
-            console.log("onmessage:", event)
-            document.getElementById('messages').innerHTML += `<div class="received-message"><p>` + event.data + `</p></div>`;
-	@@ -29,7 +59,7 @@ export default class extends AbstractView {
-            console.log("We are connected");
-        });
-        document.getElementById('input-form').addEventListener('submit', this.sendMessageCallback(webSocket));
-    }
-    sendMessageCallback = (webSocket) => {
-	@@ -43,8 +73,8 @@ export default class extends AbstractView {
-        event.preventDefault();
-        let inputMessage = document.getElementById('message');
-        webSocket.send(this.user.datas.username + `: ` + inputMessage.value)
-        document.getElementById('messages').innerHTML +=
-        `<div class="sent-message"><p>` + inputMessage.value + `</p></div>`;
-        inputMessage.value = ""
-    } */
 }

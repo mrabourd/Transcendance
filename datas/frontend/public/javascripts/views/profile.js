@@ -88,7 +88,6 @@ export default class extends AbstractView {
 		if (this.is_user_page())
 		{
 			this.UserDatas = this.user.datas;
-			// console.log("this.UserDatas lastname: ", this.UserDatas.last_name)
 		}
 		else
 		{
@@ -141,45 +140,12 @@ export default class extends AbstractView {
 			const friends = this.UserDatas.follows;
 			if (!friends)
 				return
-			// console.log("friends ", friends)
 			friends.forEach(async friend_id => {
 				const nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend_id);
 				dest_container.appendChild(nodeCopy);
 			})
 		});
 
-
-		/*
-		Promise.all(
-			(this.user.datas.follows).map(async (followed) => {
-				// console.log("followed: ", followed);	
-				let url = '/api/users/profile/'+followed+'/';
-				let response = await this.user.request.get(url);
-				const userListContainer = document.getElementById("userList");
-				const userDiv = document.createElement("div");
-
-				if (response.ok) {
-					const users_followed = await response.json();
-					if (users_followed.id == undefined || users_followed.username == "root")
-						return;
-
-					userDiv.innerHTML = userListContainer.innerHTML; // Copie le HTML depuis le fichier HTML
-					userDiv.querySelector("#friend_avatar").src = users_followed.avatar;
-					userDiv.querySelector("#friend_username").textContent = users_followed.username;
-					userDiv.querySelector("#friend_status").textContent = users_followed.status;
-			  
-				}
-				
-				else
-					console.log("Not ok");
-				userListContainer.appendChild(userDiv);
-			
-		}),
-		)
-		.catch((error) => {
-			console.error("Une erreur s'est produite lors du traitement des requêtes :", error);
-		});
-		*/
 	}
 
 	formatDate = (isoDate) => {

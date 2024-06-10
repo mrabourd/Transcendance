@@ -70,13 +70,13 @@ CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_ALLOWED_ORIGINS").split(" ")
 
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'None'
-# CSRF_COOKIE_AGE = 36000
+CSRF_COOKIE_AGE = 36000
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = True 
 # Durée de vie de la session en secondes (1 heure)
-# SESSION_COOKIE_AGE = 36000
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 36000
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 AUTH_USER_MODEL = 'users.User'
 # Application definition
@@ -203,6 +203,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
     'ROTATE_REFRESH_TOKENS': True,
     'AUTH_COOKIE_PATH' : '/',
+    'AUTH_COOKIE_SECURE' : True,
   # It will work instead of the default serializer(TokenObtainPairSerializer).
   	"TOKEN_OBTAIN_SERIALIZER": "users.serializers.CustomTokenObtainPairSerializer",
 	"USER_ID_FIELD": "id",

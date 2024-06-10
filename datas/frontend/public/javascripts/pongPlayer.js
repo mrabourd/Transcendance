@@ -62,11 +62,5 @@ export default class extends AbstractPong {
 		this._game.playerleft.y -= 10;
 		this.setPlayerLeftValues(this._game.playerleft.y);
 	}
-
-
-	//playerLeftMove() {
-		// console.log("computer not playing this time");
-        //this._game.computer.y += this._game.ball.speed.y * 0.85;
-   // }
     
 }

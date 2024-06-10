@@ -20,12 +20,15 @@ export default class extends AbstractPong {
 	
 	connect = () =>
     {
-        console.log("PongSocket creation")
 		this.PongSocket = new WebSocket(
 			this.user.request.url_wss+'/ws/pong/'+ this.match_id +'/?token=' + this.user.request.getJWTtoken()["access"]
 		);
-		this.PongSocket.onopen = function(e) {console.log('Socket connected for online pong.');};
-		this.PongSocket.onclose = function(e) {this.PongSocket = null; console.warn('Socket connection closed ...');};
+		this.PongSocket.onopen = function(e) {
+
+		};
+		this.PongSocket.onclose = function(e) {
+			this.PongSocket = null; 
+		};
 		this.PongSocket.onerror = function(e) {
 			document.querySelector("#app").innerHTML = "An error occured ... WSS connection can be established"
 		};
@@ -77,12 +80,10 @@ export default class extends AbstractPong {
 			winner = this._game["playerright"]["username"]
 		context.fillText(`The winner is ${winner}`, canvas.width / 2, canvas.height / 2);
 		let button = document.querySelector('#app button.redirection')
-		console.log(this._game)
 		if (this._game["infos"]["tournament_id"])
 		{
 			button.textContent = "View Tournament page"
 			button.addEventListener('click',  async e => {
-				console.log("ici")
 				e.preventDefault();
 				this.user.router.navigateTo(`/tournament/${this._game["infos"]["tournament_id"]}`, this.user)
 			})

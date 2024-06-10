@@ -33,12 +33,9 @@ router.post('/upload', function (req, res) {
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
-      console.log('A Multer error occurred when uploading.');
     } else if (err) {
-      console.log('err',err )
       // An unknown error occurred when uploading.
     }
-    console.log('Everything went fine.' );
     // Everything went fine.
   })
 })
@@ -58,7 +55,8 @@ router.get('/get_env', function (req, res) {
     HOST: process.env.HOST,
     URL_BACK: process.env.URL_BACK,
     URL_FRONT: process.env.URL_FRONT,
-    URL_WSS: process.env.URL_WSS
+    URL_WSS: process.env.URL_WSS,
+    API42_URL: process.env.API42_URL
   });
 });
 

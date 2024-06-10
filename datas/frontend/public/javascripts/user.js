@@ -61,14 +61,7 @@ export default class User {
             let jsonData = await response_copy.json();
             this.setLocalDatas(jsonData.user);
             this.request.setJWTtoken(jsonData.access, jsonData.refresh);
-            this.isConnected = true;
-    
-            /* const resp_csrf = await this.request.post('/api/users/ma_vue_protegee/');
-            if (resp_csrf.status === 403) {
-                console.warn("Attaque CSRF");
-                return true;
-            } */
-			
+            this.isConnected = true;			
             this.websockets = new Websockets(this)
             await this.view.printHeader();
             await this.view.printAside();

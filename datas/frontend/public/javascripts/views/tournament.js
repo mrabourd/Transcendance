@@ -33,10 +33,6 @@ export default class extends AbstractView {
             document.querySelectorAll('form input[type="text"]').forEach(input => {
                 input.addEventListener("focusout", utils.checkBlankField);
             });
-            // document.querySelectorAll('form .create_tournament').forEach(input => {
-            //     // input.addEventListener("focusout", this.checkIfSame);
-            //     console.log("input: ", input)
-            // });
         }
     }
 
@@ -155,7 +151,6 @@ export default class extends AbstractView {
             }
             for (let i = 0; i < 4 ; i++){
                 if (players[i] == picks[0] || players[i] == picks[1]){
-					console.log("continue");
 					continue;
 				}
                 else{
@@ -181,7 +176,6 @@ export default class extends AbstractView {
             p2 == p3 || p2 == p4 ||
             p3 == p4)
         {
-            console.log("cannot work");
             errDiv.classList.remove("d-none");
             errDiv.innerHTML = "You cannot add the same names";
             return;
@@ -195,9 +189,6 @@ export default class extends AbstractView {
         else
             errDiv.classList.add("d-none");
             
-        console.log("name of the tournament: ", nametournament);
-        // checker que les champs sont bien remplis
-
         let action = "create";
         let picks = [];
 		

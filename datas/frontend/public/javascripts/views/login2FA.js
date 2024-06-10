@@ -27,7 +27,6 @@ export default class extends AbstractView {
     }
 
 	async  addEvents () {
-		console.log("enter login 2FA")
 		document.querySelector(".verify").classList.add("d-none");
 		document.getElementById("send_code").addEventListener('click', async (event) =>  {
 			event.preventDefault();
@@ -36,7 +35,6 @@ export default class extends AbstractView {
 	}
 	
 	login2FA = async () => {
-		console.log("enter login 2FA function")
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
 		let password = document.getElementById("password").value;
@@ -52,7 +50,6 @@ export default class extends AbstractView {
 			document.querySelector(".verify").classList.remove("d-none")
 			if (jsonData.error)
 			{
-				console.log("error in resp_2FA")
 				let errDiv = document.getElementById("errorFeedback");
 				errDiv.classList.remove("d-none")
 				errDiv.innerHTML = "Bad input!";
@@ -65,24 +62,11 @@ export default class extends AbstractView {
 					event.preventDefault();
 					this.verify2FA();
 				})
-				// this.user.setLocalDatas(jsonData.user)
-				// this.user.request.setJWTtoken(jsonData.access, jsonData.refresh)
-	
-				// this.user.isConnected = true;
-	
-				// const resp_csrf = await this.user.request.post('/api/users/ma_vue_protegee/');
-				// if(resp_csrf.status == 403)
-				// {
-				// 	console.warn("CSRF attack")
-				// 	return true;
-				// }
-				// this.user.router.navigateTo('/profile/', this.user);
 			}
 			
 			// return resp_2FA;
 		}
 		else if (resp_2FA.status === 404) {
-			console.log("error 404")
 			let errDiv = document.getElementById("errorFeedback");
 			errDiv.classList.remove("d-none")
 			errDiv.innerHTML = 'The domain of your email is invalid';
@@ -90,7 +74,6 @@ export default class extends AbstractView {
 			return jsonData.detail;
 		}
 		else if (resp_2FA.status === 400) {
-			console.log("error 400")
 			let errDiv = document.getElementById("errorFeedback");
 			errDiv.classList.remove("d-none")
 			errDiv.innerHTML = "Bad input!";
@@ -116,10 +99,7 @@ export default class extends AbstractView {
 			const jsonData = await verif_2FA.json();
 			if (jsonData.error)
 			{
-				console.log("error in verif_2FA")
-			//     document.querySelector('#app').innerHTML =
-			//         `<h1>${jsonData.error}</h1>
-			//         <p>${jsonData.error_description}</p>`
+				
 			}
 			else
 			{

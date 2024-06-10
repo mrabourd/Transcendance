@@ -79,9 +79,7 @@ export default class AbstractPong {
 
 	
 	start = (fps) => {
-		console.log("start")
 		document.querySelector("#winner").classList.add("d-none");
-		console.log("hide winner");
 		document.querySelector('#start-game').innerHTML = "Pause game";
 		this._game.playerleft.score = 0;
 		this._game.playerright.score = 0;
@@ -208,7 +206,6 @@ export default class AbstractPong {
 	}
 
 	pause = () => {
-		console.log("pause");
 		if (document.querySelector('#start-game').innerHTML == "Pause game"){
 			document.querySelector('#start-game').innerHTML = "Start game";
 		}
@@ -225,7 +222,6 @@ export default class AbstractPong {
 	}
 
 	stop = () => {
-		console.log("stop");
 		document.querySelector('#start-game').innerHTML = "Start game";
 		document.querySelector('#app .scores .playerleft .score').innerHTML = 0;
 		document.querySelector('#app .scores .playerright .score').innerHTML = 0;

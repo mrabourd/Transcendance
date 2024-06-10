@@ -59,14 +59,11 @@ export default class extends AbstractView {
 		const user = this.user;
 		if (friends_utils.is_blocked_by(user, this.friend_id) == true ||
 				friends_utils.is_blocked(user, this.friend_id) == true){
-			// console.log("you cannot talk to this person");
 			document.getElementById("chat-message-input").classList.add("d-none")
 			document.getElementById("chat-message-submit").classList.add("d-none")
-			// document.querySelector(".message").classList.add("text-secondary")
 			return true;
 		}
 		else {
-			// console.log("please talk to this person");
 			document.getElementById("chat-message-input").classList.remove("d-none")
 			document.getElementById("chat-message-submit").classList.remove("d-none")
 			return false;
@@ -74,16 +71,6 @@ export default class extends AbstractView {
 	}
 
 	async addEvents() {
-
-		//console.log('datas',user.datas)
-		console.log("send_message", this.user.datas.id)
-
-        /*
-        if (this.user.datas.id == friend_id) {
-			return false
-		}
-        */
-		console.log(this.user.datas.username + ' is connected to the chatroom.');
 		const user = this.user;
 		
 
@@ -95,18 +82,15 @@ export default class extends AbstractView {
 
 			// on socket open
 			this.chatSocket.onopen = (e) => {
-				console.log('Socket between ' + user.datas.id + ' and ' + this.friend_id + ' successfully connected.');
 			};
 			this.chatSocket.onclose = function(e) {
-				console.error('Chat socket closed unexpectedly');
+				// TODO reconnect 
 			};
 
 
 			// on socket close
 			this.chatSocket.onmessage = (e) => {
 				const data = JSON.parse(e.data);
-				// console.log("data.message: ", data.message)
-				// console.log("data.id: ", data.id)
 				if (data.message == `\n`){
 					return;
 				}
@@ -144,9 +128,6 @@ export default class extends AbstractView {
 	historyJSON = async (history) => {
 		let messageHistory = await history.json();
 		let currentUser = this.user.datas.id;
-		console.log(messageHistory.length);
-	
-
 		if (messageHistory.length > 0){
 			messageHistory.forEach(message => {
 
@@ -224,7 +205,6 @@ export default class extends AbstractView {
 
 			}
 			else{
-				// console.log("send notif pls")
 				return;
 			}
 		}

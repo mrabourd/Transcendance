@@ -70,7 +70,6 @@ export default class extends AbstractView {
                     this.user.saveDatasToLocalStorage()
                 }
             }
-            console.log('response : ', response)
         })
     }
 
@@ -126,7 +125,6 @@ export default class extends AbstractView {
                 nodePlayer2.classList.add('col-md-4')
                 nodePlayer2.querySelector(".dropdown").innerHTML = ''
                 friends_utils.update_status_text(nodePlayer2)
-                // console.log(nodePlayer2)
 
 
                 var VS = document.createElement('div')
@@ -202,7 +200,6 @@ export default class extends AbstractView {
         else
         {
             invitations_sent.forEach(async invitation => {
-                console.log('invitation :', invitation)
                 nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, invitation)
                 let bt_cancel = '<a class="cancel btn btn-primary btn-sm" role="button">cancel</a>'
                 nodeCopy.querySelector(".dropdown").innerHTML = bt_cancel

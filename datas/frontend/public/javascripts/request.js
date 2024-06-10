@@ -1,11 +1,12 @@
 
 export default class Request {
-    constructor(url_backend, url_origin, url_wss, host) {
+    constructor(url_backend, url_origin, url_wss, host, api42_url) {
 
         this.url_origin = url_origin
         this.url_backend = url_backend
         this.url_wss = url_wss
         this.host = host
+        this.api42_url = api42_url
     }
 
     static async create() {
@@ -16,7 +17,7 @@ export default class Request {
 
         try {
             let JSONResponse = JSON.parse(textResponse); // Parse the response manually
-            return new Request(JSONResponse['URL_BACK'], JSONResponse['URL_FRONT'], JSONResponse['URL_WSS'], JSONResponse['HOST']);
+            return new Request(JSONResponse['URL_BACK'], JSONResponse['URL_FRONT'], JSONResponse['URL_WSS'], JSONResponse['HOST'], JSONResponse['API42_URL']);
         } catch (e) {
             console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
             throw e; // Re-throw the error after logging it
@@ -68,7 +69,6 @@ export default class Request {
             }
             else if (response.status == 403 && response.statusText == "Forbidden")
             {
-                console.warn("############# REFRESH CSRF")
                 this.rmCsrfToken()
                 let RefreshResponse = await this.refreshCsrftoken();
                 //if (RefreshResponse.ok)
@@ -119,8 +119,19 @@ export default class Request {
                 method: 'GET',
                 headers: await this.get_request_header(),
             });
+
             if (response.headers.has('X-CSRFToken'))
+            {
+                console.log("response.headers.has('X-CSRFToken')")
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
+
+            }
+            if(response.headers.has('csrftoken'))
+            {
+                console.log("response.headers.has('csrftoken')")
+
+                this.setCookie('csrftoken', 'Strict', response.headers.get('csrftoken'), 1)
+            }
  
             if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
             {

@@ -16,18 +16,15 @@ export default class Websockets {
 		);
 		// on socket open
 		this.notifySocket.onopen = function (e) {
-			// console.log('Socket successfully connected.');
 		};
 		// on socket close
 		this.notifySocket.onclose = function (e) {
-			//console.log('Socket closed');
+			// TODO reconnect notifysocker
 		};
 
 		// on receiving message on group
 		this.notifySocket.onmessage = async (e) => {
 			const data = JSON.parse(e.data);
-			// console.log("data.sender: ", data.sender)
-			// console.log("data.code_name: ", data.code_name)
 			if(data.error && data.error == 'token_not_valid')
 			{
 				let RefreshResponse = await this.user.request.refreshJWTtoken();
@@ -67,16 +64,12 @@ export default class Websockets {
     }
 
 	async update_profile(data){
-		console.log("update profile", data)
 		let friend_id = data.sender;
 		let username = data.message.username;
 		let avatar = data.message.avatar;
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
 		
-		console.log("profile_cards", profile_cards)
-
 		profile_cards.forEach(profile_card => {
-			console.log('profile_card', profile_card)
 			profile_card.querySelector('.avatar').src = avatar;
 			profile_card.querySelector('.username').innerHTML = username;
 		});
@@ -89,7 +82,6 @@ export default class Websockets {
 
 	async update_follow(data)
 	{
-		// console.log("enter update block")
 		let friend_id = data.sender;
 		if (data.code_value == 1) // following someone 
 		{
@@ -102,7 +94,6 @@ export default class Websockets {
 		if (data.code_value == 2) // unfollowing someone
 		{
 			this.user.datas.followed_by = this.user.datas.followed_by.filter(id => id !== data.sender);
-			// console.log("user: ", this.user.datas, "followed by: ", this.user.datas.followed_by);
 		}
 		this.user.saveDatasToLocalStorage()
 		friends_utils.update_profile_cards_text(this.user)
@@ -116,7 +107,6 @@ export default class Websockets {
 
 	async update_block(data)
 	{
-		// console.log("enter update block")
 		let friend_id = data.sender;
 		if (data.code_value == 1) // blocking someone 
 		{
@@ -137,14 +127,12 @@ export default class Websockets {
 	}
 
 	update_msg_link(data){
-		// console.log("enter update_msg_link")
 		let friend_id = data.sender;
 		data.link = "/chatroom/" + friend_id;
 	}
 
 	print_notification(data)
 	{
-		// console.log("enter print_notification : data", data)
 		if (location.pathname == data.link){
 			this.count = 0;
 			return;
@@ -184,7 +172,6 @@ export default class Websockets {
 
 	async update_invitation(data)
 	{
-		console.log("enter update_invitation")
 		if (data.code_value == 1) // invitation received
 		{
 			if (!this.user.datas.received_invitations.includes(data.sender))
@@ -216,7 +203,6 @@ export default class Websockets {
 
 	async update_status(data)
 	{
-		// console.log("update_status")
 		let friend_id = data.sender
 		let friend_status = data.code_value
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);

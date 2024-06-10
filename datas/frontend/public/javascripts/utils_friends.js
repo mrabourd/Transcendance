@@ -24,7 +24,6 @@ export function is_followed(user, friend_id)
 
 export async function block(user, friend_id, action)
 {
-    // console.log("enter block")
     let response = await user.request.get(`/api/users/${action}/${friend_id}/`)
     if (response.status == 200)
     {
@@ -58,7 +57,6 @@ export async function invite(user, friend_id, action)
 
         }else if (action == 'cancel'){
             user.datas.status = USER_STATUS["ONLINE"]
-            // console.log("CANCEL invitation", friend_id)
             user.datas.invitations_sent = user.datas.invitations_sent.filter(id => id !== friend_id);
 
         }else if (action == 'deny' || action == 'accept' ){
@@ -262,7 +260,6 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alia
     let existing_thumbnail = document.querySelector(`aside .profile_card[data-friend-id="${friend_id}"]`)
     if (existing_thumbnail)
     {
-        // console.log('existing_thumbnail')
         return existing_thumbnail.cloneNode(true)
     }
     if (friend == null)

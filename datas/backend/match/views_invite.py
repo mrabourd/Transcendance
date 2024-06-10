@@ -22,7 +22,6 @@ class Subscribe(APIView):
 	# Cette méthode gère les requêtes POST
 	def post(self, request):
 		current_user = request.user
-		print(">>>>>>>>>>>>>>>> Subscribe")
 		# Try to find another user with status WAITING_PLAYER
 		waiting_user = User.objects.filter(status=User.USER_STATUS['WAITING_PLAYER']).exclude(id=current_user.id).first()
 		if waiting_user:

@@ -54,7 +54,6 @@ export default class extends AbstractView {
         this.user.request.post('/api/users/register/', RQ_BODY)
         .then((response) =>
         {
-            console.log("Register Response :", response)
             if (response.ok || response.status == 400)
                 return Promise.all([response.json(), response.ok, response.status]);
             else

@@ -4,8 +4,6 @@ import {USER_STATUS} from "./config.js";
 
 export function send_message(user,friend_id )
 {
-    //console.log('datas',user.datas)
-    console.log("send_message", user.datas.id)
     if (user.datas.id == friend_id) {
 		return false
 	}
@@ -16,12 +14,11 @@ export function send_message(user,friend_id )
 	
 	// on socket open
 	chatSocket.onopen = function (e) {
-		console.log('Socket successfully connected.');
 	};
 	
 	// on socket close
 	chatSocket.onclose = function (e) {
-		console.log('Socket closed unexpectedly');
+		// TODO reconnect chatSocket ?
 	};
 	
 	// on receiving message on group

@@ -18,7 +18,6 @@ export function FormAppendElements(parent, ...children) {
 
 export function printError(f, isError, innerText)
 {
-    console.log("printError", f, isError, innerText)
     let field = document.querySelector(`form #${f}`)
     if (isError && f != 'error')
     {
