@@ -53,10 +53,6 @@ export default class Websockets {
 				this.update_follow(data)
 			}
 
-			if (data.code_name == "PFL"){
-				this.update_profile(data)
-			}
-
 			if (data.message)
 			{
 				this.print_notification(data)
@@ -65,10 +61,6 @@ export default class Websockets {
 			
 		};
     }
-
-	async update_profile(data){
-		console.log("update thumbnails pls", data)
-	}
 
 	async update_follow(data)
 	{

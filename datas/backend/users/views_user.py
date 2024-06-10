@@ -60,17 +60,6 @@ class UsersAPIView(APIView):
 
 
 class UserDetail(APIView):
-
-	# def current_profile(self):
-	# 	try:
-	# 		return self.request.data.get('me')
-	# 	except User.DoesNotExist:
-	# 		raise Http404
-			
-	# def other_profiles(self, current_user):
-	# 	online_users = User.objects.filter(status=User.USER_STATUS['ONLINE']).exclude(id=current_user.id).distinct()
-	# 	return online_users
-
 	def get_user(self, id):
 		return get_object_or_404(User, id=id)
 
@@ -86,12 +75,8 @@ class UserDetail(APIView):
 		#response['Access-Control-Allow-Credentials'] = 'true'
 		return response
 
-
 	def put(self, request, id, format=None):
-		pk = id
-		user = request.user
-		other_profiles = User.objects.filter(status=User.USER_STATUS['ONLINE']).exclude(id=user.id).all()
-
+		user = self.get_user(id)
 		if user.id != request.user.id:
 			return Response(status=status.HTTP_401_UNAUTHORIZED)
 		
@@ -120,11 +105,11 @@ class UserDetail(APIView):
 class FollowUser(APIView):
 	permission_classes = [IsAuthenticated]
 
-	# def current_profile(self):
-	# 	try:
-	# 		return self.request.data.get('me')
-	# 	except User.DoesNotExist:
-	# 		raise Http404
+	def current_profile(self):
+		try:
+			return self.request.data.get('me')
+		except User.DoesNotExist:
+			raise Http404
 			
 	def other_profile(self, pk):
 		try:

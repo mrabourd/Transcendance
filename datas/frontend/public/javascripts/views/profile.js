@@ -381,10 +381,8 @@ export default class extends AbstractView {
 				this.user.request.put('/api/users/profile/'+this.user.datas.id+'/', RQ_Body)
 				.then((response) =>
 				{
-					if (response.ok || response.status === 400){
-						
+					if (response.ok || response.status === 400)
                     	return Promise.all([response.json(), response.ok, response.status]);
-					}
                 	else
                     	throw new Error('Network response was not ok.');
 				})
@@ -405,7 +403,6 @@ export default class extends AbstractView {
 					}
 					else
 					{
-						console.log("jsonData: ", jsonData)
 						document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
 							input.classList.remove(`is-invalid`)
 							input.classList.remove(`is-valid`)
