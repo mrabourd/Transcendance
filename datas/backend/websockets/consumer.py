@@ -157,7 +157,7 @@ class GeneralNotificationConsumer(AsyncWebsocketConsumer):
 			await self.channel_layer.group_discard(f"{self.user.id}", self.channel_name)
 			# set user status to OFFLINE & send a notification to users
 			self.user.status = User.USER_STATUS['OFFLINE']
-			await sync_to_async(self.user.save, thread_sensitive=True)()
+			# await sync_to_async(self.user.save, thread_sensitive=True)()
 			await sync_to_async(Notification.objects.create)(type="public",code_name="STA",code_value=self.user.status,sender=self.user,receiver=self.user,link=None)
 
 		except Exception as e:
