@@ -42,13 +42,14 @@ export default class extends AbstractPong {
 			this._game = data
 			await this.print_players();
 			this.draw();
-			this.print_scores();
+			// this.print_scores();
 		}
 
     }
 	async print_players(){
 		if (document.querySelector('#app .scores .playerleft').innerHTML == "")
 		{
+
 			let player_left_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, this._game["playerleft"]["id"], this._game["playerleft"]["username"])
 			let player_right_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, this._game["playerright"]["id"], this._game["playerleft"]["username"])
 			if (document.querySelector('#app .scores .playerleft').innerHTML == "")
@@ -58,6 +59,8 @@ export default class extends AbstractPong {
 					// If Anonymous
 					document.querySelector('#app .scores .playerleft .username').innerHTML = this._game["playerleft"]["username"]
 					document.querySelector('#app .scores .playerright .username').innerHTML = this._game["playerright"]["username"]
+					document.querySelector('#app .playerleft .dropdown-toggle').classList.add('d-none')
+					document.querySelector('#app .playerright .dropdown-toggle').classList.add('d-none')
 				}
 		}
 	}

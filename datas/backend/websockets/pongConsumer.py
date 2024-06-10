@@ -329,9 +329,9 @@ class PongConsumer(AsyncWebsocketConsumer):
 				self._game["pong"].moveUp(self.get_player_role())
 			elif player_move['down']:
 				self._game["pong"].moveDown(self.get_player_role())
-			if player_move['opp_up']:
+			if player_move['opp_up'] and self._game["type"] == "local":
 				self._game["pong"].moveUp(self.get_opponent_role())
-			elif player_move['opp_down']:
+			elif player_move['opp_down'] and self._game["type"] == "local":
 				self._game["pong"].moveDown(self.get_opponent_role())
 
 	async def send_game_state_periodically(self):

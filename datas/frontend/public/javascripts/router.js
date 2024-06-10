@@ -45,7 +45,7 @@ export const router = async (user) => {
         { id:1, path: "/login2FA", view: login2FA },
         { id:2, path: "/register", view: register },
         { id:3, path: "/home", view: home },
-        // { id:5, path: "/profile/:user_id/:tab", view: profile },
+        { id:5, path: "/profile/:user_id/:tab", view: profile },
         { id:5, path: "/profile", view: profile },
         { id:5, path: "/profile/:user_id", view: profile },
         { id:5, path: "/profile", view: profile },
