@@ -109,8 +109,6 @@ export default class extends AbstractView {
 	}
 
 	async fillHtml(DOM) {
-		if (!this.is_user_page())
-			document.querySelector(".mt-2.image-upload").innerHTML = "";
 		this.fillProfile()
 		this.fillFollowed()
 
@@ -308,14 +306,26 @@ export default class extends AbstractView {
 		if(!this.UserDatas)
 			return;
 
-		document.querySelector(".user_username").innerHTML = this.UserDatas.username;
-		document.querySelector(".id").innerHTML = this.UserDatas.id;
-		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ? this.UserDatas.avatar : "/avatars/default.png";
+
+		var profile_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  this.UserDatas.id)
+		
+		document.querySelector("#app .profile_thumbnail").appendChild(profile_thumb)
+		if (this.is_user_page())
+		{
+		profile_thumb.querySelector('.dropdown').innerHTML = '<div class="mt-2 image-upload"><input type="file" id="fileInput"  accept="image/*"  class=""><i class="fa fa-fw fa-camera"></i></div><p id="status"></p>';
+		document.getElementById("fileInput").addEventListener('change', async () =>  {
+			document.getElementById("fileInput")
+			document.querySelector("#status").innerText = "reading URL";
+			this.readURL(document.getElementById("fileInput"));
+		});
+		}
+
 		document.querySelector(".tab-pane.profile #username").value = this.UserDatas.username;
 		document.querySelector(".tab-pane.profile #first_name").value = this.UserDatas.first_name;
 		document.querySelector(".tab-pane.profile #last_name").value = this.UserDatas.last_name;
 		document.querySelector(".tab-pane.profile #email").value = this.UserDatas.email;
 		document.querySelector(".tab-pane.profile #biography").value = this.UserDatas.biography;
+		return 1;
 	}
 
 
@@ -354,12 +364,7 @@ export default class extends AbstractView {
 		// USER PROFILE FORM
 		if (this.is_user_page())
 		{
-			document.getElementById("fileInput").addEventListener('change', async () =>  {
-				
-				document.getElementById("fileInput")
-				document.querySelector("#status").innerText = "reading URL";
-				this.readURL(document.getElementById("fileInput"));
-			});
+
 			document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
 				input.addEventListener("focusout", form.checkBlankField);
 			});
@@ -371,7 +376,7 @@ export default class extends AbstractView {
 				if (!this.checkAllFields())
 					return false;				
 				let RQ_Body = {
-					avatar: document.querySelector("#avatar").src,
+					avatar: document.querySelector("#app .profile_thumbnail .profile_card .avatar").src,
 					username: document.querySelector("#username").value,
 					first_name: document.querySelector("#first_name").value,
 					last_name: document.querySelector("#last_name").value,
@@ -407,13 +412,7 @@ export default class extends AbstractView {
 							input.classList.remove(`is-invalid`)
 							input.classList.remove(`is-valid`)
 						});
-						this.user.setLocalDatas(jsonData.datas)
-						//this.user.request.rmJWTtoken();
-						//await this.user.request.setJWTtoken(jsonData.access, jsonData.refresh);
-						
-						await this.user.request.refreshJWTtoken();
-						//await this.user.RefreshLocalDatas();
-
+						this.user.setLocalDatas(jsonData)
 						let errDiv = document.querySelector("#ProfileForm #errorFeedback");
 						errDiv.classList.remove("d-none", "alert-danger")
 						errDiv.classList.add("alert-success")
@@ -468,7 +467,7 @@ export default class extends AbstractView {
 				})
 				.then(response => {
 					if (response.ok) {
-						document.getElementById("avatar").setAttribute('src', './avatars/' + response.message);
+						document.querySelector("#app .profile_thumbnail .profile_card .avatar").setAttribute('src', './avatars/' + response.message);
 
 						document.getElementById('status').innerText = 'Image uploadée avec succès !';
 					} else {

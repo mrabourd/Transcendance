@@ -31,9 +31,9 @@ export default class {
     }
 
 
-    printHeader()
+    async printHeader()
     {
-        header.print(this.user);
+        await header.print(this.user);
     }
     async printAside()
     {

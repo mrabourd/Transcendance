@@ -94,14 +94,13 @@ class CustomLogoutView(APIView):
 	def post(self, request, *args, **kwargs):
 		try:
 			if request.user and request.user.is_authenticated:
-				#print("logout self.user", self.user)
 				print("logout request.user", request.user)
 				request.user.SetStatus(User.USER_STATUS['OFFLINE'])
-				#logout(request)
-				#token = RefreshToken(request.data.get('refresh'))
-				#token.blacklist()
+				logout(request)
+				token = RefreshToken(request.data.get('refresh'))
+				token.blacklist()
 				response = Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
-				#response.delete_cookie('csrftoken')
+				response.delete_cookie('csrftoken')
 				return response
 			else:
 				return Response({"error": "User not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)

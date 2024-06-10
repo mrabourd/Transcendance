@@ -57,7 +57,7 @@ export default class Websockets {
 				this.update_profile(data)
 			}
 
-			if (data.message)
+			if (data.message && data.code_name != "PFL")
 			{
 				this.print_notification(data)
 				//router.router(this.user);
@@ -69,7 +69,19 @@ export default class Websockets {
 	async update_profile(data){
 		console.log("update profile", data)
 		let friend_id = data.sender;
-		this.user.saveDatasToLocalStorage()
+		let username = data.message.username;
+		let avatar = data.message.avatar;
+		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
+		
+		console.log("profile_cards", profile_cards)
+
+		profile_cards.forEach(profile_card => {
+			console.log('profile_card', profile_card)
+				profile_card.querySelector('.username').innerHTML = username;
+		});
+
+		
+		//this.user.saveDatasToLocalStorage()
 		friends_utils.update_profile_cards_text(this.user)
 		// this.user.router.navigateTo('/profile/' + friend_id, this.user);
 	}

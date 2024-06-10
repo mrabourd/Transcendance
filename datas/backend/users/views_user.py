@@ -69,14 +69,9 @@ class UserDetail(APIView):
 		response_data = serializer.data
 		
 		response = JsonResponse(response_data, safe=False)
-		#response['X-CSRFToken'] = get_token(request)
-		#response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
-		#response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
-		#response['Access-Control-Allow-Credentials'] = 'true'
 		return response
 
 	def put(self, request, id, format=None):
-		pk = id
 		user = self.get_user(id)
 		if user.id != request.user.id:
 			return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -87,20 +82,16 @@ class UserDetail(APIView):
 			serializer = UserSerializer(user)
 			notif_message = f'{user.username} has changed some infos'
 
-			print("UPDATE OK  username = ", user)
-			print("UPDATE OK  username = ", user)
-
-			for online in other_profiles:
-				notification = create_notif(user, online, 1, notif_message, "PFL", pk)
-			#refresh = RefreshToken.for_user(user)
-			return_datas = {
-				'refresh': 'str(refresh)',
-				'access': 'str(refresh.access_token)',
-				'datas': serializer.data
-			}
-
-			# return JsonResponse(response_data)
-			return Response(return_datas)
+			Notification.objects.create(
+				type="public",
+				code_name="PFL",
+				code_value=1,
+				message={'username':user.username, 'avatar':user.avatar},
+				sender=user,
+				receiver=user,
+				link=f"/profile/{str(user.id)}"
+			)
+			return Response(serializer.data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class FollowUser(APIView):

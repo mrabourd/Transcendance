@@ -9,7 +9,7 @@ class Notification(models.Model):
     type = models.CharField(max_length=100, default='public')
     code_name = models.CharField(max_length=3, default="000")
     code_value = models.IntegerField(default=0)
-    message = models.CharField(max_length=100)
+    message = models.CharField(max_length=800)
     sender = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="sender", null=True, blank=True)
     receiver = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="receiver", null=True, blank=True)
     link = models.CharField(max_length=100, null=True, blank=True)
