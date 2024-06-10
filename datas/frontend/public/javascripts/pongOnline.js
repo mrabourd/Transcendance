@@ -57,6 +57,7 @@ export default class extends AbstractPong {
 					document.querySelector('#app .scores .playerleft').appendChild(player_left_thumb)
 					document.querySelector('#app .scores .playerright').appendChild(player_right_thumb)
 					// If Anonymous
+					console.log("player_left_thumb.username", player_left_thumb)
 					document.querySelector('#app .scores .playerleft .username').innerHTML = this._game["playerleft"]["username"]
 					document.querySelector('#app .scores .playerright .username').innerHTML = this._game["playerright"]["username"]
 					document.querySelector('#app .playerleft .dropdown-toggle').classList.add('d-none')

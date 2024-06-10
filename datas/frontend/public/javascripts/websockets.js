@@ -53,6 +53,10 @@ export default class Websockets {
 				this.update_follow(data)
 			}
 
+			if (data.code_name == "PFL"){
+				this.update_profile(data)
+			}
+
 			if (data.message)
 			{
 				this.print_notification(data)
@@ -61,6 +65,14 @@ export default class Websockets {
 			
 		};
     }
+
+	async update_profile(data){
+		console.log("update profile", data)
+		let friend_id = data.sender;
+		this.user.saveDatasToLocalStorage()
+		friends_utils.update_profile_cards_text(this.user)
+		// this.user.router.navigateTo('/profile/' + friend_id, this.user);
+	}
 
 	async update_follow(data)
 	{
@@ -81,11 +93,12 @@ export default class Websockets {
 		}
 		this.user.saveDatasToLocalStorage()
 		friends_utils.update_profile_cards_text(this.user)
-        if(location.pathname == '/profile/' + friend_id){
-			this.user.router.navigateTo('/profile/' + friend_id, this.user);
+        if(location.pathname == `/profile/${friend_id}/followed`){
+			// this.user.router.navigateTo('/profile/' + friend_id, this.user);
+			this.user.router.navigateTo(`/profile/${friend_id}/followed`, this.user)
 		}
 		// this.user.router.navigateTo('/profile/' + friend_id, this.user);
-		data.link = '/profile/' + friend_id;
+		data.link = `/profile/${friend_id}/followed`;
 	}
 
 	async update_block(data)

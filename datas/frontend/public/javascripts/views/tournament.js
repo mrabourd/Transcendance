@@ -28,9 +28,29 @@ export default class extends AbstractView {
     async addEvents () {
         if (this.params.tournament_id)
             this.display_tournament_infos(this.params.tournament_id)
-        else
+        else{
             this.display_tournament_form();        
+            document.querySelectorAll('form input[type="text"]').forEach(input => {
+                input.addEventListener("focusout", utils.checkBlankField);
+            });
+            // document.querySelectorAll('form .create_tournament').forEach(input => {
+            //     // input.addEventListener("focusout", this.checkIfSame);
+            //     console.log("input: ", input)
+            // });
+        }
     }
+
+    // async checkIfSame(event){
+    //     let value = event.target.value;
+    //     document.querySelectorAll('form input[type="text"]').forEach(name => {
+    //         if (name == value){
+    //             document.querySelector("#app #errorFeedback").classList.add(`is-invalid`);
+    //             document.querySelector("#app #errorFeedback").innerHTML = "This fields must not be blank";
+    //             return false;
+    //         }
+    //     });
+    //     return true;
+    // }
 
     async display_tournament_infos(id_tournament){
         let response = await this.user.request.get(`/api/match/tournament/${this.params.tournament_id}/`)

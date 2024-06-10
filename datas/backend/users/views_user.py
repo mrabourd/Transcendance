@@ -76,6 +76,7 @@ class UserDetail(APIView):
 		return response
 
 	def put(self, request, id, format=None):
+		pk = id
 		user = self.get_user(id)
 		if user.id != request.user.id:
 			return Response(status=status.HTTP_401_UNAUTHORIZED)
