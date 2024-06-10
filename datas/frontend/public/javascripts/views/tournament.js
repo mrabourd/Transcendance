@@ -62,12 +62,15 @@ export default class extends AbstractView {
             let id_match = 0
             let id_player = 0
             document.querySelector('#app table.tournament_matchs').classList.remove("d-none");
+            document.querySelector('#app tbody.matchs').innerHTML = '';
             // document.querySelector('#app form.create_tournament').remove("d-none")
             let JSONResponse = await response.json()
-            console.log("response match: ", JSONResponse);
             document.querySelector('#app h1.tournament_name').innerHTML = JSONResponse[0]['name']
             document.querySelector('#app p.tournament_info').innerHTML = JSONResponse[0]['status']
             this.setTitle(JSONResponse[0]['name']);
+
+            JSONResponse[0]["matches"].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
             JSONResponse[0]["matches"].forEach(match => {
                 id_match++;
                 tr = document.createElement("tr")

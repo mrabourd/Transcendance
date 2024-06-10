@@ -82,6 +82,7 @@ export default class extends AbstractPong {
 		{
 			button.textContent = "View Tournament page"
 			button.addEventListener('click',  async e => {
+				console.log("ici")
 				e.preventDefault();
 				this.user.router.navigateTo(`/tournament/${this._game["infos"]["tournament_id"]}`, this.user)
 			})
