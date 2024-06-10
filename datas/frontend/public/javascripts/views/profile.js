@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import * as form from "../utils_form.js"
 import * as friends_utils from "../utils_friends.js"
+import * as router from "../router.js"
 
 export default class extends AbstractView {
 	constructor(params) {
@@ -77,7 +78,8 @@ export default class extends AbstractView {
 			else
 			{
 				let del = document.querySelector('.nav-item[data-target="followed"]');
-				del.remove()
+				if (del != null)
+					del.remove()
 			}
 		}).catch(function (err) {
 			// There was an error
@@ -111,6 +113,8 @@ export default class extends AbstractView {
 		this.fillProfile()
 		this.fillFollowed()
 
+		if (this.UserDatas == undefined)
+			return;
 		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
 		let response = await this.user.request.get(URL);
         if (response.ok)

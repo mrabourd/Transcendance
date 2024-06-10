@@ -378,7 +378,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 		print("####################### save_game_state #1")
 
 		try:
-			print("save_game_state #2", self.match)
+			# print("save_game_state #2", self.match)
 			game_params = self._game["pong"].get_params()
 			self.match.status = game_params["infos"]["status"]
 			self.match_point_1.points = game_params["playerleft"]["score"]

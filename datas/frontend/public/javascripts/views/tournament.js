@@ -199,11 +199,17 @@ export default class extends AbstractView {
 			'players': picks
 		}
         let response = await this.user.request.post(`/api/match/tournament/${action}/`, RQ_BODY)
-        if (response.status == 200){
-			let tournament_id = await response.json();
-            this.user.router.navigateTo(`/tournament/${tournament_id}`, this.user)
+        try {
+
+            if (response.status == 200){
+                let tournament_id = await response.json();
+                this.user.router.navigateTo(`/tournament/${tournament_id}`, this.user)
+            }
         }
+        catch (e) {
+            console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
+            throw e; // Re-throw the error after logging it
+        }
+
     }
-
-
 }
