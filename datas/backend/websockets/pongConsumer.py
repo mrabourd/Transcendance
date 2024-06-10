@@ -44,7 +44,7 @@ class PongServer:
 			},
 			"paddles": {
 				"speed":3,
-				"height":50,
+				"height":25,
 				"width":1.5
 			},
 			"playerleft": {

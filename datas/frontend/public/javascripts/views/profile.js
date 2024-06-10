@@ -85,7 +85,12 @@ export default class extends AbstractView {
 		});
 
 		if (this.is_user_page())
-			this.UserDatas = this.user.datas;
+		{
+			//this.UserDatas = this.user.datas;
+			let response = await this.user.request.get('/api/users/profile/'+this.user.datas.id+'/')
+			if (response.ok)
+				this.UserDatas = await response.json();
+		}
 		else
 		{
 			var elements = document.querySelectorAll('input, textarea');
@@ -381,7 +386,7 @@ export default class extends AbstractView {
                 	else
                     	throw new Error('Network response was not ok.');
 				})
-				.then(([jsonData, ok, status]) => {
+				.then(async ([jsonData, ok, status]) => {
 					if (!ok)
 					{
 						for (const key in jsonData) {
@@ -398,16 +403,21 @@ export default class extends AbstractView {
 					}
 					else
 					{
-						this.user.setLocalDatas(jsonData)
 						document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
 							input.classList.remove(`is-invalid`)
 							input.classList.remove(`is-valid`)
 						});
+						this.user.setLocalDatas(jsonData.datas)
+						this.user.request.rmJWTtoken();
+						await this.user.request.setJWTtoken(jsonData.access, jsonData.refresh);
+						
+						await this.user.request.refreshJWTtoken();
+						//await this.user.RefreshLocalDatas();
+
 						let errDiv = document.querySelector("#ProfileForm #errorFeedback");
 						errDiv.classList.remove("d-none", "alert-danger")
 						errDiv.classList.add("alert-success")
 						errDiv.innerHTML = "Well done ! ...";
-
 					}
 				})
 				.catch((error) => {

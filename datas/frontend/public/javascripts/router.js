@@ -25,7 +25,6 @@ export const getParams = match => {
 
 export const navigateTo = (url, user) => {
     if(user.view && user.view.chatSocket != null){
-        console.log("in navigate to")
         user.view.chatSocket.close()
         user.view.chatSocket = null
     }
@@ -33,6 +32,7 @@ export const navigateTo = (url, user) => {
         user.view.PongSocket.close()
         user.view.PongSocket = null
     }
+
     history.pushState({ page: url }, null, url);
     router(user);
 };
@@ -47,6 +47,7 @@ export const router = async (user) => {
         { id:3, path: "/home", view: home },
         { id:5, path: "/profile/:user_id/:tab", view: profile },
         { id:5, path: "/profile/:user_id", view: profile },
+        { id:5, path: "/profile", view: profile },
         { id:6, path: "/tournament", view: tournament },
         { id:6, path: "/tournament/:tournament_id", view: tournament },
         { id:7, path: "/contact", view: contact },

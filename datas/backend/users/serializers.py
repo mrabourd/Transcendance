@@ -85,14 +85,15 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         email = attrs.get('email', None)
         
         if username and User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
-            raise serializers.ValidationError("Ce nom d'utilisateur est déjà utilisé.")
+            raise serializers.ValidationError({"username": "Ce nom d'utilisateur est déjà utilisé."})
         
         if email and User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
-            raise serializers.ValidationError("Cet email est déjà utilisé.")
+            raise serializers.ValidationError({"email": "Cet email est déjà utilisé."})
         
         return attrs
 
     def update(self, instance, validated_data):
+
         instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.username = validated_data.get('username', instance.username)
         instance.first_name = validated_data.get('first_name', instance.first_name)
@@ -100,8 +101,10 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
         instance.biography = validated_data.get('biography', instance.biography)
         instance.save()
+        instance = super().update(instance, validated_data)
 
         return instance
+
 
 class ChatMessageSerializer(serializers.ModelSerializer):
     class Meta:

@@ -71,15 +71,17 @@ class CustomTokenRefreshView(TokenRefreshView):
 	permission_classes = [AllowAny]
 	serializer_class = CustomTokenObtainPairSerializer
 	def get (self, request):
+		print("REFRESH TOKEN")
 		return Response('ok')
 
 class CustomLogoutView(APIView):
 	def post(self, request, *args, **kwargs):
 		try:
 			if request.user and request.user.is_authenticated:
+				#print("logout self.user", self.user)
+				print("logout request.user", request.user)
 				request.user.SetStatus(User.USER_STATUS['OFFLINE'])
-				request.user.save()
-				logout(request)
+				#logout(request)
 				token = RefreshToken(request.data.get('refresh'))
 				token.blacklist()
 				response = Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
