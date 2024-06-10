@@ -60,70 +60,67 @@ class UsersAPIView(APIView):
 
 
 class UserDetail(APIView):
-    def get_user(self, id):
-        return get_object_or_404(User, id=id)
 
-    def get(self, request, id, format=None):
-        user = self.get_user(id)
-        serializer = UserSerializer(user)
-        response_data = serializer.data
-        print("GET user profile ", user)
-        response = JsonResponse(response_data, safe=False)
-        #response['X-CSRFToken'] = get_token(request)
-        #response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
-        #response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
-        #response['Access-Control-Allow-Credentials'] = 'true'
-        return response
-    
-    def put(self, request, id, format=None):
-        user = self.get_user(id)
-        if user is None:
-            return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
-        
-        if user.id != request.user.id:
-            return Response({'detail': 'Unauthorized.'}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        serializer = UpdateUserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            
+	# def current_profile(self):
+	# 	try:
+	# 		return self.request.data.get('me')
+	# 	except User.DoesNotExist:
+	# 		raise Http404
+			
+	# def other_profiles(self, current_user):
+	# 	online_users = User.objects.filter(status=User.USER_STATUS['ONLINE']).exclude(id=current_user.id).distinct()
+	# 	return online_users
 
-            # blacklist token 
-            token = RefreshToken(request.data.get('refresh'))
-            token.blacklist()
-            # generate a new token 
-            serializer.save()
-            user.save()
+	def get_user(self, id):
+		return get_object_or_404(User, id=id)
 
-            user_serializer = UserSerializer(user)
+	def get(self, request, id, format=None):
+		user = self.get_user(id)
+		serializer = UserSerializer(user)
+		response_data = serializer.data
+		
+		response = JsonResponse(response_data, safe=False)
+		#response['X-CSRFToken'] = get_token(request)
+		#response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
+		#response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
+		#response['Access-Control-Allow-Credentials'] = 'true'
+		return response
 
-            refresh = RefreshToken.for_user(user)
-            return_datas = {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-                'datas': user_serializer.data
-            }
 
-            print("UPDATE OK  username = ", user)
-            print("UPDATE OK  username = ", user)
+	def put(self, request, id, format=None):
+		pk = id
+		user = request.user
+		other_profiles = User.objects.filter(status=User.USER_STATUS['ONLINE']).exclude(id=user.id).all()
 
-            return Response(return_datas)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+		if user.id != request.user.id:
+			return Response(status=status.HTTP_401_UNAUTHORIZED)
+		
+		serializer = UpdateUserSerializer(user, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			serializer = UserSerializer(user)
+			notif_message = f'{user.username} has changed some infos'
+			for online in other_profiles:
+				notification = create_notif(user, online, 1, notif_message, "PFL", pk)
+			response_data = serializer.data
+			# return JsonResponse(response_data)
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class FollowUser(APIView):
     permission_classes = [IsAuthenticated]
 
-    def current_profile(self):
-        try:
-            return self.request.data.get('me')
-        except User.DoesNotExist:
-            raise Http404
-            
-    def other_profile(self, pk):
-        try:
-            return User.objects.get(id = pk)
-        except User.DoesNotExist:
-            raise Http404
+	# def current_profile(self):
+	# 	try:
+	# 		return self.request.data.get('me')
+	# 	except User.DoesNotExist:
+	# 		raise Http404
+			
+	def other_profile(self, pk):
+		try:
+			return User.objects.get(id = pk)
+		except User.DoesNotExist:
+			raise Http404
 
     def get(self, request, req_type, id, format=None):    
         pk = id         # Here pk is opposite user's profile ID
@@ -131,22 +128,33 @@ class FollowUser(APIView):
         
         current_profile = request.user
         other_profile = self.other_profile(pk)
+		response_data = {}
         
         if req_type == 'follow':
             if current_profile.follows.filter(pk = other_profile.id).exists():
                 return Response({"Following Fail" : "You can not follow this profile because you are already following this user!"},status=status.HTTP_400_BAD_REQUEST)
             current_profile.follows.add(other_profile)
-            return Response(status=status.HTTP_200_OK) 
+            # return Response(status=status.HTTP_200_OK) 
+			notif_message = f'{current_profile.username} is following me'
+			notification = create_notif(current_profile, other_profile, 1, notif_message, "FLW", pk)
+			response_data = {'message': 'Followed successfully!'}
+			return JsonResponse(response_data)
         
         elif req_type == 'unfollow':
             current_profile.follows.remove(other_profile)
-            return Response(status=status.HTTP_200_OK)
+            # return Response(status=status.HTTP_200_OK)
+			notif_message = f'{current_profile.username} has unfollowed me'
+			notification = create_notif(current_profile, other_profile, 2, notif_message, "FLW", pk)
+			response_data = {'message': 'Unfollowed successfully!'}
+			return JsonResponse(response_data)
 
 
         elif req_type == 'block':
+			if current_profile.blocks.filter(pk = other_profile.id).exists():
+				return Response({"Blocking Fail" : "You can not block this profile because you are already blocking this user!"},status=status.HTTP_400_BAD_REQUEST)
             current_profile.blocks.add(other_profile)
             notif_message = f'{current_profile.username} has blocked me'
-            notification = create_notif(current_profile, other_profile, 1, notif_message, pk)
+            notification = create_notif(current_profile, other_profile, 1, notif_message, "BLK", pk)
             response_data = {'message': 'You were blocked!'}
             # return Response(status=status.HTTP_200_OK)
             return JsonResponse(response_data)
@@ -154,23 +162,22 @@ class FollowUser(APIView):
         elif req_type == 'unblock':
             current_profile.blocks.remove(other_profile)
             notif_message = f'{current_profile.username} has unblocked me'
-            notification = create_notif(current_profile, other_profile, 2, notif_message, pk)
+            notification = create_notif(current_profile, other_profile, 2, notif_message, "BLK", pk)
             # other_profile.followers.remove(current_profile)
             response_data = {'message': 'You were unblocked!'}
             # return Response(status=status.HTTP_200_OK)
             return JsonResponse(response_data)
             
 
-def create_notif(current_profile, other_profile, code, notif_message, pk):
-    print("want to send a notif because i blocked someone")
-    Notification.objects.create(
-        type="private",
-        code_name="BLK",
-        code_value=code,
-        message=notif_message,
-        sender=current_profile,
-        receiver=other_profile,
-        # link=f"/chatroom/{str(pk)}"
-        link=None
-    )
-    return Notification
+def create_notif(current_profile, other_profile, code, notif_message, name, pk):
+	Notification.objects.create(
+		type="private",
+		code_name=name,
+		code_value=code,
+		message=notif_message,
+		sender=current_profile,
+		receiver=other_profile,
+		# link=f"/chatroom/{str(pk)}"
+		link=None
+	)
+	return Notification

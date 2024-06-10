@@ -13,9 +13,7 @@ export default class extends AbstractView {
 
 	async  addEvents () {
 		console.log("enter 42 login now")
-		// this.user.rmLocalDatas();
-		// this.user.request.rmJWTtoken()
-		// this.user.request.rmCsrfToken()
+
 
 		// CODE DANS l'URL
 		var queryString = window.location.search;
@@ -29,7 +27,6 @@ export default class extends AbstractView {
 			paramsObj[key] = value;
 		});
 		var code42 = paramsObj['code'];
-		console.log("code: ", code42);
 
 		let data = {
 			'code': code42,
@@ -37,6 +34,11 @@ export default class extends AbstractView {
 		let get_token_path = await this.user.request.post("/api/users/auth/intra_callback/", data);
 		if (get_token_path.ok){
 			const jsonData = await get_token_path.json();
+			for (let key in jsonData.user) {
+				if (jsonData.user.hasOwnProperty(key) && typeof jsonData.user[key] === 'string') {
+					jsonData.user[key] = jsonData.user[key].replace(/[()',]/g, "");
+				}
+			}
 
 			if (jsonData.error)
             {

@@ -7,15 +7,15 @@ export default class extends AbstractView {
 		super(params);
 		this.setTitle("Profile");
 		const UserDatas = null;
-		console.log("params", this.params)
 	}
 	
 	is_user_page()
 	{
 		if (this.params.user_id)
 		{
-			if (this.params.user_id == this.user.datas.id)
+			if (this.params.user_id == this.user.datas.id){
 				return true
+			}
 			else
 				return false
 		}
@@ -84,9 +84,12 @@ export default class extends AbstractView {
 			console.warn('Something went wrong.', err);
 		});
 
-		if (this.is_user_page())
+
+		if (this.is_user_page()){
 		{
 			//this.UserDatas = this.user.datas;
+			console.log("this.UserDatas lastname: ", this.UserDatas.last_name)
+		}
 			let response = await this.user.request.get('/api/users/profile/'+this.user.datas.id+'/')
 			if (response.ok)
 				this.UserDatas = await response.json();
@@ -99,8 +102,9 @@ export default class extends AbstractView {
 				element.classList.add('form-control-plaintext');
 			});
 			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
-			if (response.ok)
+			if (response.ok){
 				this.UserDatas = await response.json();
+			}
 		}
 	}
 
@@ -303,19 +307,15 @@ export default class extends AbstractView {
 	{
 		if(!this.UserDatas)
 			return;
-		for (let key in this.UserDatas) {
-			if (this.UserDatas.hasOwnProperty(key) && typeof this.UserDatas[key] === 'string') {
-				this.UserDatas[key] = this.UserDatas[key].replace(/[()',]/g, "");
-			}
-		}
+
 		document.querySelector(".user_username").innerHTML = this.UserDatas.username;
 		document.querySelector(".id").innerHTML = this.UserDatas.id;
-		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ?  this.UserDatas.avatar : "/avatars/default.png";
-		document.querySelector(".tab-pane.profile #username").value =  this.UserDatas.username;
-		document.querySelector(".tab-pane.profile #first_name").value =  this.UserDatas.first_name;
-		document.querySelector(".tab-pane.profile #last_name").value =  this.UserDatas.last_name;
-		document.querySelector(".tab-pane.profile #email").value =  this.UserDatas.email;
-		document.querySelector(".tab-pane.profile #biography").value =  this.UserDatas.biography;
+		document.querySelector("#avatar").src = ( this.UserDatas.avatar) ? this.UserDatas.avatar : "/avatars/default.png";
+		document.querySelector(".tab-pane.profile #username").value = this.UserDatas.username;
+		document.querySelector(".tab-pane.profile #first_name").value = this.UserDatas.first_name;
+		document.querySelector(".tab-pane.profile #last_name").value = this.UserDatas.last_name;
+		document.querySelector(".tab-pane.profile #email").value = this.UserDatas.email;
+		document.querySelector(".tab-pane.profile #biography").value = this.UserDatas.biography;
 	}
 
 
@@ -381,8 +381,10 @@ export default class extends AbstractView {
 				this.user.request.put('/api/users/profile/'+this.user.datas.id+'/', RQ_Body)
 				.then((response) =>
 				{
-					if (response.ok || response.status === 400)
+					if (response.ok || response.status === 400){
+						
                     	return Promise.all([response.json(), response.ok, response.status]);
+					}
                 	else
                     	throw new Error('Network response was not ok.');
 				})
@@ -403,6 +405,7 @@ export default class extends AbstractView {
 					}
 					else
 					{
+						console.log("jsonData: ", jsonData)
 						document.querySelectorAll('.tab-pane.profile form input[type="text"]').forEach(input => {
 							input.classList.remove(`is-invalid`)
 							input.classList.remove(`is-valid`)

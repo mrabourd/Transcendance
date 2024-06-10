@@ -80,9 +80,10 @@ export default class extends AbstractView {
         let link
             let JSONResponse = await response.json()
             JSONResponse.forEach(tournament => {
-                link = document.createElement('div')
-                link.classList.add("mr-2", "btn", "btn-primary", "btn-lg")
-                link.innerHTML = tournament["name"]
+                link = document.createElement('div');
+                link.classList.add("mr-2", "btn", "btn-dark", "btn-lg");
+                link.style.margin = "5px";
+                link.innerHTML = tournament["name"];
                 link.addEventListener('click',  async e => {
                     e.preventDefault();
                     this.user.router.navigateTo(`/tournament/${tournament["tournament_id"]}`, this.user)
@@ -90,14 +91,14 @@ export default class extends AbstractView {
                 destination.appendChild(link)
             }); 
 
-            link = document.createElement('div')
-            link.classList.add("btn", "btn-primary", "btn-lg")
-            link.innerHTML = "create a tournament"
-            link.addEventListener('click',  async e => {
+            let create = document.querySelector('#app .create')
+            // create.classList.add("btn", "btn-primary", "btn-lg")
+            // create.innerHTML = "create a tournament"
+            create.addEventListener('click',  async e => {
                 e.preventDefault();
                 this.user.router.navigateTo('/tournament', this.user)
             })
-            destination.appendChild(link)
+            // destination.appendChild(link)
         
     }
 
@@ -125,7 +126,7 @@ export default class extends AbstractView {
                 nodePlayer2.classList.add('col-md-4')
                 nodePlayer2.querySelector(".dropdown").innerHTML = ''
                 friends_utils.update_status_text(nodePlayer2)
-                console.log(nodePlayer2)
+                // console.log(nodePlayer2)
 
 
                 var VS = document.createElement('div')
