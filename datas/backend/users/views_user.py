@@ -79,7 +79,7 @@ class UserDetail(APIView):
 		user = self.get_user(id)
 		if user.id != request.user.id:
 			return Response(status=status.HTTP_401_UNAUTHORIZED)
-		
+		other_profiles = User.objects.filter(status=User.USER_STATUS['ONLINE']).exclude(id=user.id).all()
 		serializer = UpdateUserSerializer(user, data=request.data)
 		if serializer.is_valid():
 			serializer.save()
@@ -91,10 +91,10 @@ class UserDetail(APIView):
 
 			for online in other_profiles:
 				notification = create_notif(user, online, 1, notif_message, "PFL", pk)
-			refresh = RefreshToken.for_user(user)
+			#refresh = RefreshToken.for_user(user)
 			return_datas = {
-				'refresh': str(refresh),
-				'access': str(refresh.access_token),
+				'refresh': 'str(refresh)',
+				'access': 'str(refresh.access_token)',
 				'datas': serializer.data
 			}
 

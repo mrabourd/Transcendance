@@ -26,7 +26,7 @@ urlpatterns = [
     path('auth/verify2FA/', login2FA_Verify, name='login2FA_Verify'),
     path('register/', UserRegistrationAPIView.as_view(), name='user-register'),
     path('login/', CustomObtainTokenPairView.as_view(), name='token_obtain_pair'),
-	path('login/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
+	path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
 
     path('refresh_csrftoken/', GetCSRFTokenView.as_view(), name='get_csrf_token'),

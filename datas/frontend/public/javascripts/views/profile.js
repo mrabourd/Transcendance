@@ -408,8 +408,8 @@ export default class extends AbstractView {
 							input.classList.remove(`is-valid`)
 						});
 						this.user.setLocalDatas(jsonData.datas)
-						this.user.request.rmJWTtoken();
-						await this.user.request.setJWTtoken(jsonData.access, jsonData.refresh);
+						//this.user.request.rmJWTtoken();
+						//await this.user.request.setJWTtoken(jsonData.access, jsonData.refresh);
 						
 						await this.user.request.refreshJWTtoken();
 						//await this.user.RefreshLocalDatas();
