@@ -105,8 +105,8 @@ export default class extends AbstractView {
 			// on socket close
 			this.chatSocket.onmessage = (e) => {
 				const data = JSON.parse(e.data);
-				console.log("data.message: ", data.message)
-				console.log("data.id: ", data.id)
+				// console.log("data.message: ", data.message)
+				// console.log("data.id: ", data.id)
 				if (data.message == `\n`){
 					return;
 				}
