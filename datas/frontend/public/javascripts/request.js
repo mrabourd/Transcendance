@@ -219,7 +219,7 @@ export default class Request {
 
     async checkJWTtoken()
     {
-        let response = await this.get("/api/users/list/all/")
+        let response = await this.get("/api/users/checktoken/")
         if (response && response.ok)
             return true;
         else

@@ -203,6 +203,7 @@ export default class Websockets {
 
 	async update_status(data)
 	{
+		console.log('update_status', data)
 		let friend_id = data.sender
 		let friend_status = data.code_value
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
@@ -213,7 +214,7 @@ export default class Websockets {
 				this.user.datas.status = friend_status;
 				this.user.saveDatasToLocalStorage()
 			}
-			return 
+			return
 		}
 		
 		profile_cards.forEach(profile_card => {

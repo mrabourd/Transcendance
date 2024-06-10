@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status, authentication
 # We import our serializer here
-from .serializers import UserSerializer, CustomTokenObtainPairSerializer, UpdateUserSerializer
+from .serializers import UserSerializer, CustomTokenObtainPairSerializer, CustomTokenRefreshSerializer
 from django.contrib.auth import get_user_model, authenticate, logout, login as django_login
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenBlacklistView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken, OutstandingToken
@@ -66,29 +66,17 @@ class GetCSRFTokenView(APIView):
 		if csrf_token == csrf_cookie:
 			rotate_token(request)
 		return response
-			
-class CustomTokenRefreshView(TokenRefreshView):
-	permission_classes = [AllowAny]
-	serializer_class = CustomTokenObtainPairSerializer
 
-	def validate(self, attrs):
-		# The default result (access/refresh tokens)
-		data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
-		# Custom data you want to include
-		data.update({'user': self.user.username})
-		data.update({'id': self.user.id})
-		# and everything else you want to send in the response
-		return data
-	def get (self, request):
-		user = request.user
-		print("REFRESH TOKEN : ", user)
-		return Response('ok')
-	def post (self, request):
-		data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
-		response = super().post(request)
-		user = request.user
-		print("REFRESH TOKEN : ", user)
-		return response
+class VerifyTokenView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        request.user.SetStatus(User.USER_STATUS['ONLINE'])
+        return Response({'message': 'Token is valid'}, status=200)
+		
+class CustomTokenRefreshView(TokenRefreshView):
+	serializer_class = CustomTokenRefreshSerializer
+
 
 class CustomLogoutView(APIView):
 	def post(self, request, *args, **kwargs):

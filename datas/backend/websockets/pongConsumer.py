@@ -216,6 +216,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 
 	async def connect(self):
+		#self.match = None
 		self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
 		self.user = self.scope["user"]
 
@@ -380,10 +381,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 		try:
 			# print("save_game_state #2", self.match)
 			game_params = self._game["pong"].get_params()
+			#if self.match:
 			self.match.status = game_params["infos"]["status"]
 			self.match_point_1.points = game_params["playerleft"]["score"]
 			self.match_point_2.points = game_params["playerright"]["score"]
-			
 			await database_sync_to_async(self.match.save)()
 			await database_sync_to_async(self.match_point_1.save)()
 			await database_sync_to_async(self.match_point_2.save)()

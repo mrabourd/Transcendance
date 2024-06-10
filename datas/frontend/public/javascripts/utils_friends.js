@@ -96,7 +96,7 @@ export async function follow(user, friend_id, action)
 
        
 
-        let profile_card = document.querySelector(`.profile_card[data-friend-id="${friend_id}"]`);
+        let profile_card = document.querySelector(`aside .profile_card[data-friend-id="${friend_id}"]`);
         let followed_div = document.querySelector(`aside .followed ul.userList`);
         let test = followed_div.querySelector(`aside .profile_card[data-friend-id="${friend_id}"]`)
         if (action =='follow' && !test && profile_card)

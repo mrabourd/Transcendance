@@ -17,6 +17,13 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from users.models import Invitation
 
 User = get_user_model()
+class CustomTokenRefreshSerializer(TokenRefreshSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        # Print the new access token for demonstration purposes
+        print("New Access Token:", data.get('access'))
+        return data
 
 class InvitationSerializer(serializers.ModelSerializer):
     sender = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())

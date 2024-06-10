@@ -1,6 +1,6 @@
 from django.urls import path
 
-from users.views_login import CustomObtainTokenPairView, CustomTokenRefreshView, GetCSRFTokenView
+from users.views_login import CustomObtainTokenPairView, CustomTokenRefreshView, GetCSRFTokenView,VerifyTokenView
 from users.views_login import UserRegistrationAPIView, MaVueProtegee, GetCSRFTokenView, CustomLogoutView
 from users.views_login_42 import login42Callback
 from users.views_login2FA import login2FA, login2FA_Verify
@@ -26,7 +26,8 @@ urlpatterns = [
     path('auth/verify2FA/', login2FA_Verify, name='login2FA_Verify'),
     path('register/', UserRegistrationAPIView.as_view(), name='user-register'),
     path('login/', CustomObtainTokenPairView.as_view(), name='token_obtain_pair'),
-	path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+	path('login/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
+	path('checktoken/', VerifyTokenView.as_view(), name='cjheck_token'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
 
     path('refresh_csrftoken/', GetCSRFTokenView.as_view(), name='get_csrf_token'),
