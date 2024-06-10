@@ -77,7 +77,8 @@ export default class Websockets {
 
 		profile_cards.forEach(profile_card => {
 			console.log('profile_card', profile_card)
-				profile_card.querySelector('.username').innerHTML = username;
+			profile_card.querySelector('.avatar').src = avatar;
+			profile_card.querySelector('.username').innerHTML = username;
 		});
 
 		

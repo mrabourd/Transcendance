@@ -47,9 +47,15 @@ export async function print(user)
 		document.querySelector("header nav ul").appendChild(li)
 
 		var user_thumbnail = await friends_utils.create_thumbnail(user.DOMProfileCard, user, null,  user.datas.id)
+		document.querySelector("header .user_thumbnail").innerHTML = '';		
 		document.querySelector("header .user_thumbnail").appendChild(user_thumbnail);		
+		document.querySelector("header .user_thumbnail").classList.remove('d-none')
 
 		document.querySelector(".notif").classList.remove("d-none");
+	}
+	else 
+	{
+		document.querySelector("header .user_thumbnail").classList.add('d-none')
 	}
 
 }

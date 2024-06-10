@@ -25,7 +25,7 @@ export default class extends AbstractPong {
 			this.user.request.url_wss+'/ws/pong/'+ this.match_id +'/?token=' + this.user.request.getJWTtoken()["access"]
 		);
 		this.PongSocket.onopen = function(e) {console.log('Socket connected for online pong.');};
-		this.PongSocket.onclose = function(e) {console.warn('Socket connection closed ...');};
+		this.PongSocket.onclose = function(e) {this.PongSocket = null; console.warn('Socket connection closed ...');};
 		this.PongSocket.onerror = function(e) {
 			document.querySelector("#app").innerHTML = "An error occured ... WSS connection can be established"
 		};
