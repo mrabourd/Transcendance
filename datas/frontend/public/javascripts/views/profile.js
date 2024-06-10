@@ -85,23 +85,23 @@ export default class extends AbstractView {
 		});
 
 
-		if (this.is_user_page()){
+		if (this.is_user_page())
 		{
-			//this.UserDatas = this.user.datas;
+			this.UserDatas = this.user.datas;
 			console.log("this.UserDatas lastname: ", this.UserDatas.last_name)
-		}
-			let response = await this.user.request.get('/api/users/profile/'+this.user.datas.id+'/')
-			if (response.ok)
-				this.UserDatas = await response.json();
 		}
 		else
 		{
+			let response = await this.user.request.get('/api/users/profile/'+this.user.datas.id+'/')
+			if (response.ok)
+				this.UserDatas = await response.json();
+
 			var elements = document.querySelectorAll('input, textarea');
 			elements.forEach(function(element) {
 				element.setAttribute('readonly', 'readonly');
 				element.classList.add('form-control-plaintext');
 			});
-			let response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
+			response = await this.user.request.get('/api/users/profile/'+this.params.user_id+'/')
 			if (response.ok){
 				this.UserDatas = await response.json();
 			}

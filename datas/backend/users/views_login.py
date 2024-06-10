@@ -51,14 +51,14 @@ class GetCSRFTokenView(APIView):
 		response['Access-Control-Allow-Credentials'] = 'true'
 		response.status_code = status.HTTP_200_OK
 		response.set_cookie(
-            key = 'csrftoken', 
-            value = get_token(request),
-            expires = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
-            path= settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
-            secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
-            httponly = False,
-            samesite = 'Lax'
-          )
+			key = 'csrftoken', 
+			value = get_token(request),
+			expires = settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
+			path= settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+			secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+			httponly = False,
+			samesite = 'Lax'
+		  )
 		"""
 		Check if both alphanumerics(strings) values are differents to prevent 
 		a malicious user get the csrf cookie and send it from the ajax.
@@ -70,9 +70,25 @@ class GetCSRFTokenView(APIView):
 class CustomTokenRefreshView(TokenRefreshView):
 	permission_classes = [AllowAny]
 	serializer_class = CustomTokenObtainPairSerializer
+
+	def validate(self, attrs):
+		# The default result (access/refresh tokens)
+		data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
+		# Custom data you want to include
+		data.update({'user': self.user.username})
+		data.update({'id': self.user.id})
+		# and everything else you want to send in the response
+		return data
 	def get (self, request):
-		print("REFRESH TOKEN")
+		user = request.user
+		print("REFRESH TOKEN : ", user)
 		return Response('ok')
+	def post (self, request):
+		data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
+		response = super().post(request)
+		user = request.user
+		print("REFRESH TOKEN : ", user)
+		return response
 
 class CustomLogoutView(APIView):
 	def post(self, request, *args, **kwargs):
@@ -82,10 +98,10 @@ class CustomLogoutView(APIView):
 				print("logout request.user", request.user)
 				request.user.SetStatus(User.USER_STATUS['OFFLINE'])
 				#logout(request)
-				token = RefreshToken(request.data.get('refresh'))
-				token.blacklist()
+				#token = RefreshToken(request.data.get('refresh'))
+				#token.blacklist()
 				response = Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
-				response.delete_cookie('csrftoken')
+				#response.delete_cookie('csrftoken')
 				return response
 			else:
 				return Response({"error": "User not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)

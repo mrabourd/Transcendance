@@ -42,21 +42,21 @@ User = get_user_model()
 
 
 class UsersAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = UserSerializer
+	permission_classes = [IsAuthenticated]
+	serializer_class = UserSerializer
 
-    def get(self, request, req_type):
-        if req_type == 'online':
-            users = User.objects.exclude(status=0)
-        elif req_type == 'all':
-            users = User.objects.all()
-        elif req_type == 'followed':
-            users =  request.user.follows.all()
-        if not users:  # Vérifie si la base de données d'utilisateurs est vide
-            return Response({"error": "Aucun utilisateur trouvé."}, status=204)
-        # Renvoie une réponse avec le code d'état 200 (OK)
-        serializer = self.serializer_class(users, many=True)
-        return Response(serializer.data, status=200)
+	def get(self, request, req_type):
+		if req_type == 'online':
+			users = User.objects.exclude(status=0)
+		elif req_type == 'all':
+			users = User.objects.all()
+		elif req_type == 'followed':
+			users =  request.user.follows.all()
+		if not users:  # Vérifie si la base de données d'utilisateurs est vide
+			return Response({"error": "Aucun utilisateur trouvé."}, status=204)
+		# Renvoie une réponse avec le code d'état 200 (OK)
+		serializer = self.serializer_class(users, many=True)
+		return Response(serializer.data, status=200)
 
 
 class UserDetail(APIView):
@@ -100,15 +100,25 @@ class UserDetail(APIView):
 			serializer.save()
 			serializer = UserSerializer(user)
 			notif_message = f'{user.username} has changed some infos'
+
+			print("UPDATE OK  username = ", user)
+			print("UPDATE OK  username = ", user)
+
 			for online in other_profiles:
 				notification = create_notif(user, online, 1, notif_message, "PFL", pk)
-			response_data = serializer.data
+			refresh = RefreshToken.for_user(user)
+			return_datas = {
+				'refresh': str(refresh),
+				'access': str(refresh.access_token),
+				'datas': serializer.data
+			}
+
 			# return JsonResponse(response_data)
-			return Response(serializer.data)
+			return Response(return_datas)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class FollowUser(APIView):
-    permission_classes = [IsAuthenticated]
+	permission_classes = [IsAuthenticated]
 
 	# def current_profile(self):
 	# 	try:
@@ -122,52 +132,52 @@ class FollowUser(APIView):
 		except User.DoesNotExist:
 			raise Http404
 
-    def get(self, request, req_type, id, format=None):    
-        pk = id         # Here pk is opposite user's profile ID
-        # followType = request.data.get('usertype')
-        
-        current_profile = request.user
-        other_profile = self.other_profile(pk)
+	def get(self, request, req_type, id, format=None):	
+		pk = id		 # Here pk is opposite user's profile ID
+		# followType = request.data.get('usertype')
+		
+		current_profile = request.user
+		other_profile = self.other_profile(pk)
 		response_data = {}
-        
-        if req_type == 'follow':
-            if current_profile.follows.filter(pk = other_profile.id).exists():
-                return Response({"Following Fail" : "You can not follow this profile because you are already following this user!"},status=status.HTTP_400_BAD_REQUEST)
-            current_profile.follows.add(other_profile)
-            # return Response(status=status.HTTP_200_OK) 
+		
+		if req_type == 'follow':
+			if current_profile.follows.filter(pk = other_profile.id).exists():
+				return Response({"Following Fail" : "You can not follow this profile because you are already following this user!"},status=status.HTTP_400_BAD_REQUEST)
+			current_profile.follows.add(other_profile)
+			# return Response(status=status.HTTP_200_OK) 
 			notif_message = f'{current_profile.username} is following me'
 			notification = create_notif(current_profile, other_profile, 1, notif_message, "FLW", pk)
 			response_data = {'message': 'Followed successfully!'}
 			return JsonResponse(response_data)
-        
-        elif req_type == 'unfollow':
-            current_profile.follows.remove(other_profile)
-            # return Response(status=status.HTTP_200_OK)
+		
+		elif req_type == 'unfollow':
+			current_profile.follows.remove(other_profile)
+			# return Response(status=status.HTTP_200_OK)
 			notif_message = f'{current_profile.username} has unfollowed me'
 			notification = create_notif(current_profile, other_profile, 2, notif_message, "FLW", pk)
 			response_data = {'message': 'Unfollowed successfully!'}
 			return JsonResponse(response_data)
 
 
-        elif req_type == 'block':
+		elif req_type == 'block':
 			if current_profile.blocks.filter(pk = other_profile.id).exists():
 				return Response({"Blocking Fail" : "You can not block this profile because you are already blocking this user!"},status=status.HTTP_400_BAD_REQUEST)
-            current_profile.blocks.add(other_profile)
-            notif_message = f'{current_profile.username} has blocked me'
-            notification = create_notif(current_profile, other_profile, 1, notif_message, "BLK", pk)
-            response_data = {'message': 'You were blocked!'}
-            # return Response(status=status.HTTP_200_OK)
-            return JsonResponse(response_data)
-            
-        elif req_type == 'unblock':
-            current_profile.blocks.remove(other_profile)
-            notif_message = f'{current_profile.username} has unblocked me'
-            notification = create_notif(current_profile, other_profile, 2, notif_message, "BLK", pk)
-            # other_profile.followers.remove(current_profile)
-            response_data = {'message': 'You were unblocked!'}
-            # return Response(status=status.HTTP_200_OK)
-            return JsonResponse(response_data)
-            
+			current_profile.blocks.add(other_profile)
+			notif_message = f'{current_profile.username} has blocked me'
+			notification = create_notif(current_profile, other_profile, 1, notif_message, "BLK", pk)
+			response_data = {'message': 'You were blocked!'}
+			# return Response(status=status.HTTP_200_OK)
+			return JsonResponse(response_data)
+			
+		elif req_type == 'unblock':
+			current_profile.blocks.remove(other_profile)
+			notif_message = f'{current_profile.username} has unblocked me'
+			notification = create_notif(current_profile, other_profile, 2, notif_message, "BLK", pk)
+			# other_profile.followers.remove(current_profile)
+			response_data = {'message': 'You were unblocked!'}
+			# return Response(status=status.HTTP_200_OK)
+			return JsonResponse(response_data)
+			
 
 def create_notif(current_profile, other_profile, code, notif_message, name, pk):
 	Notification.objects.create(
