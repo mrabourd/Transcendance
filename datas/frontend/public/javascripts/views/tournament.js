@@ -40,17 +40,17 @@ export default class extends AbstractView {
         }
     }
 
-    // async checkIfSame(event){
-    //     let value = event.target.value;
-    //     document.querySelectorAll('form input[type="text"]').forEach(name => {
-    //         if (name == value){
-    //             document.querySelector("#app #errorFeedback").classList.add(`is-invalid`);
-    //             document.querySelector("#app #errorFeedback").innerHTML = "This fields must not be blank";
-    //             return false;
-    //         }
-    //     });
-    //     return true;
-    // }
+    async checkIfSame(event){
+        let value = event.target.value;
+        document.querySelectorAll('form input[type="text"]').forEach(name => {
+            if (name == value){
+                document.querySelector("#app #errorFeedback").classList.add(`is-invalid`);
+                document.querySelector("#app #errorFeedback").innerHTML = "This fields must not be blank";
+                return false;
+            }
+        });
+        return true;
+    }
 
     async display_tournament_infos(id_tournament){
         let response = await this.user.request.get(`/api/match/tournament/${this.params.tournament_id}/`)
@@ -173,6 +173,17 @@ export default class extends AbstractView {
 		let p2 = document.querySelector('#app input#player2').value;
 		let p3 = document.querySelector('#app input#player3').value;
 		let p4 = document.querySelector('#app input#player4').value;
+
+        if (p1 == p2 || p1 == p3 || p1 == p4 ||
+            p2 == p3 || p2 == p4 ||
+            p3 == p4)
+        {
+            console.log("cannot work");
+            errDiv.classList.remove("d-none");
+            errDiv.innerHTML = "You cannot add the same names";
+            return;
+        }
+
         if (nametournament == "" || p1 == "" || p2 == "" || p3 == "" || p4 == ""){
             errDiv.classList.remove("d-none")
             errDiv.innerHTML = 'An error occured! Please fill all the fields...';
