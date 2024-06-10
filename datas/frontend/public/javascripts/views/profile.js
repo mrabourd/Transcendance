@@ -88,7 +88,7 @@ export default class extends AbstractView {
 		if (this.is_user_page())
 		{
 			this.UserDatas = this.user.datas;
-			console.log("this.UserDatas lastname: ", this.UserDatas.last_name)
+			// console.log("this.UserDatas lastname: ", this.UserDatas.last_name)
 		}
 		else
 		{

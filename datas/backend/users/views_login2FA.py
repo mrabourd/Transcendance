@@ -56,6 +56,8 @@ def sendEmailWithCode(user_profile, email):
 
 
 def validate_email_domain(email_address):
+	if '@' not in email_address:
+		return False
 	domain = email_address.split('@')[1]
 	try:
 		# Check MX records for the domain
@@ -79,7 +81,6 @@ def emailCorrespondsToUser(user_profile, email):
 @api_view(['POST'])
 def login2FA(request):
 	permission_classes = [AllowAny]
-	print("enter login2FA")
 	email = request.data.get('email')
 
 	if not validate_email_domain(email):
@@ -101,7 +102,6 @@ def login2FA(request):
 		# Generate a 6-digit code and set the expiry time to 1 hour from now
 		user_profile.otp = verification_code
 		user_profile.otp_expiry_time = timezone.now() + timedelta(hours=1)
-		print("expiring time entered: ", user_profile.otp_expiry_time)
 		user_profile.save()
 		# Send the code via email (use Django's send_mail function)
 
@@ -131,7 +131,6 @@ def login2FA_Verify(request):
 			user_profile.otp_expiry_time is not None and
 			user_profile.otp_expiry_time > timezone.now()
 		):
-			print("ok")
 			# Verification successful, generate access and refresh tokens
 			django_login(request, user)
 			# Implement your token generation logic here
