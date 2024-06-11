@@ -133,32 +133,24 @@ export default class extends AbstractView {
 
 
 
-	displayRight = (data, time, text, DOM) => {
+	displayRight = (DOM) => {
 
-		let chatbox = document.querySelector("#app .overflow-scroll");
+		//let chatbox = document.querySelector("#app .overflow-scroll");
 
 		// document.querySelector(".chat_message").classList.add("bg-info")
-		time.classList.add('text-right')
-		text.classList.add('text-right')
-
+		DOM.classList.add('justify-content-end', 'd-flex')
 		DOM.style.backgroundColor = '#9ec5fe';
-		// DOM.classList.add('text-white', 'rounded');
 
-		text.innerHTML = data.message;
-		time.innerHTML = time.innerText;
 
-		chatbox.scrollTop = document.querySelector(".endofscroll").offsetTop
 	}
 
-	displayLeft = (data, time, text, DOM) => {
-		let chatbox = document.querySelector("#app .overflow-scroll");
-
-		text.innerHTML = data.message
+	displayLeft = (DOM) => {
+		//let chatbox = document.querySelector("#app .overflow-scroll");
 
 		DOM.style.backgroundColor = '#e9ecef';
 
-		chatbox.scrollTop = document.querySelector(".endofscroll").offsetTop
-		document.querySelector('#chat-message-input')
+		
+
 	}
 
 	createChatMessage = (data, currentUser, isHist) => {
@@ -184,23 +176,16 @@ export default class extends AbstractView {
 	
 		let side = data.user_id === currentUser ? 'right' : 'left';
 		
-		let text = DOM.querySelector(".message");
-
+		DOM.querySelector(".message").innerHTML = data.message
 		if (side == 'right') {
-			this.displayRight(data, time, text, DOM)
-			// document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
+			this.displayRight(DOM)
 		}
-		else {
-			if (location.pathname == '/chatroom/' + this.friend_id){
-				this.displayLeft(data, time, text, DOM)
-
-			}
-			else{
-				return;
-			}
+		else
+		{
+			this.displayLeft(DOM)
 		}
 		document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
-
+		document.querySelector("#app .overflow-scroll").scrollTop = document.querySelector(".endofscroll").offsetTop
 
 	}
 };

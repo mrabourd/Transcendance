@@ -22,9 +22,11 @@ export const getParams = match => {
 
 
 export const navigateTo = (url, user) => {
-    window.removeEventListener("keydown", user.view.preventDefaultKeyDown, false);
-    window.removeEventListener("keydown", user.view.keyupHandler)
-    window.removeEventListener("keyup", user.view.keydownHandler)
+    if(user.view){
+        window.removeEventListener("keydown", user.view.preventDefaultKeyDown, false);
+        window.removeEventListener("keydown", user.view.keyupHandler)
+        window.removeEventListener("keyup", user.view.keydownHandler)
+    }
     if(user.view && user.view.chatSocket != null){
         user.view.chatSocket.close()
         user.view.chatSocket = null
@@ -46,8 +48,8 @@ export const router = async (user) => {
         { id:4, path: "/register", view: register },
         { id:5, path: "/home", view: home },
         { id:6, path: "/profile/:user_id/:tab", view: profile },
-        { id:7, path: "/profile", view: profile },
-        { id:8, path: "/profile/:user_id", view: profile },
+        { id:7, path: "/profile/:user_id", view: profile },
+        { id:8, path: "/profile", view: profile },
         { id:9, path: "/tournament", view: tournament },
         { id:10, path: "/tournament/:tournament_id", view: tournament },
 		{ id:11, path: "/chatroom/:friend_id", view: mpchat},
@@ -70,7 +72,8 @@ export const router = async (user) => {
             result: [location.pathname]
         };
     }
-    // check user.isConnected & rediriger si necessaire
+    if (match.length > 0)
+        match = match[0]
     let path = location.pathname;
     let isConnected = user.isConnected;
     if (match.route.id > 4 && !isConnected)
@@ -90,4 +93,5 @@ export const router = async (user) => {
     await user.view.getHtml(document.querySelector("#app"));
     await user.view.fillHtml();
     await user.view.addEvents();
+    return;
 };

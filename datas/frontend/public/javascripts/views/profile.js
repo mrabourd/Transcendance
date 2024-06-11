@@ -26,11 +26,15 @@ export default class extends AbstractView {
 
 	async getHtml(DOM) {
 
-		DOM.innerHTML = this.user.TemplateProfile.innerHTML;
-		DOM.querySelector('.tab-content').innerHTML = ""
+		DOM.innerHTML = this.user.TemplateProfile.cloneNode(true).innerHTML;
+		let tabContent = DOM.querySelector('.tab-content')
+		while (tabContent.firstChild) {
+			tabContent.removeChild(tabContent.firstChild);
+		}
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_profile.cloneNode(true));
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_stats.cloneNode(true));
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_history.cloneNode(true));
+		console.log("HISTORY", DOM.querySelector('.tab-content .tab-pane.history').innerHTML)
 		if (!this.is_user_page())
 		{
 			DOM.querySelector('.tab-content .tab-pane.profile form button#submit_form').remove()
@@ -78,6 +82,7 @@ export default class extends AbstractView {
 		let response = await this.user.request.get(URL);
         if (response.ok)
         {
+			console.log("FILL HISTORY")
 			let JSONResponse = await response.json();
 			this.matches_stat = JSONResponse.matches_stat;
 			this.matches_history = JSONResponse.matches_history;
