@@ -72,7 +72,7 @@ export const router = async (user) => {
             result: [location.pathname]
         };
     }
-    if (match.length > 0)
+    if (match.length > 1)
         match = match[0]
     let path = location.pathname;
     let isConnected = user.isConnected;

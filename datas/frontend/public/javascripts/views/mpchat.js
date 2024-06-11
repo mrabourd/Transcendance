@@ -138,18 +138,16 @@ export default class extends AbstractView {
 		//let chatbox = document.querySelector("#app .overflow-scroll");
 
 		// document.querySelector(".chat_message").classList.add("bg-info")
-		DOM.classList.add('justify-content-end', 'd-flex')
+		//DOM.classList.add('justify-content-end', 'd-flex')
+		DOM.querySelector('.message').classList.add('text-right', 'mb-0')
+		DOM.querySelector('.hour').classList.add('text-right', 'mt-2')
 		DOM.style.backgroundColor = '#9ec5fe';
-
-
 	}
 
 	displayLeft = (DOM) => {
 		//let chatbox = document.querySelector("#app .overflow-scroll");
 
 		DOM.style.backgroundColor = '#e9ecef';
-
-		
 
 	}
 
@@ -170,13 +168,13 @@ export default class extends AbstractView {
 		const date = new Date();
 		const hour = date.getHours();
 		const min = date.getMinutes();
-		let time = DOM.querySelector(".hour");
 
-		time.innerHTML = hour+":"+min;
-	
+		
 		let side = data.user_id === currentUser ? 'right' : 'left';
 		
+		DOM.querySelector(".hour").innerHTML = hour+":"+min;
 		DOM.querySelector(".message").innerHTML = data.message
+
 		if (side == 'right') {
 			this.displayRight(DOM)
 		}
