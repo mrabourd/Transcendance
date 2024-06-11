@@ -135,8 +135,8 @@ class MatchHistory(APIView):
 
 
 
-
-		tournaments = Tournament.objects.filter(user=request.user).order_by('created_at')
+		tournaments = Tournament.objects.filter(Q(user=current_user)).order_by('created_at')
+		# tournaments = Tournament.objects.filter(user=request.user).order_by('created_at')
 		serializer = TournamentSerializer(tournaments, many=True)
 		tournaments_list = serializer.data
 	

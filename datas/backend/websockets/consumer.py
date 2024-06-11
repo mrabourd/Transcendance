@@ -91,7 +91,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 	def create_notif(self, message):
 		if message == "\n" or message == "":
 			return
-		notif_message = f'{self.user.username} has sent you message'
+		notif_message = f'{self.user.username} has sent me a message'
 		Notification.objects.create(
 			type="private",
 			code_name="MSG",
