@@ -34,7 +34,7 @@ export default class extends AbstractView {
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_profile.cloneNode(true));
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_stats.cloneNode(true));
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_history.cloneNode(true));
-		console.log("HISTORY", DOM.querySelector('.tab-content .tab-pane.history').innerHTML)
+
 		if (!this.is_user_page())
 		{
 			DOM.querySelector('.tab-content .tab-pane.profile form button#submit_form').remove()
@@ -75,14 +75,14 @@ export default class extends AbstractView {
 		
 		if (this.UserDatas == undefined)
 			return;
-		
+		console.log("fillHtml")
 		this.fillProfile()
 		this.fillFollowed()
 		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
 		let response = await this.user.request.get(URL);
         if (response.ok)
         {
-			console.log("FILL HISTORY")
+			
 			let JSONResponse = await response.json();
 			this.matches_stat = JSONResponse.matches_stat;
 			this.matches_history = JSONResponse.matches_history;

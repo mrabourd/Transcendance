@@ -18,10 +18,11 @@ export default class pongOnline {
 			"up" : false,
 			"down": false
 		}
+		this._winner = null
         this.match_id = match_id
 		this.PongSocket = null;
     }
-	
+
 	connect = () =>
     {
 		this.PongSocket = new WebSocket(
@@ -84,21 +85,16 @@ export default class pongOnline {
 			winner = this._game["playerright"]["username"]
 		context.fillText(`The winner is ${winner}`, canvas.width / 2, canvas.height / 2);
 		let button = document.querySelector('#app button.redirection')
+
 		if (this._game["infos"]["tournament_id"])
 		{
 			button.textContent = "View Tournament page"
-			button.addEventListener('click',  async e => {
-				e.preventDefault();
-				this.user.router.navigateTo(`/tournament/${this._game["infos"]["tournament_id"]}`, this.user)
-			})
+			button.setAttribute('data-link-play', `/tournament/${this._game["infos"]["tournament_id"]}`);
 		}
 		else
 		{
 			button.textContent = "View my history page"
-			button.addEventListener('click',  async e => {
-				e.preventDefault();
-				this.user.router.navigateTo(`/profile/${this.user.datas.id}/history`, this.user)
-			})
+			button.setAttribute('data-link-play', `/profile/${this.user.datas.id}/history`);
 		}
 		button.classList.remove('d-none')
 
