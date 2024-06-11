@@ -135,9 +135,11 @@ class PongServer:
 		if ball_y <= ball_radius or ball_y >= 100 - ball_radius:
 			print("################## COLLIDE TOP/BOTTOM")
 			if ball_y <= ball_radius :
-				ball_y = ball_radius * 2
+				ball_y = ball_radius
+				# ball_y = ball_radius * 2
 			else:
-				ball_y =  100 - ball_radius * 2
+				ball_y =  100 - ball_radius
+				# ball_y =  100 - ball_radius * 2
 			speed_y = -speed_y + random.uniform(-0.1, 0.1)
 			speed_y = max(min(speed_y, 0.8), -0.8)
 			self._param['cooldown'] = 5
