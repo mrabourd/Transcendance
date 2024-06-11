@@ -9,20 +9,7 @@ export default class extends AbstractView {
     }
 
     async getHtml(DOM) {
-        await fetch('/template/tournament').then(function (response) {
-            // The API call was successful!
-            return response.text();
-        }).then(function (html) {
-            // This is the HTML from our response as a text string
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(html, 'text/html');
-            let body = doc.querySelector('#app');
-            DOM.innerHTML = body.innerHTML;
-            document.querySelector('#app table.table').classList.add("d-none");
-        }).catch(function (err) {
-            // There was an error
-            console.warn('Something went wrong.', err);
-        });
+        DOM.innerHTML = this.user.TemplateTournament.innerHTML;
     }
 
     async addEvents () {
@@ -120,7 +107,7 @@ export default class extends AbstractView {
     display_tournament_form = () => { 
         document.querySelector("#app form.create_tournament").classList.remove("d-none")
         document.querySelector('#app input#player1').value = this.user.datas.username;
-        document.querySelector('#app div.col-12 button#matchmaking').addEventListener('click', async (event) =>  {
+        document.querySelector('#app button#matchmaking').addEventListener('click', async (event) =>  {
             event.preventDefault();
             this.createTournament();
         })

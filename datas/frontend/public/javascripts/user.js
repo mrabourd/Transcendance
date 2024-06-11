@@ -84,12 +84,26 @@ export default class User {
         doc = parser.parseFromString(html, 'text/html');
         this.TemplateProfile_history = doc.querySelector('.profile_history .tab-pane');
 
+        tpl_url = '/template/tournament';
+        response = await fetch(tpl_url);
+        html = await response.text();
+        parser = new DOMParser();
+        doc = parser.parseFromString(html, 'text/html');
+        this.TemplateTournament = doc.querySelector('#app.tournament');
+
         tpl_url = '/template/profile_stats';
         response = await fetch(tpl_url);
         html = await response.text();
         parser = new DOMParser();
         doc = parser.parseFromString(html, 'text/html');
         this.TemplateProfile_stats = doc.querySelector('.profile_stats .tab-pane');
+
+        tpl_url = '/template/play';
+        response = await fetch(tpl_url);
+        html = await response.text();
+        parser = new DOMParser();
+        doc = parser.parseFromString(html, 'text/html');
+        this.TemplatePlay = doc.querySelector('#app.template_play');
 
 
     }

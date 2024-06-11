@@ -27,6 +27,7 @@ export default class extends AbstractView {
 	async getHtml(DOM) {
 
 		DOM.innerHTML = this.user.TemplateProfile.innerHTML;
+
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_profile.cloneNode(true));
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_stats.cloneNode(true));
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_history.cloneNode(true));

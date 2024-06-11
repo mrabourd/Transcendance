@@ -1,8 +1,5 @@
 import AbstractView from "./AbstractView.js";
-import pongComputer from "../pongComputer.js";
-import pongPlayer from "../pongPlayer.js";
 import pongOnline from "../pongOnline.js";
-import AbstractPong from "../AbstractPong.js";
 
 export default class extends AbstractView {
     constructor(params) {
@@ -12,25 +9,14 @@ export default class extends AbstractView {
     }
 
     async getHtml(DOM) {
-        await fetch('/template/play').then(function (response) {
-            // The API call was successful!
-            return response.text();
-        }).then(function (html) {
-            // This is the HTML from our response as a text string
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(html, 'text/html');
-            let body = doc.querySelector('#app');
-            DOM.innerHTML = body.innerHTML;
-        }).catch(function (err) {
-            // There was an error
-            console.warn('Something went wrong.', err);
-        });
+        DOM.innerHTML = this.user.TemplatePlay.innerHTML;
     }
 
 	addEvents () {
 
 		if (this.params.match_id)
 		{
+			document.querySelector('#app p.play_info').innerHTML = "Play with arrows "
 			let canvas = document.getElementById('canvas');
 			canvas.classList.remove('d-none')
 			this.pong = new pongOnline(canvas, this.user, this.match_id);
@@ -51,7 +37,7 @@ export default class extends AbstractView {
 		else
 		{
 			let button = document.querySelector('#app button.redirection')
-			button.textContent = "Play Locally with a friend"
+			button.textContent = "Play locally with a friend"
 			button.addEventListener('click',  async e => {
 				e.preventDefault();
 				let response = await this.user.request.get("/api/match/create/")

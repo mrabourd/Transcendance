@@ -64,7 +64,7 @@ export default class Request {
                 {
                     let RefreshResponse = await this.refreshJWTtoken();
                     if (RefreshResponse.ok)
-                        return await this.post(RQ_url);
+                        return await this.post(RQ_url, RQ_body);
                 }
             }
             else if (response.status == 403 && response.statusText == "Forbidden")

@@ -1,12 +1,15 @@
-import AbstractPong from "./AbstractPong.js";
 import * as friends_utils from "./utils_friends.js"
 
 const PLAYER_HEIGHT = 100;
 
-export default class extends AbstractPong {
+export default class pongOnline {
 
 	constructor(canvas, user, match_id) {
-		super(canvas);
+		
+		this.currentKeysDown = [];
+		this._canvas = canvas;
+		this._game = {}
+
         this.user = user
 		this.player_move =
 		{

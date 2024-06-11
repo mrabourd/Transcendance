@@ -70,8 +70,10 @@ export default class Websockets {
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
 		
 		profile_cards.forEach(profile_card => {
-			profile_card.querySelector('.avatar').src = avatar;
-			profile_card.querySelector('.username').innerHTML = username;
+			if (profile_card.querySelector('.avatar'))
+				profile_card.querySelector('.avatar').src = avatar;
+			if (profile_card.querySelector('.username'))
+				profile_card.querySelector('.username').innerHTML = username;
 		});
 
 		
