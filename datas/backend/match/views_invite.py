@@ -88,14 +88,12 @@ class Invite(APIView):
 					receiver=user_invited,
 					link=f"/home"
 				)
-				user.SetStatus(User.USER_STATUS['WAITING_FRIEND'])
 				return HttpResponse("Invitation sent!")
 			except IntegrityError:
 				return HttpResponse("An error occurred while sending the invitation.", status=500)
 
 		elif req_type == 'cancel':
 			# Vérifier si l'utilisateur a effectivement envoyé une invitation
-			user.SetStatus(User.USER_STATUS['ONLINE'])
 			invitation = get_object_or_404(Invitation, sender=user, receiver=user_invited)
 			invitation.delete()
 			notif_message = f'{user.username} has cancelled her/his invitation'
@@ -114,8 +112,6 @@ class Invite(APIView):
 			# Vérifier si l'utilisateur cible a reçu une invitation
 			invitation_sender = user_invited
 			invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
-			user.SetStatus(User.USER_STATUS['ONLINE'])
-			invitation_sender.SetStatus(User.USER_STATUS['ONLINE'])
 			# Envoyer une notification / invitation refusee
 			##### TO DO
 			notif_message = f'{user.username} has rejected {invitation_sender.username} invitation'
@@ -138,8 +134,6 @@ class Invite(APIView):
 			
 			# Vérifier le statut du demandeur (s'il est en ligne, annuler la demande)
 			# S'il est en ligne, cela signifie que l'invitation a été annulée
-			if invitation_sender.status == User.USER_STATUS['ONLINE']:
-				return JsonResponse({'message': 'La demande a été annulée'}, status=404)
 
 			invitation = get_object_or_404(Invitation, sender=invitation_sender, receiver=user)
 			
