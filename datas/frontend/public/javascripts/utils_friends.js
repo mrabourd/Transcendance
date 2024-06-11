@@ -246,7 +246,6 @@ export async function update_status_text(profile_card)
 }
 export async function create_anonymous_thumbnail(nodeToCopy, user, alias)
 {
-    console.log("create_anonymous_thumbnail")
     const nodeCopy = nodeToCopy.cloneNode(true);
     nodeCopy.querySelector(".username").innerHTML = alias ? alias : "Anonymous"
     nodeCopy.querySelector(".status").remove()
@@ -256,7 +255,6 @@ export async function create_anonymous_thumbnail(nodeToCopy, user, alias)
 
 export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alias="")
 {
-    console.log("create_thumbnail")
 
     if (!friend_id)
         return create_anonymous_thumbnail(nodeToCopy, user, alias)
@@ -269,7 +267,6 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alia
         if (response.status === 200)
             friend = await response.json();
     }
-    console.log("friend.username", friend.username)
     const nodeCopy = nodeToCopy.cloneNode(true);
     await nodeCopy.setAttribute("data-friend-id", friend.id)
     await nodeCopy.setAttribute("data-friend-status", friend.status)

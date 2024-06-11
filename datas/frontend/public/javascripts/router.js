@@ -73,7 +73,12 @@ export const router = async (user) => {
         };
     }
     if (match.length > 1)
+    {
+        console.log(match[0])
+        console.log(match[1])
         match = match[0]
+    }
+        
     let path = location.pathname;
     let isConnected = user.isConnected;
     if (match.route.id > 4 && !isConnected)
@@ -89,7 +94,7 @@ export const router = async (user) => {
     
     user.view = new match.route.view(getParams(match));
     user.view.user = user;
-
+    console.log("router ...", match.route.path)
     await user.view.getHtml(document.querySelector("#app"));
     await user.view.fillHtml();
     await user.view.addEvents();
