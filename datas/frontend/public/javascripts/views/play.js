@@ -44,16 +44,9 @@ export default class extends AbstractView {
 			this.pong.connect();
 			this.PongSocket = this.pong.PongSocket
 			
-			document.addEventListener("keydown", (event) => {
-				if (!this.pong.currentKeysDown.includes(event.key)) {
-					this.pong.currentKeysDown.push(event.key);
-				}
-				this.pong.movePaddles();
-			})
-			document.addEventListener("keyup", (event) => {
-				this.pong.currentKeysDown.splice(this.pong.currentKeysDown.indexOf(event.key), 1)
-				this.pong.movePaddles();
-			})
+			window.addEventListener("keydown", this.user.view.preventDefaultKeyDown, false);
+			window.addEventListener("keydown", this.user.view.keyupHandler)
+			window.addEventListener("keyup", this.user.view.keydownHandler)
 		}
 		else
 		{
@@ -61,8 +54,5 @@ export default class extends AbstractView {
 			button.setAttribute('data-link-play', 'create_match');
 			button.classList.remove("d-none")
 		}
-
-
-
     }
 }

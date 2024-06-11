@@ -138,12 +138,18 @@ export default class extends AbstractView {
 		//let chatbox = document.querySelector("#app .overflow-scroll");
 
 		// document.querySelector(".chat_message").classList.add("bg-info")
-		//DOM.classList.add('justify-content-end', 'd-flex')
-		DOM.querySelector('.message').classList.add('text-right', 'mb-0')
-		DOM.querySelector('.hour').classList.add('text-right', 'mt-2')
+		DOM.classList.add('justify-content-end', 'd-flex')
+		DOM.querySelector('.message').classList.add('mb-0')
+		DOM.querySelector('.hour').classList.add('mt-2')
 		DOM.style.backgroundColor = '#9ec5fe';
 	}
 
+	/*
+	<li class="chat_message mb-2 p-2 border-secondary rounded">
+    <p class="message text-break text-right mb-0">Contenu du message aligné à droite</p>
+    <p class="hour text-xs text-right mt-2">Heure alignée à droite</p>
+	</li>
+	*/
 	displayLeft = (DOM) => {
 		//let chatbox = document.querySelector("#app .overflow-scroll");
 
