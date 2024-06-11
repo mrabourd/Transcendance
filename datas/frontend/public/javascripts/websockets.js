@@ -68,10 +68,22 @@ export default class Websockets {
 		let username = data.message.username;
 		let avatar = data.message.avatar;
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
-		
+		/// IMG Managment
+		let avatar_url;
+		try {
+			const response = await fetch(avatar);
+			if (!response.ok) {
+				throw new Error('Network response was not ok');
+			}
+			const blob = await response.blob();
+			const objectURL = URL.createObjectURL(blob);
+			avatar_url =  objectURL;
+		} catch (error) {
+		}
+
 		profile_cards.forEach(profile_card => {
-			if (profile_card.querySelector('.avatar'))
-				profile_card.querySelector('.avatar').src = avatar;
+			if (avatar_url)
+				profile_card.querySelector('.avatar').src = avatar_url;
 			if (profile_card.querySelector('.username'))
 				profile_card.querySelector('.username').innerHTML = username;
 		});
