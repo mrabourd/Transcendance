@@ -191,16 +191,25 @@ export default class Websockets {
 		this.user.saveDatasToLocalStorage()
 		friends_utils.update_profile_cards_text(this.user)
         if(location.pathname == '/home'){
-            // this.user.router.router(this.user);
 			this.user.router.navigateTo('/home', this.user);
 		}
-		/*
-		if((action == "block") && (!user.datas.blocks.includes(friend_id)))
-        {
-            user.datas.blocks.push(friend_id);
-        } else if (action == "unblock"){
-        }
-		*/
+		if(location.pathname == '/chatroom/' + data.sender){
+			console.log("invite via chat")
+			let DOM = this.user.DOMMpChatMessage.cloneNode(true)
+			let text = DOM.querySelector(".message");
+
+			DOM.style.backgroundColor = '#75b798';
+
+			text.classList.add('d-flex', 'flex-row', 'justify-content-center')
+			let chatbox = document.querySelector("#app .overflow-scroll");
+
+			text.innerHTML = data.message
+	
+			chatbox.scrollTop = document.querySelector(".endofscroll").offsetTop
+			document.querySelector('#chat-message-input')
+			document.querySelector("#app .overflow-scroll ul").appendChild(DOM)
+
+		}
 	}
 
 	async update_status(data)

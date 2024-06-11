@@ -78,7 +78,7 @@ class Invite(APIView):
 			try:
 				invitation = Invitation.objects.create(sender=user, receiver=user_invited)
 
-				notif_message = f'{user.username} has invited {user_invited.username} to play'
+				notif_message = f'{user.username} has invited you to play'
 				Notification.objects.create(
 					type="private",
 					code_name="INV",
@@ -98,7 +98,7 @@ class Invite(APIView):
 			user.SetStatus(User.USER_STATUS['ONLINE'])
 			invitation = get_object_or_404(Invitation, sender=user, receiver=user_invited)
 			invitation.delete()
-			notif_message = f'{user.username} has cancelled his invitation'
+			notif_message = f'{user.username} has cancelled his/her invitation'
 			Notification.objects.create(
 				type="private",
 				code_name="INV",
