@@ -35,7 +35,6 @@ export default class User {
 
 
     async getTemplates() {
-        //await this.RefreshLocalDatas();
         let tpl_url = '/template/profile_card';
         let response = await fetch(tpl_url);
         let html = await response.text();
@@ -49,6 +48,48 @@ export default class User {
         parser = new DOMParser();
         doc = parser.parseFromString(html, 'text/html');
         this.DOMMpChatMessage = doc.querySelector('.chat_message');
+
+        tpl_url = '/template/home';
+        response = await fetch(tpl_url);
+        html = await response.text();
+        parser = new DOMParser();
+        doc = parser.parseFromString(html, 'text/html');
+        this.TemplateHome = doc.querySelector('.home');
+
+        tpl_url = '/template/profile';
+        response = await fetch(tpl_url);
+        html = await response.text();
+        parser = new DOMParser();
+        doc = parser.parseFromString(html, 'text/html');
+        this.TemplateProfile = doc.querySelector('.profile');
+
+        tpl_url = '/template/profile_profile';
+        response = await fetch(tpl_url);
+        html = await response.text();
+        parser = new DOMParser();
+        doc = parser.parseFromString(html, 'text/html');
+        this.TemplateProfile_profile = doc.querySelector('.profile_profile .tab-pane');
+
+        tpl_url = '/template/profile_followed';
+        response = await fetch(tpl_url);
+        html = await response.text();
+        parser = new DOMParser();
+        doc = parser.parseFromString(html, 'text/html');
+        this.TemplateProfile_followed = doc.querySelector('.profile_followed .tab-pane');
+
+        tpl_url = '/template/profile_history';
+        response = await fetch(tpl_url);
+        html = await response.text();
+        parser = new DOMParser();
+        doc = parser.parseFromString(html, 'text/html');
+        this.TemplateProfile_history = doc.querySelector('.profile_history .tab-pane');
+
+        tpl_url = '/template/profile_stats';
+        response = await fetch(tpl_url);
+        html = await response.text();
+        parser = new DOMParser();
+        doc = parser.parseFromString(html, 'text/html');
+        this.TemplateProfile_stats = doc.querySelector('.profile_stats .tab-pane');
 
 
     }

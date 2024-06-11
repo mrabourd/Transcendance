@@ -25,66 +25,20 @@ export default class extends AbstractView {
 	}
 
 	async getHtml(DOM) {
-		await fetch('/template/profile').then(function (response) {
-			// The API call was successful!
-			return response.text();
-		}).then(async html =>  {
-			// This is the HTML from our response as a text string
-			let parser = new DOMParser();
-			let doc = parser.parseFromString(html, 'text/html');
-			let body = doc.querySelector('#app');
-			DOM.innerHTML = body.innerHTML;
 
-			// Get profile page HTML
-			let profile_url;
-			profile_url = '/template/profile_profile'
-			await fetch(profile_url).then(function (response) {
-				return response.text();
-			}).then(function (html) {
-				let parser = new DOMParser();
-				let doc = parser.parseFromString(html, 'text/html');
-				document.querySelector('.tab-content').append(doc.querySelector('body div'));
-			});
+		DOM.innerHTML = this.user.TemplateProfile.innerHTML;
+		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_profile);
+		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_stats);
+		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_history);
+		if (this.is_user_page())
+			DOM.querySelector('.tab-content').append(this.user.TemplateProfile_followed);
+		else
+		{
+			let del = document.querySelector('.nav-item[data-target="followed"]');
+			if (del != null)
+				del.remove()
+		}
 
-			// Get Hitory page HTML
-			await fetch( '/template/profile_history').then(function (response) {
-				return response.text();
-			}).then(function (html) {
-				let parser = new DOMParser();
-				let doc = parser.parseFromString(html, 'text/html');
-				document.querySelector('.tab-content').append(doc.querySelector('body div'));
-			});
-
-			// Get Stats page HTML
-			await fetch( '/template/profile_stats').then(function (response) {
-				return response.text();
-			}).then(function (html) {
-				let parser = new DOMParser();
-				let doc = parser.parseFromString(html, 'text/html');
-				document.querySelector('.tab-content').append(doc.querySelector('body div'));
-			});
-
-			// Get Followed page HTML
-			if (!this.is_user_page())
-			{
-				await fetch( '/template/profile_followed').then(function (response) {
-					return response.text();
-				}).then(function (html) {
-					let parser = new DOMParser();
-					let doc = parser.parseFromString(html, 'text/html');
-					document.querySelector('.tab-content').append(doc.querySelector('body div'));
-				});
-			}
-			else
-			{
-				let del = document.querySelector('.nav-item[data-target="followed"]');
-				if (del != null)
-					del.remove()
-			}
-		}).catch(function (err) {
-			// There was an error
-			console.warn('Something went wrong.', err);
-		});
 
 
 		if (this.is_user_page())
@@ -131,10 +85,7 @@ export default class extends AbstractView {
 
 	async fillFollowed()
 	{
-		let profile_card_url = '/template/profile_card'
-		await fetch(profile_card_url).then(function (response) {
-			return response.text();
-		}).then( async (html) => {
+
 			let dest_container = document.querySelector('main .followed ul')
 			
 			if (dest_container.hasChildNodes())
@@ -148,7 +99,7 @@ export default class extends AbstractView {
 				const nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend_id);
 				dest_container.appendChild(nodeCopy);
 			})
-		});
+
 
 	}
 

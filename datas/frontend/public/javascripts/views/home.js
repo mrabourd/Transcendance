@@ -1,6 +1,5 @@
 import AbstractView from "./AbstractView.js";
 import * as friends_utils from "../utils_friends.js"
-import * as router from "../router.js";
 import { USER_STATUS } from "../config.js";
 
 export default class extends AbstractView {
@@ -10,16 +9,7 @@ export default class extends AbstractView {
     }
 
     async getHtml(DOM) {
-        await fetch('/template/home').then(function (response) {
-            return response.text();
-        }).then(function (html) {
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(html, 'text/html');
-            let body = doc.querySelector('#app');
-            DOM.innerHTML = body.innerHTML;
-        }).catch(function (err) {
-            console.warn('Something went wrong.', err);
-        });
+        DOM.innerHTML = this.user.TemplateHome.innerHTML;
     }
 
     async fillHtml(DOM) {   
@@ -40,6 +30,7 @@ export default class extends AbstractView {
             dom.innerHTML = 'Unsubscribe from waiting list'
         else
             dom.innerHTML = 'Find a random oponent'
+        dom.classList.remove('d-none')
         if (dom){
         dom.addEventListener('click',  async e => 
         {
@@ -51,14 +42,13 @@ export default class extends AbstractView {
                 {
                     let JSONResponse = await response.json()
                     let match_id = JSONResponse['match_id']
-                    this.user.datas.status = USER_STATUS["PLAYING"];
                     this.user.router.navigateTo(`/play/${match_id}`, this.user)
                 }else if (response.status == 200)
                 {
                     e.target.innerHTML = 'Unsubscribe from waiting list'
                     this.user.datas.status = USER_STATUS["WAITING_PLAYER"];
+                    this.user.saveDatasToLocalStorage()
                 }
-                this.user.saveDatasToLocalStorage()
             }
             else
             {
@@ -77,37 +67,30 @@ export default class extends AbstractView {
         response = await this.user.request.get('/api/match/tournament/list/')
         let destination = document.querySelector('#app .tournament')
         let link
-            let JSONResponse = await response.json()
-            JSONResponse.forEach(tournament => {
-                link = document.createElement('div');
-                link.classList.add("mr-2", "btn", "btn-dark", "btn-lg");
-                link.style.margin = "5px";
-                link.innerHTML = tournament["name"];
-                link.addEventListener('click',  async e => {
-                    e.preventDefault();
-                    this.user.router.navigateTo(`/tournament/${tournament["tournament_id"]}`, this.user)
-                })
-                destination.appendChild(link)
-            }); 
-
-            let create = document.querySelector('#app .create')
-            // create.classList.add("btn", "btn-primary", "btn-lg")
-            // create.innerHTML = "create a tournament"
-            create.addEventListener('click',  async e => {
+        let JSONResponse = await response.json()
+        JSONResponse.forEach(tournament => {
+            link = document.createElement('div');
+            link.classList.add("mr-2", "btn", "btn-dark", "btn-lg");
+            link.style.margin = "5px";
+            link.innerHTML = tournament["name"];
+            link.addEventListener('click',  async e => {
                 e.preventDefault();
-                this.user.router.navigateTo('/tournament', this.user)
+                this.user.router.navigateTo(`/tournament/${tournament["tournament_id"]}`, this.user)
             })
-            // destination.appendChild(link)
-        
+            destination.appendChild(link)
+        }); 
+        let create = destination.querySelector('.create')
+        create.addEventListener('click',  async e => {
+            e.preventDefault();
+            this.user.router.navigateTo('/tournament', this.user)
+        })
+        destination.classList.remove('d-none')
     }
 
     async add_pending_matches ()
     {
         /* PENDING MATCHES */
-        let nodePlayer1;
-        let nodePlayer2;
-
-        let dom = document.querySelector('#app .pending_matchs ul')
+        let dom = document.querySelector('#app .pending_matchs')
         let response = await this.user.request.post('/api/match/list/pending/')
         try{
             let JSONResponse = await response.json()
@@ -130,8 +113,6 @@ export default class extends AbstractView {
                 var VS = document.createElement('div')
                 VS.classList.add('col-md-2', 'text-center')
                 VS.innerHTML = '<h4>VS</h4>'
-
-    
                 var play_button = document.createElement('div')
                 play_button.classList.add('col-md-2', 'text-center')
                 play_button.innerHTML = '<a class="btn btn-primary btn-sm" role="button">play</a>'
@@ -144,7 +125,8 @@ export default class extends AbstractView {
                 newLi.appendChild(VS);
                 newLi.appendChild(nodePlayer2);
                 newLi.appendChild(play_button);
-                dom.appendChild(newLi);
+                dom.querySelector('ul').appendChild(newLi);
+                dom.classList.remove('d-none')
 
             })
         } catch (e) {
@@ -157,11 +139,8 @@ export default class extends AbstractView {
     /***  INVITATIONS RECEIVED ***/
     add_invitations_received (){
         let nodeCopy;
+        let dom = document.querySelector(`#app .invitations_received`)
         const received_invitations = this.user.datas.received_invitations
-        if (received_invitations.length === 0)
-            document.querySelector(`#app .invitations_received`).classList.add('d-none')
-        else
-        {
             received_invitations.forEach(async invitation => {
                 nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, invitation)
                 let friend_status = nodeCopy.getAttribute('data-friend-status');
@@ -184,9 +163,9 @@ export default class extends AbstractView {
                         await friends_utils.invite(this.user, invitation, 'deny')
                     });
                 }
-                document.querySelector(`#app .invitations_received ul`).append(nodeCopy);
-            })
-        }
+                dom.querySelector(`ul`).append(nodeCopy);
+                dom.classList.remove('d-none')
+            });
     }
 
 
@@ -194,11 +173,8 @@ export default class extends AbstractView {
     /***  INVITATION SENT ***/
     add_invitations_sent (){
         let nodeCopy;
+        let dom = document.querySelector(`#app .invitations_sent`)
         const invitations_sent = this.user.datas.invitations_sent
-        if (invitations_sent.length === 0)
-            document.querySelector(`#app .invitations_sent`).classList.add('d-none')
-        else
-        {
             invitations_sent.forEach(async invitation => {
                 nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, invitation)
                 let bt_cancel = '<a class="cancel btn btn-primary btn-sm" role="button">cancel</a>'
@@ -208,9 +184,10 @@ export default class extends AbstractView {
                     e.preventDefault();
                     await friends_utils.invite(this.user, invitation, 'cancel')
                 });
-                document.querySelector(`#app .invitations_sent ul`).append(nodeCopy);
+                dom.querySelector(`ul`).append(nodeCopy);
+                dom.classList.remove('d-none')
             })
-        }
+
     }
 
 }
