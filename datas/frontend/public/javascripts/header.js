@@ -57,6 +57,8 @@ export async function print(user)
 		//thumb.querySelector(".col_main").classList.remove('col-9')
 		//thumb.querySelector(".col_main").classList.add('col-6')
 		document.querySelector(".notif").classList.remove("d-none");
+		document.querySelector(".notif .dropdown-menu").innerHTML = '';
+		
 	}
 	else 
 	{
