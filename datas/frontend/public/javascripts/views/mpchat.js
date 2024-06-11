@@ -151,6 +151,10 @@ export default class extends AbstractView {
 		// document.querySelector(".chat_message").classList.add("bg-info")
 		time.classList.add('d-flex', 'flex-row', 'justify-content-end')
 		text.classList.add('d-flex', 'flex-row', 'justify-content-end')
+
+		DOM.style.backgroundColor = '#9ec5fe';
+		// DOM.classList.add('text-white', 'rounded');
+
 		text.innerHTML = data.message;
 		time.innerHTML = time.innerText;
 
@@ -161,6 +165,8 @@ export default class extends AbstractView {
 		let chatbox = document.querySelector("#app .overflow-scroll");
 
 		text.innerHTML = data.message
+
+		DOM.style.backgroundColor = '#e9ecef';
 
 		chatbox.scrollTop = document.querySelector(".endofscroll").offsetTop
 		document.querySelector('#chat-message-input')
