@@ -106,6 +106,14 @@ export default class User {
         this.TemplatePlay = doc.querySelector('#app.template_play');
 
 
+        tpl_url = '/template/mpchat';
+        response = await fetch(tpl_url);
+        html = await response.text();
+        parser = new DOMParser();
+        doc = parser.parseFromString(html, 'text/html');
+        this.TemplateChat = doc.querySelector('#app.template_chat');
+
+
     }
 
     async login(userName, passWord) {

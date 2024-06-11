@@ -10,17 +10,12 @@ export default class extends AbstractView {
 
 	async getHtml(DOM) {
 		try {
-			let response = await fetch('/template/mpchat');
-			let html = await response.text();
-			
-			let parser = new DOMParser();
-			let doc = parser.parseFromString(html, 'text/html');
-			let body = doc.querySelector('#app');
-			DOM.innerHTML = body.innerHTML;
+
+			DOM.innerHTML = this.user.TemplateChat.innerHTML;
 
 			/* get friend history */
 			this.friend_id = this.params.friend_id; // Assuming 'this' refers to the proper context here.
-			response = await this.user.request.get('/api/users/profile/'+this.friend_id+'/')
+			let response = await this.user.request.get('/api/users/profile/'+this.friend_id+'/')
 			let friend = await response.json();
 			this.friend_username = friend.username;
 			
