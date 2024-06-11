@@ -27,20 +27,25 @@ export default class extends AbstractView {
 	async getHtml(DOM) {
 
 		DOM.innerHTML = this.user.TemplateProfile.innerHTML;
-		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_profile);
-		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_stats);
-		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_history);
-		if (this.is_user_page())
-			DOM.querySelector('.tab-content').append(this.user.TemplateProfile_followed);
-		else
+		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_profile.cloneNode(true));
+		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_stats.cloneNode(true));
+		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_history.cloneNode(true));
+		if (!this.is_user_page())
 		{
-			let del = document.querySelector('.nav-item[data-target="followed"]');
-			if (del != null)
-				del.remove()
+			DOM.querySelector('.tab-content .tab-pane.profile form button#submit_form').remove()
+			DOM.querySelector('.tab-content').append(this.user.TemplateProfile_followed.cloneNode(true));
 		}
+		else
+			document.querySelector('.nav.nav-tabs li[data-target="followed"]').remove()
 
-
-
+		document.querySelectorAll('.nav.nav-tabs li a').forEach(element => {
+			element.classList.remove('active');
+		});
+		document.querySelectorAll('.tab-content .tab-pane').forEach(element => {
+			element.classList.remove('active');
+		});
+		document.querySelector('.tab-content .tab-pane.profile').classList.add('active')
+		document.querySelector('.nav.nav-tabs li[data-target="profile"] a').classList.add('active')
 		if (this.is_user_page())
 		{
 			this.UserDatas = this.user.datas;

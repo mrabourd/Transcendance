@@ -56,7 +56,7 @@ export default class Request {
             if(response.headers.has('csrftoken'))
                 this.setCookie('csrftoken', 'Strict', response.headers.get('csrftoken'), 1)
  
-            if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
+            if (response.status === 241 && RQ_url != '/api/users/login/refresh/')
             {
                 let response_copy = response.clone()
                 let jsonData = await response_copy.json();
@@ -90,7 +90,7 @@ export default class Request {
                 body: JSON.stringify(RQ_body),
                 credentials: 'include'
             });
-            if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
+            if (response.status === 241 && RQ_url != '/api/users/login/refresh/')
             {
                 let jsonData = await response.json();
                 if (jsonData.code === "user_not_found")
@@ -133,7 +133,7 @@ export default class Request {
                 this.setCookie('csrftoken', 'Strict', response.headers.get('csrftoken'), 1)
             }
  
-            if (response.status === 401 && RQ_url != '/api/users/login/refresh/')
+            if (response.status === 241 && RQ_url != '/api/users/login/refresh/')
             {
                 try {
                     let jsonData = await response.json();

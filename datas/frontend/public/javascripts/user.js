@@ -104,6 +104,8 @@ export default class User {
             this.request.setJWTtoken(jsonData.access, jsonData.refresh);
             this.isConnected = true;			
             this.websockets = new Websockets(this)
+            document.querySelector('aside .followed ul').innerHTML = '';
+            document.querySelector('aside .online ul').innerHTML = '';
             await this.view.printHeader();
             await this.view.printAside();
             return true;

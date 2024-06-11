@@ -252,6 +252,16 @@ export async function create_anonymous_thumbnail(nodeToCopy, user, alias)
     return nodeCopy;
 }
 
+/*
+async function create_thumbnail(DOMProfileCard, user, friend, friendId) {
+    const nodeCopy = DOMProfileCard.cloneNode(true);
+    const img = new Image();
+    img.src = user.profileImageUrl;
+
+    nodeCopy.querySelector('.profile-image').src = img.src;
+    return nodeCopy;
+}
+*/
 export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alias="")
 {
     if (!friend_id)
@@ -272,9 +282,23 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alia
     await nodeCopy.setAttribute("data-friend-id", friend.id)
     await nodeCopy.setAttribute("data-friend-status", friend.status)
     nodeCopy.querySelector(".username").innerHTML = friend.username
-    //nodeCopy.querySelector(".id").innerHTML = friend.id
+
+
+    /// IMG Managment
     let avatar = (friend.avatar) ? friend.avatar : '/avatars/default.png'
-    nodeCopy.querySelector("img.avatar").src = avatar
+    try {
+        const response = await fetch(avatar);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const blob = await response.blob();
+        const objectURL = URL.createObjectURL(blob);
+        nodeCopy.querySelector("img.avatar").src = objectURL;
+    } catch (error) {
+        console.error('Failed to load image:', error);
+        nodeCopy.querySelector("img.avatar").src = '/avatars/default.png'; // Image de secours en cas d'échec
+    }
+
 
     if (user.datas.id == friend.id)
     {

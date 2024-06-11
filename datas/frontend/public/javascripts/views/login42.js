@@ -58,7 +58,7 @@ export default class extends AbstractView {
 			}
 			
 			// return get_token_path;
-		} else if (response.status === 401) {
+		} else if (response.status === 241) {
 			const jsonData = await response.json();
 			return jsonData.detail;
 		}

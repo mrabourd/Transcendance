@@ -107,7 +107,7 @@ export default class extends AbstractView {
 			}
 			
 			// return resp_2FA;
-		} else if (verif_2FA.status === 401) {
+		} else if (verif_2FA.status === 241) {
 			let errDiv = document.getElementById("errorFeedback");
 			errDiv.classList.remove("d-none")
 			errDiv.innerHTML = "Bad verification code! Enter the code you received.";
