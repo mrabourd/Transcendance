@@ -100,7 +100,7 @@ export default class Request {
 
                 let RefreshResponse = await this.refreshJWTtoken();
                 if (RefreshResponse.ok)
-                    return await this.put(RQ_url);
+                    return await this.put(RQ_url, RQ_body);
                 else
                     return response;
             }

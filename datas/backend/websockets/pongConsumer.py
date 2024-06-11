@@ -271,8 +271,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 		if self._game["playerleft"] and self._game["playerright"]:
 			status = self._game["pong"].get_status()
 			if (status == self.GAME_STATUS["PENDING"]):
-				await database_sync_to_async(self._game["playerleft"].SetStatus)(User.USER_STATUS['PLAYING'])
-				await database_sync_to_async(self._game["playerright"].SetStatus)(User.USER_STATUS['PLAYING'])
+				if self._game["playerleft"]:
+					await database_sync_to_async(self._game["playerleft"].SetStatus)(User.USER_STATUS['PLAYING'])
+				if self._game["playerright"]:
+					await database_sync_to_async(self._game["playerright"].SetStatus)(User.USER_STATUS['PLAYING'])
 				self._game["pong"].set_status(self.GAME_STATUS["PLAYING"])
 				self.game_task = asyncio.create_task(self.send_game_state_periodically())
 			else:
@@ -289,9 +291,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 		)
 		player_role = self.get_player_role()
 		if player_role:
-
-			await database_sync_to_async(self._game["playerleft"].SetStatus)(User.USER_STATUS['ONLINE'])
-			await database_sync_to_async(self._game["playerright"].SetStatus)(User.USER_STATUS['ONLINE'])
+			if self._game["playerleft"]:
+				await database_sync_to_async(self._game["playerleft"].SetStatus)(User.USER_STATUS['ONLINE'])
+			if self._game["playerright"]:
+				await database_sync_to_async(self._game["playerright"].SetStatus)(User.USER_STATUS['ONLINE'])
 			self._game[self.get_player_role()] = None
 			if (self._game["pong"].get_status() == self.GAME_STATUS["PLAYING"]):
 				self._game["pong"].set_status(self.GAME_STATUS["PENDING"])
@@ -382,7 +385,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def save_game_state(self):
 		print("####################### save_game_state #1")
-
+		if (self._game["pong"] == None):
+			return
 		try:
 			# print("save_game_state #2", self.match)
 			game_params = self._game["pong"].get_params()
@@ -390,6 +394,8 @@ class PongConsumer(AsyncWebsocketConsumer):
 			self.match.status = game_params["infos"]["status"]
 			self.match_point_1.points = game_params["playerleft"]["score"]
 			self.match_point_2.points = game_params["playerright"]["score"]
+			if self.match == None:
+				return
 			await database_sync_to_async(self.match.save)()
 			await database_sync_to_async(self.match_point_1.save)()
 			await database_sync_to_async(self.match_point_2.save)()

@@ -79,7 +79,7 @@ export default class extends AbstractView {
             })
             destination.appendChild(link)
         }); 
-        let create = destination.querySelector('.create')
+        let create = destination.querySelector('.create .btn')
         create.addEventListener('click',  async e => {
             e.preventDefault();
             this.user.router.navigateTo('/tournament', this.user)

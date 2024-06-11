@@ -301,9 +301,11 @@ export default class extends AbstractView {
 				event.preventDefault();
 				
 				if (!this.checkAllFields())
-					return false;				
+					return false;
+				let avatar_src = document.querySelector("#app .profile_thumbnail .profile_card .avatar").src;
+				console.log("avatar_src", avatar_src)
 				let RQ_Body = {
-					avatar: document.querySelector("#app .profile_thumbnail .profile_card .avatar").src,
+					avatar: avatar_src,
 					username: document.querySelector("#username").value,
 					first_name: document.querySelector("#first_name").value,
 					last_name: document.querySelector("#last_name").value,

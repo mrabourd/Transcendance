@@ -274,8 +274,10 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alia
 
 
     /// IMG Managment
-    let avatar = (friend.avatar) ? friend.avatar : '/avatars/default.png'
+    let avatar = (friend.avatar && friend.avatar != '') ? friend.avatar : '/avatars/default.png'
     try {
+        console.log("friend username ", friend.username)
+        console.log("avatar ", avatar)
         const response = await fetch(avatar);
         if (!response.ok) {
             throw new Error('Network response was not ok');
