@@ -8,26 +8,23 @@
 		<link rel="stylesheet" href="/stylesheets/style.css">
 		<script type="module" src="/javascripts/index.js"></script>
 	</head>
-<body class="m-5">
-<main>
-
-<div id="app" class="chat-container">
-	<h1 class="chat-with"></h1>
-	<div class="mh-70 overflow-scroll p-2" style="height: 500px;  ">
-			<ul class="list-unstyled chat-box chatContainerScroll", style="padding-bottom: 50px;">
-
-			</ul>
-			<anchor class="endofscroll"></anchor>
-	</div>
-
-	<div class="bg-white mb-3">
-				<div data-mdb-input-init class="form-outline" id="input-form">
-				  <textarea class="form-control" rows="4" id="chat-message-input"></textarea>
-				  <!-- <label class="form-label" for="textAreaExample2">Message</label> -->
+<body>
+	<main>
+		<div id="app" class="chat-container">
+			<div class="jumbotron">
+				<div class="chat-with col-6"></div>
+				<hr class="my-4">
+				<div class="overflow-scroll" style="height: 500px;">
+					<ul class="list-unstyled chat-box", style="padding-bottom: 50px;"></ul>
+					<anchor class="endofscroll"></anchor>
 				</div>
-	</div>
-	<button  type="button" id="chat-message-submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-rounded float-end">Send</button>
-</div>
-</main>
+
+				<div class="mt-3">
+					<textarea class="form-control" rows="3" id="chat-message-input" maxlength="200"></textarea>
+				</div>
+				<button  type="button" id="chat-message-submit" class="btn btn-primary btn-rounded float-end mt-3">Send</button>
+			</div>
+		</div>
+	</main>
 </body>
 </html>

@@ -27,7 +27,7 @@ export default class extends AbstractView {
 	async getHtml(DOM) {
 
 		DOM.innerHTML = this.user.TemplateProfile.innerHTML;
-
+		DOM.querySelector('.tab-content').innerHTML = ""
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_profile.cloneNode(true));
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_stats.cloneNode(true));
 		DOM.querySelector('.tab-content').append(this.user.TemplateProfile_history.cloneNode(true));
@@ -48,9 +48,7 @@ export default class extends AbstractView {
 		document.querySelector('.tab-content .tab-pane.profile').classList.add('active')
 		document.querySelector('.nav.nav-tabs li[data-target="profile"] a').classList.add('active')
 		if (this.is_user_page())
-		{
 			this.UserDatas = this.user.datas;
-		}
 		else
 		{
 			let response = await this.user.request.get('/api/users/profile/'+this.user.datas.id+'/')
@@ -70,11 +68,12 @@ export default class extends AbstractView {
 	}
 
 	async fillHtml(DOM) {
-		this.fillProfile()
-		this.fillFollowed()
-
+		
 		if (this.UserDatas == undefined)
 			return;
+		
+		this.fillProfile()
+		this.fillFollowed()
 		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
 		let response = await this.user.request.get(URL);
         if (response.ok)
@@ -83,7 +82,6 @@ export default class extends AbstractView {
 			this.matches_stat = JSONResponse.matches_stat;
 			this.matches_history = JSONResponse.matches_history;
 			this.tournaments_history = JSONResponse.tournaments_history;
-
 			this.fillStats()
 			this.fillHistory()
 		}
@@ -232,21 +230,18 @@ export default class extends AbstractView {
 	{
 		if(!this.UserDatas)
 			return;
-
-
 		var profile_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  this.UserDatas.id)
-		
+		document.querySelector("#app .profile_thumbnail").innerHTML = ""
 		document.querySelector("#app .profile_thumbnail").appendChild(profile_thumb)
 		if (this.is_user_page())
 		{
-		profile_thumb.querySelector('.dropdown').innerHTML = '<div class="mt-2 image-upload"><input type="file" id="fileInput"  accept="image/*"  class=""><i class="fa fa-fw fa-camera"></i></div><p id="status"></p>';
-		document.getElementById("fileInput").addEventListener('change', async () =>  {
-			document.getElementById("fileInput")
-			document.querySelector("#status").innerText = "reading URL";
-			this.readURL(document.getElementById("fileInput"));
-		});
+			profile_thumb.querySelector('.dropdown').innerHTML = '<div class="mt-2 image-upload"><input type="file" id="fileInput"  accept="image/*"  class=""><i class="fa fa-fw fa-camera"></i></div><p id="status"></p>';
+			document.getElementById("fileInput").addEventListener('change', async () =>  {
+				document.getElementById("fileInput")
+				document.querySelector("#status").innerText = "reading URL";
+				this.readURL(document.getElementById("fileInput"));
+			});
 		}
-
 		document.querySelector(".tab-pane.profile #username").value = this.UserDatas.username;
 		document.querySelector(".tab-pane.profile #first_name").value = this.UserDatas.first_name;
 		document.querySelector(".tab-pane.profile #last_name").value = this.UserDatas.last_name;

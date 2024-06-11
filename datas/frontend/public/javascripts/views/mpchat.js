@@ -1,8 +1,5 @@
 import AbstractView from "./AbstractView.js";
 import * as friends_utils from "../utils_friends.js";
-import { send_message } from "../utils_chat.js";
-
-
 
 export default class extends AbstractView {
 	constructor(params) {
@@ -29,15 +26,12 @@ export default class extends AbstractView {
 			
 			var chat_with = document.querySelector("#app .chat-with");
 			var nodeFriend = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend.id);
-			nodeFriend.classList.remove('mb-2', 'col-12');
-			nodeFriend.classList.add('d-flex', 'row','justify-content-end', 'col-8');
-			// nodeFriend.querySelector(".dropdown").innerHTML = '';
 			friends_utils.update_status_text(nodeFriend)
 
 			// DOM = this.user.DOMMpChatMessage.cloneNode(true)
 
 			chat_with.appendChild(nodeFriend);
-
+			chat_with.querySelector('.profile_card').classList.remove('mb-2')
 			/* get message history */
 			let historyResponse = await this.user.request.get(`/api/users/chat/messages/history/${this.friend_id}/`);
 			/* TODO -> createChatMessage for each */
@@ -164,10 +158,6 @@ export default class extends AbstractView {
 
 		chatbox.scrollTop = document.querySelector(".endofscroll").offsetTop
 		document.querySelector('#chat-message-input')
-		// let element_to_scroll_to = document.getElementById("endofscroll");
-		// document.querySelector("ul.chatContainerScroll").scrollTop(element_to_scroll_to.offsetTop);
-
-		// element_to_scroll_to.scrollIntoView();
 	}
 
 	createChatMessage = (data, currentUser, isHist) => {

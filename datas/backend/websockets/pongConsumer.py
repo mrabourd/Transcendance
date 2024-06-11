@@ -263,14 +263,15 @@ class PongConsumer(AsyncWebsocketConsumer):
 			self._game[self.get_opponent_role()] = self.user
 		else :
 			self._game[self.get_player_role()] = self.user
-		print("self._game[type]", self._game["type"])
-		print("roles : playerleft ", self._game["playerleft"])
-		print("roles : playerright ", self._game["playerright"])
+
 		await self.accept()
 
 		if self._game["playerleft"] and self._game["playerright"]:
 			status = self._game["pong"].get_status()
 			if (status == self.GAME_STATUS["PENDING"]):
+				await database_sync_to_async(self._game["playerleft"].SetStatus)(User.USER_STATUS['PLAYING'])
+				if self._game["playerleft"] != self._game["playerright"]:
+					await database_sync_to_async(self._game["playerright"].SetStatus)(User.USER_STATUS['PLAYING'])
 				self._game["pong"].set_status(self.GAME_STATUS["PLAYING"])
 				self.game_task = asyncio.create_task(self.send_game_state_periodically())
 			else:
@@ -287,6 +288,10 @@ class PongConsumer(AsyncWebsocketConsumer):
 		)
 		player_role = self.get_player_role()
 		if player_role:
+
+			await database_sync_to_async(self._game["playerleft"].SetStatus)(User.USER_STATUS['ONLINE'])
+			if self._game["playerleft"] != self._game["playerright"]:
+				await database_sync_to_async(self._game["playerright"].SetStatus)(User.USER_STATUS['ONLINE'])
 			self._game[self.get_player_role()] = None
 			if (self._game["pong"].get_status() == self.GAME_STATUS["PLAYING"]):
 				self._game["pong"].set_status(self.GAME_STATUS["PENDING"])
