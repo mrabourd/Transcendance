@@ -22,6 +22,9 @@ export const getParams = match => {
 
 
 export const navigateTo = (url, user) => {
+    window.removeEventListener("keydown", user.view.preventDefaultKeyDown, false);
+    window.removeEventListener("keydown", user.view.keyupHandler)
+    window.removeEventListener("keyup", user.view.keydownHandler)
     if(user.view && user.view.chatSocket != null){
         user.view.chatSocket.close()
         user.view.chatSocket = null
@@ -30,7 +33,6 @@ export const navigateTo = (url, user) => {
         user.view.PongSocket.close()
         user.view.PongSocket = null
     }
-
     history.pushState({ page: url }, null, url);
     router(user);
 };

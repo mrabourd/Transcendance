@@ -138,8 +138,8 @@ export default class extends AbstractView {
 		let chatbox = document.querySelector("#app .overflow-scroll");
 
 		// document.querySelector(".chat_message").classList.add("bg-info")
-		time.classList.add('d-flex', 'flex-row', 'justify-content-end')
-		text.classList.add('d-flex', 'flex-row', 'justify-content-end')
+		time.classList.add('text-right')
+		text.classList.add('text-right')
 
 		DOM.style.backgroundColor = '#9ec5fe';
 		// DOM.classList.add('text-white', 'rounded');

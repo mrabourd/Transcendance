@@ -9,7 +9,7 @@ export default class extends AbstractView {
     }
 
     async getHtml(DOM) {
-        DOM.innerHTML = this.user.TemplateTournament.innerHTML;
+        DOM.innerHTML = this.user.TemplateTournament.cloneNode(true).innerHTML;
     }
 
     async addEvents () {

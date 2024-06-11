@@ -19,6 +19,7 @@ export default class pongOnline {
 			"down": false
 		}
         this.match_id = match_id
+		this.PongSocket = null;
     }
 	
 	connect = () =>
@@ -27,10 +28,10 @@ export default class pongOnline {
 			this.user.request.url_wss+'/ws/pong/'+ this.match_id +'/?token=' + this.user.request.getJWTtoken()["access"]
 		);
 		this.PongSocket.onopen = function(e) {
-
 		};
 		this.PongSocket.onclose = function(e) {
-			this.PongSocket = null; 
+			console.log("Close Pong Socket")
+			this.PongSocket = null;
 		};
 		this.PongSocket.onerror = function(e) {
 			document.querySelector("#app").innerHTML = "An error occured ... WSS connection can be established"
@@ -155,11 +156,7 @@ export default class pongOnline {
 
 	movePaddles() {
 
-		window.addEventListener("keydown", async (e) => {
-			if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
-				e.preventDefault();
-			}
-		}, false);
+
         if (this.currentKeysDown.includes('ArrowUp')) {
 			this.player_move['up'] = true
 			this.player_move['down'] = false
@@ -181,7 +178,8 @@ export default class pongOnline {
 			this.player_move['opp_down'] = false
 			this.player_move['opp_up'] = false			
 		}
-		this.PongSocket.send(JSON.stringify(this.player_move))
+		if (this.PongSocket)
+			this.PongSocket.send(JSON.stringify(this.player_move))
 
 	}
 }
