@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -62,10 +63,10 @@ ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost 127.0.0.1').sp
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = os.environ.get("DJANGO_ALLOWED_ORIGINS").split(" ")
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ['accept', 'authorization', 'content-type', 'user-agent', 'x-csrftoken', 'x-requested-with']
 CORS_EXPOSE_HEADERS = ['Set-Cookie', 'X-CSRFToken']
-CORS_ORIGIN_ALLOW_ALL = True  # 
 CSRF_TRUSTED_ORIGINS = os.environ.get("DJANGO_ALLOWED_ORIGINS").split(" ")
 
 CSRF_COOKIE_SECURE = True
