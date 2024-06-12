@@ -30,7 +30,7 @@ export default class Websockets {
         this.notifySocket.onclose = (e) => {
             console.log('WebSocket connection closes ', e);
 
-            this.attemptReconnect();
+            //this.attemptReconnect();
         };
 		this.notifySocket.onmessage = (e) => 
 		{
@@ -256,6 +256,7 @@ export default class Websockets {
 	}
 	update_status = async (data) => {
 	{
+		try{
 		let friend_id = data.sender
 		let friend_status = data.code_value
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
@@ -275,6 +276,9 @@ export default class Websockets {
 			let nodeCopy = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null, friend_id)
 			document.querySelector(`aside .online ul`).append(nodeCopy)
 		}
+	}catch(e){
+		console.log('fetch error')
+	}
 	}
 }
 
