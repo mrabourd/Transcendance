@@ -26,6 +26,8 @@ export default class extends AbstractView {
     }
 
     addEvents () {
+        this.user.logout()
+
         document.querySelector('#createUsers').addEventListener("click", this.createUsers);
         document.querySelector('#login42Button').addEventListener("click", this.login42);
         document.querySelector('#login2FAButton').addEventListener("click", this.login2FA);

@@ -25,6 +25,7 @@ export default class extends AbstractView {
     }
 
     addEvents () {
+        this.user.logout()
         document.querySelectorAll('form input[type="text"]').forEach(input => {
             input.addEventListener("focusout", utils.checkBlankField);
         });

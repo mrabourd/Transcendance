@@ -27,6 +27,8 @@ export default class extends AbstractView {
     }
 
 	async  addEvents () {
+		this.user.logout()
+
 		document.querySelector(".verify").classList.add("d-none");
 		document.getElementById("send_code").addEventListener('click', async (event) =>  {
 			event.preventDefault();

@@ -12,6 +12,7 @@ export default class extends AbstractView {
 
 
 	async  addEvents () {
+        this.user.logout()
 
 		// CODE DANS l'URL
 		var queryString = window.location.search;

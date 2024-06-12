@@ -205,16 +205,19 @@ export default class User {
 
     logout = async() =>{
         let RQ_Body = await this.request.getJWTtoken();
-        let response = await this.request.post('/api/users/logout/', RQ_Body)
-        if (response.ok) {
-            this.rmLocalDatas();
-            this.request.rmJWTtoken();
-            this.request.rmCsrfToken();
-            this._isConnected = false;
-            this.websockets.notifySocket.close();
-            await this.view.printHeader();
-            await this.view.printAside();
-            this.router.navigateTo('/', this);
+        if (RQ_Body)
+        {
+            let response = await this.request.post('/api/users/logout/', RQ_Body)
+            if (response.ok) {
+                this.rmLocalDatas();
+                this.request.rmJWTtoken();
+                this.request.rmCsrfToken();
+                this._isConnected = false;
+                this.websockets.notifySocket.close();
+                await this.view.printHeader();
+                await this.view.printAside();
+                this.router.navigateTo('/', this);
+            }
         }
     }
 }
