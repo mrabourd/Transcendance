@@ -161,16 +161,17 @@ export async function update_follow_text(user, profile_card, friend_id) {
 export async function update_chat_text(user, profile_card, friend_id) {
     try{
     let dom;
-    let check = is_blocked(user, friend_id);
+    let check_is_blocked = is_blocked(user, friend_id);
+    let check_is_blocked_by = is_blocked_by(user, friend_id);
     let friend_status = profile_card.getAttribute('data-friend-status');
     dom = profile_card.querySelector('.chat');
     if (!dom)
         return ;
-    if (check || friend_status == USER_STATUS["OFFLINE"])
+    if (check_is_blocked || check_is_blocked_by||  friend_status == USER_STATUS["OFFLINE"])
         dom.classList.add('d-none')
     else
         dom.classList.remove('d-none')
-    dom.innerHTML = (!check) ? 'send a message' : 'unblock to send a message';
+    dom.innerHTML = (!check_is_blocked && !check_is_blocked_by) ? 'send a message' : 'unblock to send a message';
     }catch (e){
         console.log('fetch error')
     }

@@ -158,7 +158,7 @@ export default class Websockets {
 		let friend_id = data.sender;
 		if (data.code_value == 1) // blocking someone 
 		{
-			if (!this.user.datas.blocks.includes(data.sender))
+			if (!this.user.datas.blocked_by.includes(data.sender))
 				this.user.datas.blocked_by.push(data.sender)
 		}
 		if (data.code_value == 2) // blocked by someone
