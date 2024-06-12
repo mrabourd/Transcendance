@@ -18,11 +18,11 @@
 
 		<hr class="my-4">
 
-		<form id="login2FAForm" class="row g-3 form-floating">
+		<form id="login2FAForm" class="row g-3 form-floating" autocomplete="on">
 		<div id="errorFeedback" class="alert alert-danger d-none"></div>
 		<div class="col-md-12">
 			<label for="username" class="form-label">Username</label>
-			<input type="text" class="form-control" id="username" value="" aria-describedby="usernameFeedback" required>
+			<input type="text" class="form-control" id="username" autocomplete="username" aria-describedby="usernameFeedback" required>
 			<div id="usernameFeedback" class="invalid-feedback">
 			feedback
 			</div>
@@ -30,13 +30,13 @@
 
 		<div class="col-md-12">
 			<label for="email" class="form-label">Email</label>
-			<input type="email" class="form-control" id="email" value="" aria-describedby="emailFeedback" required>
+			<input type="email" class="form-control" id="email" autocomplete="email" aria-describedby="emailFeedback" required>
 			<!-- <div id="passwordFeedback" class="invalid-feedback"> -->
 			</div>
 		</div>
 		<div class="col-md-12">
 			<label for="password" class="form-label">Password</label>
-			<input type="password" class="form-control" id="password" value="" aria-describedby="passwordFeedback" required>
+			<input autocomplete="new-password" type="password" class="form-control" id="password" value="" aria-describedby="passwordFeedback" required>
 			<div id="passwordFeedback" class="invalid-feedback">
 			feedback
 			</div>
@@ -48,14 +48,13 @@
 
 		<div class="verify">  
 			<div>
-
 				<label for="verificationcode" class="form-label">Your code:</label>
 				<input type="verificationcode" class="form-control" id="verificationcode" value="" aria-describedby="verificationcodeFeedback" required>
 				<div id="verificationcodeFeedback" class="invalid-feedback">
 			</div>
-				<div class="col-12">
-					<button class="btn btn-primary" type="submit" id="verify2FA">Login!</button>
-				</div>
+			<div class="col-12">
+				<button class="btn btn-primary" type="submit" id="verify2FA">Login!</button>
+			</div>
 		</div>
 
 		</form>

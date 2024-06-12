@@ -17,11 +17,11 @@
         <p class="lead">to join our amazing pong website</p>
         <hr class="my-4">
 
-        <form id="loginForm" class="row g-3 form-floating">
+        <form id="loginForm" class="row g-3 form-floating" autocomplete="on">
           <div id="errorFeedback" class="alert alert-danger d-none"></div>
           <div class="col-md-12">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" value="" aria-describedby="usernameFeedback" required>
+            <label for="username" class="form-label" >Username</label>
+            <input type="text" class="form-control" id="username" autocomplete="username" value="" aria-describedby="usernameFeedback" required>
             <div id="usernameFeedback" class="invalid-feedback">
               feedback
             </div>
@@ -29,7 +29,7 @@
 
           <div class="col-md-12">
             <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" value="" aria-describedby="passwordFeedback" required>
+            <input type="password" class="form-control" id="password" autocomplete="new-password" value="" aria-describedby="passwordFeedback" required>
             <div id="passwordFeedback" class="invalid-feedback">
               feedback
             </div>

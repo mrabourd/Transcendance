@@ -15,33 +15,33 @@
         <h1 class="display-4">Sign up</h1>
         <p class="lead">and join our amazing pong website</p>
         <hr class="my-4">
-        <form id="registerForm" class="row g-3 form-floating">
+        <form id="registerForm" class="row g-3 form-floating" autocomplete="on">
 
           <div id="errorFeedback" class="alert alert-danger d-none"></div>
           <div class="col-md-12">
             <label for="username" class="form-label">Username</label>
-            <input maxlength="30" type="text" class="form-control" id="username" value="" aria-describedby="usernameFeedback" required>
+            <input autocomplete="username" maxlength="30" type="text" class="form-control" id="username" value="" aria-describedby="usernameFeedback" required>
             <div id="usernameFeedback" class="invalid-feedback">
               feedback
             </div>
           </div>
             <div class="col-md-12">
               <label for="email" class="form-label">Email</label>
-              <input maxlength="30" type="text" class="form-control" id="email" value="" aria-describedby="emailFeedback" required>
+              <input autocomplete="email" maxlength="30" type="text" class="form-control" id="email" value="" aria-describedby="emailFeedback" required>
               <div id="emailFeedback" class="invalid-feedback">
                 feedback
               </div>
         </div>
           <div class="col-md-12">
             <label for="first_name" class="form-label">First name</label>
-            <input maxlength="30" type="text" class="form-control" id="first_name" value="" aria-describedby="first_nameFeedback" required>
+            <input autocomplete="name" maxlength="30" type="text" class="form-control" id="first_name" value="" aria-describedby="first_nameFeedback" required>
             <div id="first_nameFeedback" class="invalid-feedback">
               feedback
             </div>
           </div>
           <div class="col-md-12">
             <label for="last_name" class="form-label">Last name</label>
-            <input maxlength="30" type="text" class="form-control" id="last_name" value="" aria-describedby="last_nameFeedback" required>
+            <input autocomplete="family-name" maxlength="30" type="text" class="form-control" id="last_name" value="" aria-describedby="last_nameFeedback" required>
             <div id="last_nameFeedback" class="invalid-feedback">
               feedback
             </div>
@@ -49,14 +49,14 @@
 
           <div class="col-md-12">
             <label for="password" class="form-label">Password</label>
-            <input maxlength="30" type="password" class="form-control" id="password" value="" aria-describedby="passwordFeedback" required>
+            <input autocomplete="new-password" maxlength="30" type="password" class="form-control" id="password" value="" aria-describedby="passwordFeedback" required>
             <div id="passwordFeedback" class="invalid-feedback">
               feedback
             </div>
           </div>
           <div class="col-md-12">
             <label for="repeat-password" class="form-label">Repeat your password *</label>
-            <input maxlength="30" type="password" class="form-control" id="repeat-password" value="" aria-describedby="repeat-passwordFeedback" required>
+            <input autocomplete="new-password" maxlength="30" type="password" class="form-control" id="repeat-password" value="" aria-describedby="repeat-passwordFeedback" required>
             <div id="repeat-passwordFeedback" class="invalid-feedback">
               feedback
             </div>
