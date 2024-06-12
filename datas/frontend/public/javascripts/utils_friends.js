@@ -268,9 +268,12 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alia
             friend = await response.json();
     }
     const nodeCopy = nodeToCopy.cloneNode(true);
-    await nodeCopy.setAttribute("data-friend-id", friend.id)
-    await nodeCopy.setAttribute("data-friend-status", friend.status)
-    nodeCopy.querySelector(".username").innerHTML = friend.username
+    if (friend.id)
+        await nodeCopy.setAttribute("data-friend-id", friend.id)
+    if (friend.status)
+        await nodeCopy.setAttribute("data-friend-status", friend.status)
+    if (friend.username)
+        nodeCopy.querySelector(".username").innerHTML = friend.username
 
 
     /// IMG Managment
@@ -288,7 +291,7 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alia
     }
 
 
-    if (user.datas.id == friend.id)
+    if (friend.id && user.datas.id == friend.id)
     {
         nodeCopy.querySelector(".dropdown").innerHTML = ''
         return nodeCopy;
