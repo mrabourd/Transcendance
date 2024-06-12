@@ -29,13 +29,10 @@ export default class extends AbstractView {
 			chat_with.querySelector('.profile_card').classList.remove('mb-2')
 			/* get message history */
 			let historyResponse = await this.user.request.get(`/api/users/chat/messages/history/${this.friend_id}/`);
-			/* TODO -> createChatMessage for each */
-			// this.messageHistory = this.historyJSON(historyResponse);
-
-			// if (friends_utils.is_blocked(this.user, this.friend_id) != undefined){
-			// 	document.querySelector(".message").classList.add("text-secondary")
-			// }
-			this.historyJSON(historyResponse);
+			if(historyResponse.ok && historyResponse.status==200)
+			{
+				this.historyJSON(historyResponse);
+			}
 
 			
 		} catch (err) {
@@ -115,6 +112,7 @@ export default class extends AbstractView {
 	}
 
 	historyJSON = async (history) => {
+
 		let messageHistory = await history.json();
 		let currentUser = this.user.datas.id;
 		if (messageHistory.length > 0){

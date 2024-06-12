@@ -23,13 +23,13 @@ class ChatMessageHistory(APIView):
 		try:
 			other_user = User.objects.get(id=friend_id)
 		except User.DoesNotExist:
-			return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+			return Response({"error": "User not found"}, 204)
 		
 		room_name = f"room_{min(request.user.id, other_user.id)}_{max(request.user.id, other_user.id)}"
 		try :
 			chat_room = ChatRoom.objects.get(name=room_name)
 		except ChatRoom.DoesNotExist:
-			return Response({"error": "ChatRoom not found"}, status=status.HTTP_404_NOT_FOUND)
+			return Response({"error": "ChatRoom not found"}, 204)
 		
 		
 		# messages de la chatroom, trie par date, limite a 20

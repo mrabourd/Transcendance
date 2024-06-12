@@ -226,10 +226,12 @@ export async function add_follow_event(user, profile_card, friend_id) {
 }
 export async function add_profile_event(user, profile_card, friend_id) {
     try{
+        let profile_url = null
     let dom = profile_card.querySelector('.profile');
     if (!dom)
         return
-    const profile_url = "/profile/" + friend_id
+    if (friend_id)
+        profile_url = "/profile/" + friend_id
     dom.removeEventListener('click',async (e) => {})
     dom.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -238,7 +240,8 @@ export async function add_profile_event(user, profile_card, friend_id) {
     profile_card.querySelector(".avatar").removeEventListener('click',async (e) => {})
     profile_card.querySelector(".avatar").addEventListener('click', async (e) =>  {
         e.preventDefault();
-        user.router.navigateTo(profile_url, user);
+        if (profile_url)
+            user.router.navigateTo(profile_url, user);
     });
 }catch (e){
     console.log('fetch error')
@@ -321,6 +324,7 @@ export async function create_anonymous_thumbnail(nodeToCopy, user, alias)
     nodeCopy.querySelector(".username").innerHTML = alias ? alias : "Anonymous"
     nodeCopy.querySelector(".status").remove()
     nodeCopy.querySelector("img.avatar").src = '/avatars/default.png'
+
     return nodeCopy;
     }catch (e){
         console.log('fetch error')
@@ -330,12 +334,12 @@ export async function create_anonymous_thumbnail(nodeToCopy, user, alias)
 export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alias="")
 {
     try{
-    if (!friend_id)
+    if (!friend_id || friend_id == null)
         return create_anonymous_thumbnail(nodeToCopy, user, alias)
     let existing_thumbnail = document.querySelector(`aside .profile_card[data-friend-id="${friend_id}"]`)
     if (existing_thumbnail)
         return existing_thumbnail.cloneNode(true)
-    if (friend == null)
+    if (friend == null && friend_id != null)
     {
         let response = await user.request.get(`/api/users/profile/${friend_id}/`)
         if (response.status === 200)
