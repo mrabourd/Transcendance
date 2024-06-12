@@ -39,7 +39,7 @@ export default class extends AbstractView {
 
 			
 		} catch (err) {
-			console.warn('Something went wrong.', err);
+			console.log('Something went wrong.', err);
 		}
 
 	}

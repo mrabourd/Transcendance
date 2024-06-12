@@ -22,7 +22,7 @@ export default class extends AbstractView {
 
         }).catch(function (err) {
             // There was an error
-            console.warn('Something went wrong.', err);
+            console.log('Something went wrong.', err);
         });
     }
 
@@ -139,7 +139,7 @@ export default class extends AbstractView {
             }
         })
         .catch(error => {
-            console.error('login.js (76) : There was a problem with the fetch operation:', error);
+            console.log('login.js (76) : There was a problem with the fetch operation:', error);
         });
     }
 }

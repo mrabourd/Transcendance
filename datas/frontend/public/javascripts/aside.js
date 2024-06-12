@@ -37,8 +37,7 @@ export async function print(user)
 				})
 			}
         } catch (e) {
-            console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
-            throw e; // Re-throw the error after logging it
+            console.log("Failed to parse JSON:", e); // Log any JSON parsing errors
         }
 
 
@@ -62,7 +61,7 @@ export async function print(user)
 				}
 			}
 		} catch (e) {
-			console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
+			console.log("Failed to parse JSON:", e); // Log any JSON parsing errors
 			throw e; // Re-throw the error after logging it
 		}
 		/*

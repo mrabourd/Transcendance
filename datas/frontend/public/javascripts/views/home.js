@@ -35,6 +35,7 @@ export default class extends AbstractView {
         dom.addEventListener('click',  async e => 
         {
             e.preventDefault();
+            try{
             if (e.target.innerHTML == 'Find a random oponent')
             {
                 response = await this.user.request.post('/api/match/subscribe/', {})
@@ -60,10 +61,14 @@ export default class extends AbstractView {
                     this.user.saveDatasToLocalStorage()
                 }
             }
-        })
+        } catch (error) {
+            console.log("fetch error")
+        }
+    })
     }
 
         // TOURNAMENT MANAGEMENT 
+        try{
         response = await this.user.request.get('/api/match/tournament/list/')
         let destination = document.querySelector('#app .tournament')
         let link
@@ -85,30 +90,38 @@ export default class extends AbstractView {
             this.user.router.navigateTo('/tournament', this.user)
         })
         destination.classList.remove('d-none')
+        }catch (e){
+            console.log('fetch error', e)
+        }
     }
 
     async add_pending_matches ()
     {
         /* PENDING MATCHES */
+        try{
         let dom = document.querySelector('#app .pending_matchs')
         let response = await this.user.request.post('/api/match/list/pending/')
-        try{
             let JSONResponse = await response.json()
             JSONResponse.forEach(async match => {
                 var newLi = document.createElement('li')
                 newLi.classList.add('row', 'col-12');
 
                 var nodePlayer1 = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  match['match_points'][0]['user_id'])
+                if (nodePlayer1)
+                {
                 nodePlayer1.classList.remove('col-12')
                 nodePlayer1.classList.add('col-md-4')
                 nodePlayer1.querySelector(".dropdown").innerHTML = ''
                 friends_utils.update_status_text(nodePlayer1)
+                }
                 var nodePlayer2 = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  match['match_points'][1]['user_id'])
+                if (nodePlayer2)
+                {
                 nodePlayer2.classList.remove('col-12')
                 nodePlayer2.classList.add('col-md-4')
                 nodePlayer2.querySelector(".dropdown").innerHTML = ''
                 friends_utils.update_status_text(nodePlayer2)
-
+                }
 
                 var VS = document.createElement('div')
                 VS.classList.add('col-md-2', 'text-center')
@@ -121,17 +134,20 @@ export default class extends AbstractView {
                     e.preventDefault();
                     this.user.router.navigateTo(`/play/${match['match_id']}`, this.user)
                 });
+                if(newLi && nodePlayer1 && nodePlayer2 )
+                {
                 newLi.appendChild(nodePlayer1);
                 newLi.appendChild(VS);
                 newLi.appendChild(nodePlayer2);
                 newLi.appendChild(play_button);
+            
                 dom.querySelector('ul').appendChild(newLi);
                 dom.classList.remove('d-none')
+                }
 
             })
-        } catch (e) {
-            console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
-            throw e; // Re-throw the error after logging it
+        }catch (e){
+        console.log('fetch error', e)
         }
     }
 

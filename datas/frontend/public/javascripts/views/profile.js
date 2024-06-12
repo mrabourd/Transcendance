@@ -77,6 +77,7 @@ export default class extends AbstractView {
 			return;
 		this.fillProfile()
 		this.fillFollowed()
+		try{
 		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
 		let response = await this.user.request.get(URL);
         if (response.ok)
@@ -88,6 +89,9 @@ export default class extends AbstractView {
 			this.tournaments_history = JSONResponse.tournaments_history;
 			this.fillStats()
 			this.fillHistory()
+		}
+		}catch (e){
+			console.log('fetch error')
 		}
 	}
 
@@ -129,7 +133,7 @@ export default class extends AbstractView {
 
 	async fillHistory()
 	{
-
+		try{
 			let matchs = this.matches_history;
 			let tbody = document.querySelector(".table.matches_history");
 			matchs.forEach(async match => {
@@ -215,12 +219,17 @@ export default class extends AbstractView {
 				tr.appendChild(name)
 				tr.appendChild(players)
 				tr.appendChild(link)
-				tbody.appendChild(tr)
+				if (tbody)
+					tbody.appendChild(tr)
 			});
+		}catch (e){
+			console.log('fetch error')
+		}
 	}
 
 	async fillStats()
 	{
+		try{
 		let stats = this.matches_stat;
 		let nbMatchs = document.querySelector(".nb-matchs");
 		let wonMatch = document.querySelector(".won-match");
@@ -228,10 +237,14 @@ export default class extends AbstractView {
 		nbMatchs.innerHTML = stats.total;
 		wonMatch.innerHTML = stats.win;
 		lostMatch.innerHTML = stats.lost;
+		}catch(e){
+			console.log('fetch error', e)
+		}
 	}
 
 	async fillProfile()
 	{
+		try{
 		if(!this.UserDatas)
 			return;
 		var profile_thumb = await friends_utils.create_thumbnail(this.user.DOMProfileCard, this.user, null,  this.UserDatas.id)
@@ -252,6 +265,9 @@ export default class extends AbstractView {
 		document.querySelector(".tab-pane.profile #email").value = this.UserDatas.email;
 		document.querySelector(".tab-pane.profile #biography").value = this.UserDatas.biography;
 		return 1;
+	}catch(e){
+		console.log('fetch error', e)
+	}
 	}
 
 
@@ -348,7 +364,7 @@ export default class extends AbstractView {
 				})
 				.catch((error) => {
 					// Gérer les erreurs de requête ou de conversion JSON
-					console.error('There was a problem with the fetch operation:', error);
+					console.log('There was a problem with the fetch operation:', error);
 				});
 			})
 		}
@@ -402,7 +418,7 @@ export default class extends AbstractView {
 					}
 				})
 				.catch(error => {
-					console.error('Erreur lors de l\'upload de l\'image :', error);
+					console.log('Erreur lors de l\'upload de l\'image :', error);
 				});
 			}
 			reader.readAsDataURL(input.files[0]);

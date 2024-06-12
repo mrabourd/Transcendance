@@ -20,7 +20,7 @@ export default class extends AbstractView {
             DOM.innerHTML = body.innerHTML;
         }).catch(function (err) {
             // There was an error
-            console.warn('Something went wrong.', err);
+            console.log('Something went wrong.', err);
         });
     }
 
@@ -87,7 +87,7 @@ export default class extends AbstractView {
             }
         })
         .catch((error) => {
-            console.error('There was a problem with the fetch operation:', error);
+            console.log('There was a problem with the fetch operation:', error);
         });
     }
 

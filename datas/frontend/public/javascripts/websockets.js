@@ -6,30 +6,65 @@ import {USER_STATUS} from "./config.js";
 export default class Websockets {
     constructor(user) {
 		this.user = user
+		this.reconnectAttempts = 0;
 
 		this.count = 0;
 		this.countnotif = document.querySelector(".countnotif");
 		this.countnotif.textContent = this.count;
 		// setup notification websocket
-		this.notifySocket = new WebSocket(
-			`${user.request.url_wss}/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
-		);
-		// on socket open
-		this.notifySocket.onopen = function (e) {
-		};
-		// on socket close
-		this.notifySocket.onclose = function (e) {
-			// TODO reconnect notifysocker
-		};
+		this.setupWebSocket()
+	}
 
-		// on receiving message on group
-		this.notifySocket.onmessage = async (e) => {
+    setupWebSocket() {
+        this.notifySocket = new WebSocket(
+            `${this.user.request.url_wss}/ws/notify/?token=${this.user.request.getJWTtoken()['access']}`
+        );
+
+        // on socket open
+        this.notifySocket.onopen = (e) => {
+            this.reconnectAttempts = 0;
+            console.log('WebSocket connection opened');
+        };
+
+        // on socket close
+        this.notifySocket.onclose = (e) => {
+            console.log('WebSocket connection closes ', e);
+
+            this.attemptReconnect();
+        };
+		this.notifySocket.onmessage = (e) => 
+		{
+			this.treatMessage(e)
+		};
+    }
+
+    attemptReconnect = () => {
+        if (this.reconnectAttempts < 5 && this.user.isConnected) {
+            setTimeout(() => {
+                console.log("Attempting reconnect...");
+                this.reconnectAttempts++;
+                this.setupWebSocket();
+            }, 500); // 0.5 second interval
+        } else  if (this.user.isConnected){
+            // Max attempts reached, redirect to another page
+            console.log("Max reconnect attempts reached. Redirecting...");
+            window.location.href = 'your_other_page.html';
+        }
+    }
+
+	// on receiving message on group
+	treatMessage = async (e) => {
 			const data = JSON.parse(e.data);
 			if(data.error && data.error == 'token_not_valid')
 			{
 				let RefreshResponse = await this.user.request.refreshJWTtoken();
 				if (RefreshResponse.ok)
-					this.user.websockets = new Websockets(this.user)
+				{
+					console.log('token_not_valid')
+					//this.notifySocket.close();
+					//this.setupWebSocket();
+					//this.user.websockets = this.notifySocket
+				}
 				return;
 			}
 			
@@ -61,9 +96,10 @@ export default class Websockets {
 			}
 			
 		};
-    }
+    
 
-	async update_profile(data){
+	
+	update_profile = async (data) => {
 		let friend_id = data.sender;
 		let username = data.message.username;
 		let avatar = data.message.avatar;
@@ -94,8 +130,7 @@ export default class Websockets {
 		// this.user.router.navigateTo('/profile/' + friend_id, this.user);
 	}
 
-	async update_follow(data)
-	{
+	update_follow = async (data) => {
 		let friend_id = data.sender;
 		if (data.code_value == 1) // following someone 
 		{
@@ -119,8 +154,7 @@ export default class Websockets {
 		data.link = `/profile/${friend_id}/followed`;
 	}
 
-	async update_block(data)
-	{
+	update_block = async (data) => {
 		let friend_id = data.sender;
 		if (data.code_value == 1) // blocking someone 
 		{
@@ -139,17 +173,16 @@ export default class Websockets {
 		// this.user.router.navigateTo('/chatroom/' + friend_id, this.user);
 		data.link = '/chatroom/' + friend_id;
 	}
-
-	update_msg_link(data){
+	update_msg_link = async (data) => {
 		let friend_id = data.sender;
 		data.link = "/chatroom/" + friend_id;
 	}
-
+	
 	print_notification(data)
 	{
-		if (location.pathname == data.link){
+		if (location.pathname === data.link){
 			this.count = 0;
-			return;
+			return
 		}
 		this.count++;
 
@@ -184,8 +217,7 @@ export default class Websockets {
 	}
 
 
-	async update_invitation(data)
-	{
+	update_invitation = async (data) => {
 		if (data.code_value == 1) // invitation received
 		{
 			if (!this.user.datas.received_invitations.includes(data.sender))
@@ -222,8 +254,7 @@ export default class Websockets {
 
 		}
 	}
-
-	async update_status(data)
+	update_status = async (data) => {
 	{
 		let friend_id = data.sender
 		let friend_status = data.code_value
@@ -245,4 +276,6 @@ export default class Websockets {
 			document.querySelector(`aside .online ul`).append(nodeCopy)
 		}
 	}
+}
+
 }

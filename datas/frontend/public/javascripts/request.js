@@ -19,7 +19,7 @@ export default class Request {
             let JSONResponse = JSON.parse(textResponse); // Parse the response manually
             return new Request(JSONResponse['URL_BACK'], JSONResponse['URL_FRONT'], JSONResponse['URL_WSS'], JSONResponse['HOST'], JSONResponse['API42_URL']);
         } catch (e) {
-            console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
+            console.log("Failed to parse JSON:", e); // Log any JSON parsing errors
             throw e; // Re-throw the error after logging it
         }
 
@@ -76,7 +76,7 @@ export default class Request {
             }
             return response;
         } catch (error) {
-            console.error('request.js post error :', error);
+            console.log('request.js post error :', error);
             throw error;
         }
     }
@@ -107,7 +107,7 @@ export default class Request {
             else
                 return response;
         } catch (error) {
-            console.error('request.js put error :', error);
+            console.log('request.js put error :', error);
             throw error;
         }
     }
@@ -149,7 +149,7 @@ export default class Request {
                           //  return response;
                     }
                 } catch (e) {
-                    console.error("Failed to parse JSON:", e); // Log any JSON parsing errors
+                    console.log("Failed to parse JSON:", e); // Log any JSON parsing errors
                     throw e; // Re-throw the error after logging it
                 }
         
@@ -160,7 +160,7 @@ export default class Request {
                 return response;
             }
         } catch (error) {
-            console.error('request.js get error :', error);
+            console.log('request.js get error :', error);
             throw error;
         }
     }

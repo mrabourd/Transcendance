@@ -3,27 +3,44 @@ import {USER_STATUS} from "./config.js";
 
 export function is_invited(user,friend_id )
 {
-    return user.datas.invitations_sent.find(id => id == friend_id) !== undefined;
+    try{
+        return user.datas.invitations_sent.find(id => id == friend_id) !== undefined;
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 export function is_blocked(user, friend_id)
 {
-    return user.datas.blocks.find(id => id == friend_id) !== undefined;
+    try{
+        return user.datas.blocks.find(id => id == friend_id) !== undefined;
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 export function is_blocked_by(user, friend_id)
 {
-    return user.datas.blocked_by.find(id => id == friend_id) !== undefined;
+    try{
+        return user.datas.blocked_by.find(id => id == friend_id) !== undefined;
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 export function is_followed(user, friend_id)
 {
-    return user.datas.follows.find(id => id == friend_id) !== undefined;
+    try{
+        return user.datas.follows.find(id => id == friend_id) !== undefined;
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 
 export async function block(user, friend_id, action)
 {
+    try{
     let response = await user.request.get(`/api/users/${action}/${friend_id}/`)
     if (response.status == 200)
     {
@@ -43,10 +60,14 @@ export async function block(user, friend_id, action)
             user.router.navigateTo('/chatroom/' + friend_id, user);
         }
     }
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 export async function invite(user, friend_id, action)
 {
+    try{
     let response = await user.request.post(`/api/match/invite/${action}/${friend_id}/`)
     if (response.status == 200)
     {
@@ -77,10 +98,14 @@ export async function invite(user, friend_id, action)
             user.router.navigateTo('/play/' + JSONresponse.match_id, user);
         }
     }
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 export async function follow(user, friend_id, action)
 {
+    try{
     let response = await user.request.get(`/api/users/${action}/${friend_id}/`)
     if (response.status == 200)
     {
@@ -104,25 +129,37 @@ export async function follow(user, friend_id, action)
         else if (action =='unfollow' && test)
             test.remove()
     }
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 export async function update_block_text(user, profile_card, friend_id) {
+    try{
     let dom;
     let check = is_blocked(user, friend_id);
     dom = profile_card.querySelector('.block');
     if (dom)
         dom.innerHTML = (check) ? 'unblock' : 'block';
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 export async function update_follow_text(user, profile_card, friend_id) {
+    try{
     let dom;
     let check = is_followed(user, friend_id);
     dom = profile_card.querySelector('.follow');
     if (dom)
         dom.innerHTML = (check) ? 'unfollow' : 'follow';
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 export async function update_chat_text(user, profile_card, friend_id) {
+    try{
     let dom;
     let check = is_blocked(user, friend_id);
     let friend_status = profile_card.getAttribute('data-friend-status');
@@ -134,10 +171,14 @@ export async function update_chat_text(user, profile_card, friend_id) {
     else
         dom.classList.remove('d-none')
     dom.innerHTML = (!check) ? 'send a message' : 'unblock to send a message';
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 
 export async function update_invite_text(user, profile_card, friend_id) {
+    try{
     let dom = profile_card.querySelector('.invite');
     if (!dom)
         return;
@@ -146,10 +187,15 @@ export async function update_invite_text(user, profile_card, friend_id) {
         dom.innerHTML = 'invite to play';
     else
         dom.innerHTML = 'cancel invitation';
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 
 export async function add_block_event(user, profile_card, friend_id) {
+    try{
+        
     let dom;
     dom = profile_card.querySelector('.block');
     if (!dom)
@@ -159,8 +205,12 @@ export async function add_block_event(user, profile_card, friend_id) {
         e.preventDefault();
         block(user, friend_id, e.target.innerHTML)
     });
+}catch (e){
+    console.log('fetch error')
+}
 }
 export async function add_follow_event(user, profile_card, friend_id) {
+    try{
     let dom = profile_card.querySelector('.follow');
     if (!dom)
         return
@@ -169,8 +219,12 @@ export async function add_follow_event(user, profile_card, friend_id) {
         e.preventDefault();
         follow(user, friend_id, e.target.innerHTML)
     });
+}catch (e){
+    console.log('fetch error')
+}
 }
 export async function add_profile_event(user, profile_card, friend_id) {
+    try{
     let dom = profile_card.querySelector('.profile');
     if (!dom)
         return
@@ -185,10 +239,14 @@ export async function add_profile_event(user, profile_card, friend_id) {
         e.preventDefault();
         user.router.navigateTo(profile_url, user);
     });
+}catch (e){
+    console.log('fetch error')
+}
 }
 
 export async function add_chat_event(user, profile_card, friend_id) {
-	let dom = profile_card.querySelector('.chat');
+	try{
+    let dom = profile_card.querySelector('.chat');
 	if (!dom)
 		return
 	dom.removeEventListener('click',async (e) => {})
@@ -197,11 +255,15 @@ export async function add_chat_event(user, profile_card, friend_id) {
 		let chat_url = "/chatroom/" + friend_id
 		user.router.navigateTo(chat_url, user);
 	});
+}catch (e){
+    console.log('fetch error')
+}
 }
 
 
 export async function add_invite_event(user, profile_card, profile_id)
 {
+    try{
     let dom = profile_card.querySelector('.invite');
     if (!dom)
         return
@@ -211,11 +273,15 @@ export async function add_invite_event(user, profile_card, profile_id)
         let action = (e.target.innerHTML == 'invite to play') ? 'send' : 'cancel'
         invite(user, profile_id, action)
     });
+}catch (e){
+    console.log('fetch error')
+}
 }
 
 /// STATUS
 export async function update_status_text(profile_card)
 {
+    try{
     let friend_status = profile_card.getAttribute('data-friend-status');
     let dom = profile_card.querySelector('.status span');
     if (!dom)
@@ -243,19 +309,26 @@ export async function update_status_text(profile_card)
     dom.innerHTML = text
     dom.removeAttribute('class')
     dom.classList.add(color)
+}catch (e){
+    console.log('fetch error')
+}
 }
 export async function create_anonymous_thumbnail(nodeToCopy, user, alias)
 {
+    try{
     const nodeCopy = nodeToCopy.cloneNode(true);
     nodeCopy.querySelector(".username").innerHTML = alias ? alias : "Anonymous"
     nodeCopy.querySelector(".status").remove()
     nodeCopy.querySelector("img.avatar").src = '/avatars/default.png'
     return nodeCopy;
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alias="")
 {
-
+    try{
     if (!friend_id)
         return create_anonymous_thumbnail(nodeToCopy, user, alias)
     let existing_thumbnail = document.querySelector(`aside .profile_card[data-friend-id="${friend_id}"]`)
@@ -299,10 +372,14 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alia
     var dropdownToggle = nodeCopy.querySelector(".dropdown-toggle");
     var dropdown = new bootstrap.Dropdown(dropdownToggle);
     return nodeCopy;
+    }catch (e){
+        console.log('fetch error')
+    }
 }
 
 export function update_profile_cards_text(user, friend_id)
 {
+    try{
     let profile_cards
     if(friend_id)
         profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);
@@ -317,10 +394,14 @@ export function update_profile_cards_text(user, friend_id)
         update_invite_text(user, profile_card, profile_id)
         update_chat_text(user, profile_card, profile_id)
     });
+}catch (e){
+    console.log('fetch error')
+}
 }
 
 export function update_profile_cards(user, profile_card)
 {
+    try{
     let profile_id = profile_card.getAttribute('data-friend-id');
     update_block_text(user, profile_card, profile_id)
     update_follow_text(user, profile_card, profile_id)
@@ -333,4 +414,7 @@ export function update_profile_cards(user, profile_card)
     add_profile_event(user, profile_card, profile_id)
     add_invite_event(user, profile_card, profile_id)
     add_chat_event(user, profile_card, profile_id)
+    }catch (e){
+        console.log('fetch error')
+    }
 }
