@@ -21,16 +21,6 @@ import requests
 from users.models import User  # Import your User model
 User = get_user_model()
 
-# @method_decorator(csrf_protect, name='dispatch')
-
-# def seachUser(players):
-# 	i = 0
-# 	for player in players:
-# 		if player[1] == "username":
-# 			return i
-# 		i =+ 1
-
-
 
 class CreateLocalMatch(APIView):
 	def get(self, request):
@@ -40,7 +30,7 @@ class CreateLocalMatch(APIView):
 		match = createMatch(current_user, None, player1, player2)
 		return Response({"match_id": match.match_id}, status=status.HTTP_200_OK)
 
-@method_decorator(csrf_protect, name='dispatch')
+#@method_decorator(csrf_protect, name='dispatch')
 class MatchList(APIView):
 	# Cette méthode gère les requêtes POST
 	def post(self, request, req_type):

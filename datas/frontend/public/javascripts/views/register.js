@@ -155,8 +155,8 @@ export default class extends AbstractView {
             }
         });
 
-        let check_pass = this.checkPassword;
-        let check_pass2 = this.checkRepeatPassword;
+        let check_pass = this.checkPassword();
+        let check_pass2 = this.checkRepeatPassword();
         let check_email = utils.checkEmail({ target: document.querySelector('form input#email') });
        
         if (isValid && check_pass && check_pass2 && check_email)

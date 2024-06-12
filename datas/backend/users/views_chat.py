@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404, redirect
 
 User = get_user_model()
 
-@method_decorator(csrf_protect, name='dispatch')
+# @method_decorator(csrf_protect, name='dispatch')
 class ChatMessageHistory(APIView):
 	# Cette méthode gère les requêtes POST
 	def get(self, request, friend_id):

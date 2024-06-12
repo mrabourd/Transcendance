@@ -17,7 +17,7 @@ from .views_match import createMatch
 from users.models import User, Invitation  # Import your User model
 User = get_user_model()
 
-@method_decorator(csrf_protect, name='dispatch')
+#@method_decorator(csrf_protect, name='dispatch')
 class Subscribe(APIView):
 	# Cette méthode gère les requêtes POST
 	def post(self, request):
@@ -53,7 +53,7 @@ class Subscribe(APIView):
 			response_content = 'No waiting player found, status updated to WAITING_PLAYER.'
 			return JsonResponse({'message': response_content}, status=200)
 
-@method_decorator(csrf_protect, name='dispatch')
+#@method_decorator(csrf_protect, name='dispatch')
 class Unsubscribe(APIView):
 	# Cette méthode gère les requêtes POST
 	def post(self, request):
@@ -64,7 +64,7 @@ class Unsubscribe(APIView):
 		return HttpResponse(response_content, status = 200)
 
 
-@method_decorator(csrf_protect, name='dispatch')
+#@method_decorator(csrf_protect, name='dispatch')
 class Invite(APIView):
 	permission_classes = [IsAuthenticated]
 	def post(self, request, req_type, id):

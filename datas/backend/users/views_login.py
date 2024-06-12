@@ -76,7 +76,7 @@ class VerifyTokenView(APIView):
 class CustomTokenRefreshView(TokenRefreshView):
 	serializer_class = CustomTokenRefreshSerializer
 
-@method_decorator(csrf_protect, name='dispatch')
+# @method_decorator(csrf_protect, name='dispatch')
 class CustomLogoutView(APIView):
 	def post(self, request, *args, **kwargs):
 		try:
@@ -119,7 +119,8 @@ class CustomObtainTokenPairView(TokenObtainPairView):
 			response = super().post(request, *args, **kwargs)
 			if response.status_code == 200:
 				# Ajouter le jeton CSRF à la réponse
-				response['X-CSRFToken'] = get_token(request)
+				csrftoken = get_token(request)
+				response['X-CSRFToken'] = csrftoken
 				response['Access-Control-Allow-Headers'] = 'accept, authorization, content-type, user-agent, x-csrftoken, x-requested-with'
 				response['Access-Control-Expose-Headers'] = 'Set-Cookie, X-CSRFToken'
 				response['Access-Control-Allow-Credentials'] = True

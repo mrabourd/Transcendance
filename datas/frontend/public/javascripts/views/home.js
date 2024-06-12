@@ -99,8 +99,8 @@ export default class extends AbstractView {
     {
         /* PENDING MATCHES */
         try{
-        let dom = document.querySelector('#app .pending_matchs')
-        let response = await this.user.request.post('/api/match/list/pending/')
+            let dom = document.querySelector('#app .pending_matchs')
+            let response = await this.user.request.post('/api/match/list/pending/')
             let JSONResponse = await response.json()
             JSONResponse.forEach(async match => {
                 var newLi = document.createElement('li')
