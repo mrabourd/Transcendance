@@ -1,7 +1,7 @@
 from django.urls import path
 
 from users.views_login import CustomObtainTokenPairView, CustomTokenRefreshView, GetCSRFTokenView,VerifyTokenView
-from users.views_login import UserRegistrationAPIView, MaVueProtegee, GetCSRFTokenView, CustomLogoutView
+from users.views_login import UserRegistrationAPIView, GetCSRFTokenView, CustomLogoutView
 from users.views_login_42 import login42Callback
 from users.views_login2FA import login2FA, login2FA_Verify
 
@@ -11,12 +11,9 @@ from users.views_user import UserDetail
 
 from users.views_chat import ChatMessageHistory
 
-from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 from rest_framework.urlpatterns import format_suffix_patterns
-from django.views.decorators.csrf import csrf_exempt
 import uuid
 
-#from users.views import UserProfileAPIView
 
 
 urlpatterns = [
@@ -31,7 +28,6 @@ urlpatterns = [
     path('logout/', CustomLogoutView.as_view(), name='logout'),
 
     path('refresh_csrftoken/', GetCSRFTokenView.as_view(), name='get_csrf_token'),
-    path('ma_vue_protegee/', MaVueProtegee.as_view(), name='ma_vue_protegee'),
 
     # USERS VIEWS
 	path('all/', UsersAPIView.as_view(), name='users-list'),

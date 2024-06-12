@@ -91,7 +91,7 @@ def CreateThirdMatch(user, tournament_id=None):
                 except Exception as e:
                     print(f"Error creating notification: {e}")
 
-# @method_decorator(csrf_protect, name='dispatch')
+@method_decorator(csrf_protect, name='dispatch')
 class TournamentView(APIView):
 	permission_classes = [IsAuthenticated]
 	def get(self, request, req_type):

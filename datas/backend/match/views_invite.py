@@ -64,7 +64,7 @@ class Unsubscribe(APIView):
 		return HttpResponse(response_content, status = 200)
 
 
-	#@method_decorator(csrf_protect, name='dispatch')
+@method_decorator(csrf_protect, name='dispatch')
 class Invite(APIView):
 	permission_classes = [IsAuthenticated]
 	def post(self, request, req_type, id):

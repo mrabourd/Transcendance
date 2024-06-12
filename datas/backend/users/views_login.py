@@ -76,7 +76,7 @@ class VerifyTokenView(APIView):
 class CustomTokenRefreshView(TokenRefreshView):
 	serializer_class = CustomTokenRefreshSerializer
 
-
+@method_decorator(csrf_protect, name='dispatch')
 class CustomLogoutView(APIView):
 	def post(self, request, *args, **kwargs):
 		try:
@@ -146,9 +146,3 @@ class UserRegistrationAPIView(APIView):
 		# Let's update the response code to 201 to follow the standards
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-@method_decorator(csrf_protect, name='dispatch')
-class MaVueProtegee(View):
-	# Cette méthode gère les requêtes POST
-	def post(self, request):
-		# Traitement de la requête POST ici
-		return HttpResponse("Requête POST protégée reçue avec succès.")

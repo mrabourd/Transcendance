@@ -40,7 +40,7 @@ class CreateLocalMatch(APIView):
 		match = createMatch(current_user, None, player1, player2)
 		return Response({"match_id": match.match_id}, status=status.HTTP_200_OK)
 
-
+@method_decorator(csrf_protect, name='dispatch')
 class MatchList(APIView):
 	# Cette méthode gère les requêtes POST
 	def post(self, request, req_type):
