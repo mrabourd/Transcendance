@@ -130,7 +130,6 @@ class Invite(APIView):
 		elif req_type == 'accept':
 			# Vérifier si l'utilisateur cible a reçu une invitation
 			invitation_sender = user_invited
-			print(f'invitation_sender ${invitation_sender} invitation_receiver = ${user}')
 			
 			# Vérifier le statut du demandeur (s'il est en ligne, annuler la demande)
 			# S'il est en ligne, cela signifie que l'invitation a été annulée

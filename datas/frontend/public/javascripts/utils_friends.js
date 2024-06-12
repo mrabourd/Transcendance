@@ -276,8 +276,6 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alia
     /// IMG Managment
     let avatar = (friend.avatar && friend.avatar != '') ? friend.avatar : '/avatars/default.png'
     try {
-        console.log("friend username ", friend.username)
-        console.log("avatar ", avatar)
         const response = await fetch(avatar);
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -286,7 +284,6 @@ export async function create_thumbnail(nodeToCopy, user, friend, friend_id, alia
         const objectURL = URL.createObjectURL(blob);
         nodeCopy.querySelector("img.avatar").src = objectURL;
     } catch (error) {
-        console.error('Failed to load image:', error);
         nodeCopy.querySelector("img.avatar").src = '/avatars/default.png'; // Image de secours en cas d'échec
     }
 

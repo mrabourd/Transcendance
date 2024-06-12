@@ -122,13 +122,11 @@ export default class Request {
 
             if (response.headers.has('X-CSRFToken'))
             {
-                console.log("response.headers.has('X-CSRFToken')")
                 this.setCsrfToken(response.headers.get('X-CSRFToken'))
 
             }
             if(response.headers.has('csrftoken'))
             {
-                console.log("response.headers.has('csrftoken')")
 
                 this.setCookie('csrftoken', 'Strict', response.headers.get('csrftoken'), 1)
             }

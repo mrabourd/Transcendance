@@ -206,7 +206,6 @@ export default class Websockets {
 			this.user.router.navigateTo('/home', this.user);
 		}
 		if(location.pathname == '/chatroom/' + data.sender){
-			console.log("invite via chat")
 			let DOM = this.user.DOMMpChatMessage.cloneNode(true)
 			let text = DOM.querySelector(".message");
 
@@ -226,7 +225,6 @@ export default class Websockets {
 
 	async update_status(data)
 	{
-		console.log('update_status', data)
 		let friend_id = data.sender
 		let friend_status = data.code_value
 		let profile_cards = document.querySelectorAll(`.profile_card[data-friend-id="${friend_id}"]`);

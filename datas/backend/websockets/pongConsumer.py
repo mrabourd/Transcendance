@@ -109,7 +109,6 @@ class PongServer:
 		# Vérifier les collisions avec les paddles
 		if ball_x <= paddle_width + ball_radius:
 			if paddle1_y <= ball_y <= paddle1_y + paddle_height:
-				print("################## COLLIDE LEFT")
 				speed_x = -speed_x + random.uniform(-0.1, 0.1)
 				speed_x = max(min(speed_x, 0.8), -0.8)
 				speed_y += (ball_y - (paddle1_y + paddle_height / 2)) * 0.05
@@ -117,7 +116,6 @@ class PongServer:
 
 		if ball_x >= 100 - paddle_width - ball_radius:
 			if paddle2_y <= ball_y <= paddle2_y + paddle_height:
-				print("################## COLLIDE RIGHT")
 				speed_x = -speed_x + random.uniform(-0.1, 0.1)
 				speed_x = max(min(speed_x, 0.8), -0.8)
 				speed_y += (ball_y - (paddle2_y + paddle_height / 2)) * 0.05
@@ -125,7 +123,6 @@ class PongServer:
 
 		# Vérifier les collisions avec les bords et inverser la direction si nécessaire
 		if ball_x <= ball_radius or ball_x >= 100 - ball_radius:
-			print("################## COLLIDE WALL")
 			self.reinisialise()
 			if ball_x <= ball_radius:
 				self.add_point("playerright")
@@ -133,7 +130,7 @@ class PongServer:
 				self.add_point("playerleft")
 
 		if ball_y <= ball_radius or ball_y >= 100 - ball_radius:
-			print("################## COLLIDE TOP/BOTTOM")
+			# print("################## COLLIDE TOP/BOTTOM")
 			if ball_y <= ball_radius :
 				ball_y = ball_radius
 				# ball_y = ball_radius * 2
@@ -198,7 +195,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 		if match_id in self.shared_game:
 			self._game = self.shared_game[match_id]
-			print("EXISTING MODEL in shared_game with status ", self._game["pong"].get_status())
 		else:
 			# get db infos 
 
@@ -214,7 +210,6 @@ class PongConsumer(AsyncWebsocketConsumer):
 			self._game["pong"].set_player_point("playerleft", playerleft.points)
 			self._game["pong"].set_player_point("playerright", playerright.points)
 
-			print("New MODEL with status ", self._game["pong"].get_status())
 
 
 	async def connect(self):
@@ -242,17 +237,12 @@ class PongConsumer(AsyncWebsocketConsumer):
 			await self.close()
 			return  # Close the connection if Match_id is invalid
 		
-		print("self.match.tournament_id : ", self.match.tournament_id)
 		if (self.match.tournament_id): 
 			await database_sync_to_async(CreateThirdMatch)(user=self.user, tournament_id=self.match.tournament_id)
 
 		existing_users = await database_sync_to_async(list)(self.match.match_points.all().order_by('my_user_id'))
 		self.match_point_1 = existing_users[0]
 		self.match_point_2 = existing_users[1]
-		#print("match_point_1 user", self.match_point_1.user)
-		#print("match_point_2 user", self.match_point_2.user)
-		print("match_point_1 my_user_id", self.match_point_1.my_user_id)
-		print("match_point_2 my_user_id", self.match_point_2.my_user_id)
 		# Join room group
 		await self.channel_layer.group_add(self.room_group_name,self.channel_name)
 		await self.load_models(uuid_obj, self.match.tournament_id, self.match_point_1, self.match_point_2)
@@ -378,13 +368,11 @@ class PongConsumer(AsyncWebsocketConsumer):
 
 	async def cancel_game_task(self):
 		self.game_task.cancel()
-		print("cancel_game_task, try to save")
 		await self.send_game_state()
 		# si le status est ended > enreister dans la BDD
 
 
 	async def save_game_state(self):
-		print("####################### save_game_state #1")
 		if (self._game["pong"] == None):
 			return
 		try:
@@ -399,9 +387,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 			await database_sync_to_async(self.match.save)()
 			await database_sync_to_async(self.match_point_1.save)()
 			await database_sync_to_async(self.match_point_2.save)()
-			print("self.match.tournament_id : ", self.match.tournament_id)
 			if (self.match.tournament_id): 
 				await database_sync_to_async(CreateThirdMatch)(self.user, self.match.tournament_id)
 		except Match.DoesNotExist:
-			print("Match not found")
 			return

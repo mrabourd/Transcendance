@@ -45,7 +45,6 @@ class User(AbstractUser):
     otp_expiry_time = models.DateTimeField(blank=True, null=True)
 
     def SetStatus(self, status):
-        print(f'{self} status = {status} ')
         self.status = status
         self.save()
         from websockets.models import Notification

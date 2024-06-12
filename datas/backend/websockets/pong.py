@@ -14,5 +14,4 @@ class Game:
 		self.player1 = None
 		self.player2 = None
 		self.score = [0, 0]
-		print(f"Game created with match_id: {self.match_id}")
 

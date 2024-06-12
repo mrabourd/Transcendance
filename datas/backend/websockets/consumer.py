@@ -39,15 +39,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			name=self.room_name
 		)
 		if created:
-			print(f">>>>>>>>>>>> ${self.chat_room} created !!!!!")
 			await database_sync_to_async(self.chat_room.users.add)(self.user)
 			await database_sync_to_async(self.chat_room.users.add)(self.other_user)
-		else:
-			print(f">>>>>>>>>>>> ${self.chat_room} exists !!!!!")
-			# print("self.chat_room.users, ", self.chat_room.users)
 		
 		existing_users = await database_sync_to_async(list)(self.chat_room.users.all())
-		print(f'>>>>>>>>>>>> existing_users {existing_users}')
 
 		await self.channel_layer.group_add(
 			self.room_group_name,
@@ -57,11 +52,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		await self.accept()
 		#@channel_session_user
 
-		# if await self.is_blocked(self.user, self.other_user):
-		# 	print("you are blocked")
-		# 	# await self.close()
-		# 	response_content = 'Your friend has blocked you!'
-		# 	return HttpResponse(response_content, status = 200)
 
 	async def disconnect(self, close_code):
 		# Leave room group
@@ -73,7 +63,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		text_data_json = json.loads(text_data)
 		message = text_data_json["message"]
 
-		print("self.channel_layer: ", self.channel_layer)
 		# Send message to room group
 		await self.channel_layer.group_send(
 			self.room_group_name, {"type": "chat.message", "message": message, "user": self.user}

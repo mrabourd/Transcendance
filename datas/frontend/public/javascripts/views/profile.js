@@ -75,7 +75,6 @@ export default class extends AbstractView {
 		
 		if (this.UserDatas == undefined)
 			return;
-		console.log("fillHtml")
 		this.fillProfile()
 		this.fillFollowed()
 		let URL = '/api/match/history/'+ this.UserDatas.id+'/';
@@ -303,7 +302,6 @@ export default class extends AbstractView {
 				if (!this.checkAllFields())
 					return false;
 				let avatar_src = document.querySelector("#app .profile_thumbnail .profile_card .avatar").src;
-				console.log("avatar_src", avatar_src)
 				let RQ_Body = {
 					avatar: avatar_src,
 					username: document.querySelector("#username").value,

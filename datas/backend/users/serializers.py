@@ -22,7 +22,6 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
         data = super().validate(attrs)
 
         # Print the new access token for demonstration purposes
-        print("New Access Token:", data.get('access'))
         return data
 
 class InvitationSerializer(serializers.ModelSerializer):

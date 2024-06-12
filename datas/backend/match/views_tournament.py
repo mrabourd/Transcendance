@@ -118,7 +118,6 @@ class TournamentView(APIView):
 			# 	return JsonResponse({'message': 'Vous ne pouvez pas creer de tournoi.'}, status=401)
 
 			# user.SetStatus(User.USER_STATUS['WAITING_TOURNAMENT'])
-			print(f'tournament_name ${tournament_name} tournament_creator = ${user}')
 
 			tournament = Tournament.objects.create(name=tournament_name, user=user, status=0)
 			# Creer une entree dans la table match (status = in_progress)

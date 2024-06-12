@@ -33,9 +33,7 @@ class ChatMessageHistory(APIView):
 		
 		
 		# messages de la chatroom, trie par date, limite a 20
-		print('chat_room', chat_room)
 		messages = Message.objects.filter(chat_room=chat_room)
 		serializer = ChatMessageSerializer(messages, many=True)
-		print("messages: ", messages)
 
 		return Response(serializer.data)

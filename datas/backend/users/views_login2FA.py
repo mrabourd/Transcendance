@@ -50,7 +50,6 @@ def sendEmailWithCode(user_profile, email):
 		[email],
 		fail_silently=False,
 	)
-	print("mail sent to: ", email)
 	return {"success"}
 
 
@@ -75,7 +74,6 @@ def emailCorrespondsToUser(user_profile, email):
 	if user_profile.email == email:
 		return True
 
-	print("the email doesn't correspond to the user")
 	return False
 
 @api_view(['POST'])
