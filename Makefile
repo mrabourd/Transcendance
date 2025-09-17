@@ -1,38 +1,79 @@
+
 all: build up
 
 build:
-	docker compose -f ./docker-compose.yml build
+	docker-compose -f ./docker-compose.yml build
 
 up:
-	docker compose -f ./docker-compose.yml up
-	
+	docker-compose -f ./docker-compose.yml up
+
 down:
-	docker compose -f ./docker-compose.yml down
-	
+	docker-compose -f ./docker-compose.yml down
+
 logs:
 	docker logs nginx
 
 migration:
-	docker exec backend python manage.py migrate --noinput 
+	docker-compose exec backend python manage.py migrate --noinput 
 
 backend :
-	docker compose -f ./docker-compose.yml down
+	docker-compose down
 	docker rmi backend
-	docker compose -f ./docker-compose.yml up
+	docker-compose up
 
 front :
-	docker compose -f ./docker-compose.yml down
+	docker-compose down
 	docker rmi -f repo_mrabourd-frontend:latest
-	docker compose -f ./docker-compose.yml up
+	docker-compose up
 
 clean: down
 	docker rmi -f $$(docker images -qa);\
-	docker volume rm $$(docker volume ls -q);
-	docker system prune
+	docker volume rm $$(docker volume ls -q);\
+	docker system prune -f
 
 fclean: clean
 
 re: clean up
 	docker ps -a
 
-.Phony: all logs clean fclean
+.PHONY: all logs clean fclean
+
+
+# all: build up
+
+# build:
+# 	docker compose -f ./docker-compose.yml build
+
+# up:
+# 	docker compose -f ./docker-compose.yml up
+	
+# down:
+# 	docker compose -f ./docker-compose.yml down
+	
+# logs:
+# 	docker logs nginx
+
+# migration:
+# 	docker exec backend python manage.py migrate --noinput 
+
+# backend :
+# 	docker compose -f ./docker-compose.yml down
+# 	docker rmi backend
+# 	docker compose -f ./docker-compose.yml up
+
+# front :
+# 	docker compose -f ./docker-compose.yml down
+# 	docker rmi -f repo_mrabourd-frontend:latest
+# 	docker compose -f ./docker-compose.yml up
+
+# clean: down
+# 	docker rmi -f $$(docker images -qa);\
+# 	docker volume rm $$(docker volume ls -q);
+# 	docker system prune
+
+# fclean: clean
+
+# re: clean up
+# 	docker ps -a
+
+# .Phony: all logs clean fclean
